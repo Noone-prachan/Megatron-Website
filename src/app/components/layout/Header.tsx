@@ -27,6 +27,7 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
     { path: "/products", label: "Products" },
     { path: "/reviews", label: "Reviews" },
     { path: "/team", label: "Team" },
+    { path: "/faq", label: "FAQ" },
     { path: "/orders", label: "Orders" },
   ];
 
