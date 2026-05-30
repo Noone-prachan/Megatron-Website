@@ -1,49 +1,80 @@
-export interface Product {
-  id: number;
-  name: string;
-  level: number;
-  rank: string;
-  skins: number;
-  heroes: number;
-  price: number;
-  image: string;
-  isHot: boolean;
-  isNew: boolean;
-}
+import { Link } from "react-router-dom";
+import { Product } from "../context/ProductContext";
+import { useCurrency } from "../context/CurrencyContext";
+import { motion } from "motion/react";
+import { ArrowUpRight } from "lucide-react";
 
-export default function ProductCard({ product }: { product: Product }) {
+const getBadgeStyle = (badge?: string) => {
+  const lowerBadge = badge?.toLowerCase();
+  switch (lowerBadge) {
+    case "hot":
+      return { bg: "bg-red-500/10", text: "text-red-500", border: "border-red-500/20" };
+    case "new":
+      return { bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20" };
+    case "premium":
+      return { bg: "bg-purple-500/10", text: "text-purple-400", border: "border-purple-500/20" };
+    case "rare":
+      return { bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/20" };
+    default:
+      return { bg: "bg-gray-500/10", text: "text-gray-400", border: "border-gray-500/20" };
+  }
+};
+
+export function ProductCard({ product }: { product: Product }) {
+  const { formatPrice } = useCurrency();
+  const badgeStyle = getBadgeStyle(product.badge);
+
   return (
-    <div className="relative bg-gray-800 rounded-2xl overflow-hidden shadow-lg transform transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl">
-      <div className="relative w-full h-72 overflow-hidden">
-        <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-        {/* Badges */}
-        {(product.isHot || product.isNew) && (
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            {product.isHot && (
-              <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">HOT</span>
-            )}
-            {product.isNew && (
-              <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">NEW</span>
-            )}
+    <Link to={`/products/${product.dedicatedId ? product.dedicatedId.toLowerCase() : product.id}`} className="block group h-full">
+      <motion.div
+        whileHover={{ y: -6 }}
+        className="bg-[var(--bg-secondary)] rounded-[2rem] overflow-hidden shadow-sm border border-[var(--border-color)] h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:border-[var(--text-secondary)]/30"
+      >
+        {/* Image container */}
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+          {product.badge && (
+            <span className={`absolute top-4 left-4 text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg ${badgeStyle.bg} ${badgeStyle.text} border ${badgeStyle.border} backdrop-blur-sm`}>
+              {product.badge}
+            </span>
+          )}
+          <div className="absolute bottom-4 right-4 w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <ArrowUpRight className="w-5 h-5" />
           </div>
-        )}
-      </div>
+        </div>
+        {/* Content */}
+        <div className="p-5 flex flex-col flex-1">
+          <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider mb-2">{product.category}</p>
+          <h3 className="font-bold text-[var(--text-primary)] text-base leading-snug mb-4 flex-1 line-clamp-2">{product.title}</h3>
 
-      <div className="p-6">
-        <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">{product.name}</h3>
-        <div className="flex justify-between text-gray-300 text-sm md:text-base mb-3">
-          <span>Level: <strong className="text-white">{product.level}</strong></span>
-          <span>Rank: <strong className="text-white">{product.rank}</strong></span>
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-2 text-center mb-4 border-t border-b border-[var(--border-color)] py-3">
+            <div>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{product.level}</p>
+              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Level</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{product.skins}</p>
+              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Skins</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{product.heroes}</p>
+              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Heroes</p>
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="flex items-baseline justify-end gap-2 mt-auto">
+            {product.discountPrice != null && (
+              <span className="text-base font-medium text-[var(--text-secondary)] line-through">{formatPrice(product.price)}</span>
+            )}
+            <span className="text-2xl font-black text-[var(--text-primary)]">
+              {formatPrice(product.discountPrice ?? product.price)}
+            </span>
+          </div>
         </div>
-        <div className="flex justify-between text-gray-300 text-sm md:text-base mb-4">
-          <span>Skins: <strong className="text-white">{product.skins}</strong></span>
-          <span>Heroes: <strong className="text-white">{product.heroes}</strong></span>
-        </div>
-        <div className="text-3xl md:text-4xl font-black text-white text-center">${product.price}</div>
-        <button className="w-full mt-6 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform hover:scale-105">
-          View Details
-        </button>
-      </div>
-    </div>
+      </motion.div>
+    </Link>
   );
 }

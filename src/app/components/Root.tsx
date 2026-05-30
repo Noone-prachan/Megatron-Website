@@ -1,10 +1,20 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./layout/Header";
 import { Footer } from "./layout/Footer";
 import { useState, useEffect } from "react";
 import { useAnnouncement } from "../context/AnnouncementContext";
 import { useTheme } from "../context/ThemeContext";
 import { ScrollToTopButton } from "./ui/ScrollToTopButton";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 // The Announcement Ticker with Timer
 function AnnouncementTicker() {
@@ -20,7 +30,7 @@ function AnnouncementTicker() {
 
   const targetDate = new Date(countdownTarget);
   const diff = Math.max(0, targetDate.getTime() - now.getTime());
-  
+
   const d = Math.floor(diff / (1000 * 60 * 60 * 24));
   const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const m = Math.floor((diff / 1000 / 60) % 60);
@@ -42,7 +52,7 @@ function AnnouncementTicker() {
   );
 
   return (
-    <div 
+    <div
       className="text-white h-10 flex items-center overflow-hidden border-b border-black/20 relative"
       style={{ backgroundColor: color }}
     >
@@ -62,6 +72,7 @@ export function Root() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ScrollToTop />
       <AnnouncementTicker />
       <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
       <main className="flex-1">

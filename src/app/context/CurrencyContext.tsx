@@ -10,14 +10,14 @@ interface CurrencyContextType {
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
-// Assuming an exchange rate of 1 USD = 133 NPR for demonstration
-const EXCHANGE_RATE = 133;
+// Assuming an exchange rate of 1 USD = 157 NPR for demonstration
+const EXCHANGE_RATE = 157;
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   // Load from local storage or default to USD
   const [currency, setCurrencyState] = useState<Currency>(() => {
     const saved = localStorage.getItem('megatron-currency');
-    return (saved === 'USD' || saved === 'NPR') ? saved : 'USD';
+    return (saved === 'NPR' || saved === 'USD') ? saved : 'NPR';
   });
 
   useEffect(() => {
@@ -28,14 +28,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     setCurrencyState(c);
   };
 
-  const formatPrice = (usdAmount: number) => {
-    if (currency === 'NPR') {
-      const converted = Math.round(usdAmount * EXCHANGE_RATE);
-      // Format as NPR with commas (e.g. Rs. 13,000)
-      return `Rs. ${converted.toLocaleString('en-IN')}`;
+  const formatPrice = (baseNprAmount: number) => {
+    if (currency === 'USD') {
+      const converted = baseNprAmount / EXCHANGE_RATE;
+      return `$${converted.toFixed(2)}`;
     }
-    // Format as USD (e.g. $99.90)
-    return `$${usdAmount.toFixed(2)}`;
+    // Format as NPR with commas (e.g. Rs. 13,000)
+    return `Rs. ${Math.round(baseNprAmount).toLocaleString('en-IN')}`;
   };
 
   return (

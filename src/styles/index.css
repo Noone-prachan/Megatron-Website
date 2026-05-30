@@ -1,3 +1,13 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './globals.css';
+
+
+/* Add this to apply the gradient background for the dark theme */
+html.dark body {
+
+    /* A very dark fallback color */
+    background-color: #0a0e14;
+    /* The radial gradient for a subtle effect */
+    background-image: radial-gradient(ellipse at top, hsl(215, 20%, 15%), hsl(220, 13%, 8%));
+}

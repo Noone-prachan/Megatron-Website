@@ -1,4 +1,4 @@
-import { RouterProvider } from "react-router";
+import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
 import { CurrencyProvider } from "./context/CurrencyContext";
 import { ProductProvider } from "./context/ProductContext";
@@ -12,20 +12,20 @@ import { Toaster } from "sonner";
 export default function App() {
   return (
     <ThemeProvider>
-      <Toaster theme="dark" position="bottom-right" richColors />
-      <AnnouncementProvider>
+      <CurrencyProvider>
         <ProductProvider>
-          <HistoryProvider>
-            <ReviewProvider>
-              <CurrencyProvider>
+          <AnnouncementProvider>
+            <HistoryProvider>
+              <ReviewProvider>
                 <OrderProvider>
+                  <Toaster theme="dark" position="bottom-right" richColors />
                   <RouterProvider router={router} />
                 </OrderProvider>
-              </CurrencyProvider>
-            </ReviewProvider>
-          </HistoryProvider>
+              </ReviewProvider>
+            </HistoryProvider>
+          </AnnouncementProvider>
         </ProductProvider>
-      </AnnouncementProvider>
+      </CurrencyProvider>
     </ThemeProvider>
   );
 }

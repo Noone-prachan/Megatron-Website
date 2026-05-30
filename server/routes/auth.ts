@@ -6,12 +6,12 @@ const router = express.Router();
 
 // Discord OAuth URLs
 const DISCORD_API = 'https://discord.com/api/v10';
-const OAUTH_URL = `${DISCORD_API}/oauth2/authorize`;
+const OAUTH_URL = 'https://discord.com/oauth2/authorize';
 const TOKEN_URL = `${DISCORD_API}/oauth2/token`;
 
 // Fallback application id (provided by user) and redirect URI
 const FALLBACK_CLIENT_ID = '1443156928254705734';
-const FALLBACK_REDIRECT_URI = 'http://localhost:5173/api/auth/discord/callback';
+const FALLBACK_REDIRECT_URI = 'http://localhost:3001/api/auth/discord/callback';
 
 /**
  * GET /api/auth/discord

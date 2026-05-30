@@ -1,7 +1,7 @@
 import { motion, AnimatePresence, useInView, useScroll, useTransform } from "motion/react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { ProductCard } from "../products/ProductCard";
+import { ProductCard } from "../ProductCard";
 import { Star, Shield, Zap, Users, CheckCircle2 } from "lucide-react";
 import { useProducts, Product } from "../../context/ProductContext";
 import { useReviews } from "../../context/ReviewContext";
@@ -17,11 +17,35 @@ const features = [
   { id: "06", title: "Pre-Verified Accounts", desc: "Every account is tested before sale. You always receive a working product." },
 ];
 
-const featuredProducts = [
-  { id: "1", title: "HYPER BASED PREMIUM ACCOUNT", level: 69, rank: "Exalted 1", skins: 315, heroes: 131, price: 99.90, image: "/images/account-preview.png", badge: "Hot" as const },
-  { id: "2", title: "EPIC STARTER BUNDLE", level: 45, rank: "Legend 3", skins: 150, heroes: 89, price: 49.90, image: "/images/skins-collection.png", badge: "New" as const },
-  { id: "3", title: "MYTHIC GLORY ACCOUNT", level: 78, rank: "Mythic Glory", skins: 420, heroes: 150, price: 149.90, image: "/images/hero-banner.png", badge: "Premium" as const },
-  { id: "4", title: "COLLECTOR'S EDITION", level: 82, rank: "Mythical Immortal", skins: 500, heroes: 160, price: 199.90, image: "/images/account-preview.png", badge: "Rare" as const },
+const featuredProducts: Product[] = [
+  {
+    id: "fp-1", title: "HYPER BASED PREMIUM ACCOUNT", level: 69, collectionRank: "Exalted Collector", skins: 315, heroes: 131, price: 99.90,
+    image: "/images/account-preview.png", badge: "Hot", category: "premium",
+    description: "A top-tier account for serious players.",
+    features: ["Many Skins", "High Rank", "Good Stats"],
+    stats: { totalMatches: 3000, winRate: "65%", mvpCount: 750 }
+  },
+  {
+    id: "fp-2", title: "EPIC STARTER BUNDLE", level: 45, collectionRank: "Renowned Collector", skins: 150, heroes: 89, price: 49.90,
+    image: "/images/skins-collection.png", badge: "New", category: "starter",
+    description: "Perfect for getting a head start in ranked games.",
+    features: ["Good Value", "Full Access", "Secure"],
+    stats: { totalMatches: 1500, winRate: "58%", mvpCount: 300 }
+  },
+  {
+    id: "fp-3", title: "MYTHIC GLORY ACCOUNT", level: 78, collectionRank: "Mega Collector", skins: 420, heroes: 150, price: 149.90,
+    image: "/images/hero-banner.png", badge: "Premium", category: "premium",
+    description: "Dominate the leaderboard with this high-end account.",
+    features: ["Max Emblems", "Rare Skins", "High Winrate"],
+    stats: { totalMatches: 4000, winRate: "70%", mvpCount: 1100 }
+  },
+  {
+    id: "fp-4", title: "COLLECTOR'S EDITION", level: 82, collectionRank: "World Collector", skins: 500, heroes: 160, price: 199.90,
+    image: "/images/account-preview.png", badge: "Rare", category: "collector",
+    description: "For the ultimate collector, featuring rare and limited items.",
+    features: ["Collector Skins", "Legend Skins", "Limited Items"],
+    stats: { totalMatches: 5000, winRate: "68%", mvpCount: 1400 }
+  },
 ];
 
 const faqsData = [
@@ -95,7 +119,7 @@ export function Home() {
 
   // Get featured products from context, fallback to static array if none exist
   const contextFeatured = products.filter(p => p.featured).slice(0, 4);
-  const displayFeatured = contextFeatured.length > 0 ? contextFeatured : featuredProducts as unknown as Product[];
+  const displayFeatured = contextFeatured.length > 0 ? contextFeatured : featuredProducts;
 
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
 
@@ -182,10 +206,10 @@ export function Home() {
                 transition={{ delay: 0.2 }}
                 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-widest mb-6 leading-[1.1] uppercase drop-shadow-lg"
               >
-                <span className="text-white">DIGITAL </span>
+                <span className="text-[var(--text-primary)]">DIGITAL </span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400">PRODUCTS</span>
                 <br />
-                <span className="text-white">&amp; </span>
+                <span className="text-[var(--text-primary)]">&amp; </span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">SERVICES</span>
               </motion.h1>
 
@@ -275,11 +299,11 @@ export function Home() {
               viewport={{ once: true }}
               className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-4 leading-[1.1] drop-shadow-md"
             >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400">Built </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-500">different.</span>
+              <span className="text-[var(--text-primary)]">The Ultimate </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-cyan-400 to-sky-400">Standard.</span>
               <br />
-              <span className="text-white">By </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-600">design.</span>
+              <span className="text-[var(--text-primary)]">Without </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-purple-500">Compromise.</span>
             </motion.h2>
 
             <motion.p
@@ -288,7 +312,7 @@ export function Home() {
               viewport={{ once: true }}
               className="text-[var(--text-secondary)] text-lg max-w-2xl leading-relaxed mx-auto"
             >
-              We're not just another seller. Every detail is engineered for trust, speed, and your peace of mind.
+              Your trusted destination for premium gaming assets. We deliver secure, high-tier accounts with unmatched speed and absolute reliability.
             </motion.p>
           </div>
         </div>
@@ -333,7 +357,7 @@ export function Home() {
               viewport={{ once: true }}
               className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6"
             >
-              <span className="text-white">Featured </span>
+              <span className="text-[var(--text-primary)]">Featured </span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300">Accounts</span>
             </motion.h2>
           </div>
@@ -342,7 +366,7 @@ export function Home() {
             {displayFeatured.map((product, i) => (
               <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                <ProductCard product={product as any} />
+                <ProductCard product={product} />
               </motion.div>
             ))}
           </div>
@@ -387,10 +411,10 @@ export function Home() {
               <h2
                 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 uppercase tracking-tight leading-[1.1]"
               >
-                <span className="text-white">Turn Your </span>
+                <span className="text-[var(--text-primary)]">Turn Your </span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400">Skins</span>
                 <br />
-                <span className="text-white">Into </span>
+                <span className="text-[var(--text-primary)]">Into </span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400">Real Cash</span>
               </h2>
 
@@ -506,7 +530,7 @@ export function Home() {
             <h2
               className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 uppercase tracking-tight leading-[1.1]"
             >
-              <span className="text-white">Enter The </span>
+              <span className="text-[var(--text-primary)]">Enter The </span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5865F2] via-blue-400 to-indigo-300">Megatron Corps</span>
             </h2>
             <p className="text-[var(--text-secondary)] text-lg max-w-2xl font-medium leading-relaxed">
@@ -538,20 +562,20 @@ export function Home() {
                 </h3>
                 <div className="space-y-6 relative z-10">
                   <div>
-                    <span className="block text-4xl font-black text-white leading-none">
+                    <span className="block text-4xl font-black text-[var(--text-primary)] leading-none">
                       {discordStats.totalMembers.toLocaleString()}
                     </span>
                     <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Registered Members</span>
                   </div>
                   <div>
-                    <span className="block text-4xl font-black text-[#10b981] leading-none flex items-center gap-2">
+                    <span className="block text-4xl font-black text-green-500 leading-none flex items-center gap-2">
                       {discordStats.onlineMembers.toLocaleString()}
                       <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-ping" />
                     </span>
                     <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Online Gamers</span>
                   </div>
                   <div>
-                    <span className="block text-4xl font-black text-amber-500 leading-none">
+                    <span className="block text-4xl font-black text-amber-400 leading-none">
                       {reviews.length.toLocaleString()}
                     </span>
                     <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Verified Vouches</span>
@@ -654,7 +678,7 @@ export function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] transition-all duration-300 shadow-xl backdrop-blur-md lg:h-[540px] w-full relative overflow-hidden"
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] transition-all duration-300 shadow-xl backdrop-blur-md h-[400px] sm:h-[450px] lg:h-[540px] w-full relative overflow-hidden"
             >
               <iframe
                 src="https://discord.com/widget?id=1486062330466013409&theme=dark"
@@ -677,7 +701,7 @@ export function Home() {
         <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-red-500/5 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <motion.div 
+          <motion.div
             layout
             transition={{ type: "spring", stiffness: 220, damping: 26 }}
             className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
@@ -694,26 +718,24 @@ export function Home() {
                 </span>
               </motion.div>
 
-              <motion.h2 
+              <motion.h2
                 layout="position"
-                className={`font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight transition-all duration-500 ${
-                  openFaq !== null 
-                    ? "text-2xl md:text-3xl lg:text-4xl" 
-                    : "text-4xl md:text-5xl lg:text-6xl"
-                }`}
+                className={`font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight transition-all duration-500 ${openFaq !== null
+                  ? "text-2xl md:text-3xl lg:text-4xl"
+                  : "text-4xl md:text-5xl lg:text-6xl"
+                  }`}
                 style={{ fontFamily: "'Venite Adoremus', sans-serif", lineHeight: "1.1" }}
               >
-                <span className="text-white">Frequently </span>
+                <span className="text-[var(--text-primary)]">Frequently </span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-orange-400">Asked</span>
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">Questions</span>
               </motion.h2>
 
-              <motion.p 
+              <motion.p
                 layout="position"
-                className={`text-[var(--text-secondary)] font-medium max-w-sm transition-all duration-500 ${
-                  openFaq !== null ? "text-xs opacity-60" : "text-sm"
-                }`}
+                className={`text-[var(--text-secondary)] font-medium max-w-sm transition-all duration-500 ${openFaq !== null ? "text-xs opacity-60" : "text-sm"
+                  }`}
               >
                 Got questions? We've got answers. Explore our detailed FAQ sections to get instant help.
               </motion.p>
@@ -733,7 +755,7 @@ export function Home() {
                           {faqsData[openFaq].category}
                         </span>
                         <button
-                          onClick={() => setOpenFaq(null)}
+                          onClick={(e) => { e.stopPropagation(); setOpenFaq(null); }}
                           className="w-7 h-7 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-red-500 hover:border-red-500/20 flex items-center justify-center transition-all duration-300 active:scale-95 shadow-md"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -741,7 +763,7 @@ export function Home() {
                           </svg>
                         </button>
                       </div>
-                      <h3 className="text-base font-bold text-white mb-4 leading-snug">
+                      <h3 className="text-base font-bold text-[var(--text-primary)] mb-4 leading-snug">
                         {faqsData[openFaq].q}
                       </h3>
                       <p className="text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed">
@@ -764,7 +786,7 @@ export function Home() {
                   .slice(0, showAllFaqs ? 6 : 3)
                   .map((faq, idx) => {
                     const isOpen = openFaq === idx;
-                    
+
                     // Hide the active item from the right side so it flies left and others shift up
                     if (isOpen) return null;
 
@@ -808,11 +830,11 @@ export function Home() {
                   className="group relative px-8 py-3.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--text-secondary)]/30 text-xs font-bold uppercase tracking-widest text-[var(--text-primary)] inline-flex items-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 shadow-md"
                 >
                   <span>{showAllFaqs ? "Collapse FAQs" : "Show More FAQs"}</span>
-                  <svg 
-                    className={`w-3 h-3 transition-transform duration-300 ${showAllFaqs ? 'rotate-180' : ''}`} 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2.5" 
+                  <svg
+                    className={`w-3 h-3 transition-transform duration-300 ${showAllFaqs ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -879,7 +901,7 @@ function TimelineFeature({ feature, index }: { feature: any, index: number }) {
           </div>
 
           <div className="relative z-10 pr-12">
-            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-3 flex items-center gap-3">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-3">
               {feature.title}
             </h3>
 

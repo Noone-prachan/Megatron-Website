@@ -2,186 +2,307 @@ import { motion } from "motion/react";
 
 const teamMembers = [
   {
-    id: "1",
-    name: "Admin",
-    role: "Founder & CEO",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&auto=format&fit=crop",
-    bio: "Leading Megatron with 5+ years of MLBB trading expertise and a passion for building trust in digital marketplaces.",
-    discord: "admin#0001",
-    accent: "from-violet-500 to-indigo-500",
-    accentLight: "violet",
-    since: "2021",
-    trades: "1,200+",
+    id: "570146481663770634",
+    username: "blakeactual",
+    displayName: "Blake",
+    role: "OWNER",
+    bioTag: "Purchase Handler",
+    icon: (
+      <svg className="w-5 h-5 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
+      </svg>
+    ),
+    avatar: "https://cdn.discordapp.com/avatars/570146481663770634/d6bd981f5a7fbd7b48357d0e2f46f420.png?size=256",
+    banner: "https://cdn.discordapp.com/banners/570146481663770634/ef386bce68955c1732855ed5dfe41350.png?size=512",
+    bannerColor: "#000000",
+    themeColor: "from-red-500 to-rose-500",
+    glowColor: "shadow-red-500/20",
+    textColor: "text-red-400",
+    borderColor: "border-red-500/30",
+    link: "https://discord.com/users/570146481663770634"
   },
   {
-    id: "2",
-    name: "Sarah Chen",
-    role: "Account Specialist",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&auto=format&fit=crop",
-    bio: "Expert in account verification, quality assurance, and ensuring every listed account meets Megatron's premium standard.",
-    discord: "sarah#0002",
-    accent: "from-pink-500 to-rose-500",
-    accentLight: "pink",
-    since: "2022",
-    trades: "800+",
+    id: "913826949820997654",
+    username: "astral.0740",
+    displayName: "I-naa?",
+    role: "OWNER",
+    bioTag: "Purchase Handler",
+    icon: (
+      <svg className="w-5 h-5 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
+      </svg>
+    ),
+    avatar: "https://cdn.discordapp.com/avatars/913826949820997654/322a9c9efec773beefe07d658784075d.png?size=256",
+    banner: "https://cdn.discordapp.com/banners/913826949820997654/a_69d525642c6b76df462f8409b116541c.gif?size=512",
+    bannerColor: "#383d46",
+    themeColor: "from-red-500 to-orange-500",
+    glowColor: "shadow-red-500/20",
+    textColor: "text-red-400",
+    borderColor: "border-red-500/30",
+    link: "https://discord.com/users/913826949820997654"
   },
   {
-    id: "3",
-    name: "Mike Johnson",
-    role: "Customer Support",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop",
-    bio: "Available 24/7 on Discord to help buyers and sellers navigate every step of the purchase process seamlessly.",
-    discord: "mike#0003",
-    accent: "from-blue-500 to-cyan-500",
-    accentLight: "blue",
-    since: "2022",
-    trades: "600+",
+    id: "850383604404322304",
+    username: "stingplayer",
+    displayName: "Noone ✮",
+    role: "DEVELOPER",
+    bioTag: "Technical Management",
+    icon: (
+      <svg className="w-5 h-5 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <polyline points="10 8 6 12 10 16"></polyline>
+        <polyline points="14 8 18 12 14 16"></polyline>
+      </svg>
+    ),
+    avatar: "https://cdn.discordapp.com/avatars/850383604404322304/80d23f978344d4ba2681f822d2402d06.png?size=256",
+    banner: null,
+    bannerColor: "#000000",
+    themeColor: "from-emerald-400 to-cyan-400",
+    glowColor: "shadow-emerald-500/20",
+    textColor: "text-emerald-400",
+    borderColor: "border-emerald-500/30",
+    link: "https://discord.com/users/850383604404322304"
   },
   {
-    id: "4",
-    name: "Aisha Patel",
-    role: "Payment Coordinator",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop",
-    bio: "Handles all secure payment processing including eSewa, Khalti, IME Pay, and Bank transfers with zero failed transactions.",
-    discord: "aisha#0004",
-    accent: "from-emerald-500 to-teal-500",
-    accentLight: "emerald",
-    since: "2023",
-    trades: "400+",
+    id: "844877006634221598",
+    username: "bauchaonfire",
+    displayName: "baucha_store",
+    role: "ADMIN",
+    bioTag: "Community Manager",
+    icon: (
+      <svg className="w-5 h-5 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        <circle cx="12" cy="11" r="3"></circle>
+        <path d="M7.7 18.5a6 6 0 0 1 8.6 0"></path>
+      </svg>
+    ),
+    avatar: "https://cdn.discordapp.com/avatars/844877006634221598/b7524ea6f9c6cada8e93f8e0fd555aba.png?size=256",
+    banner: "https://cdn.discordapp.com/banners/844877006634221598/17990f6d474a2763e167a335aa0be07e.png?size=512",
+    bannerColor: "#001d17",
+    themeColor: "from-amber-400 to-yellow-500",
+    glowColor: "shadow-amber-500/20",
+    textColor: "text-amber-400",
+    borderColor: "border-amber-500/30",
+    link: "https://discord.com/users/844877006634221598"
+  },
+  {
+    id: "896711755055632417",
+    username: "akiro_g",
+    displayName: "Akiro",
+    role: "ADMIN",
+    bioTag: "Community Manager",
+    icon: (
+      <svg className="w-5 h-5 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        <circle cx="12" cy="11" r="3"></circle>
+        <path d="M7.7 18.5a6 6 0 0 1 8.6 0"></path>
+      </svg>
+    ),
+    avatar: "https://cdn.discordapp.com/avatars/896711755055632417/4eed496ca6f92b5ea14a0971abf83474.png?size=256",
+    banner: null,
+    bannerColor: "#141414",
+    themeColor: "from-amber-400 to-yellow-500",
+    glowColor: "shadow-amber-500/20",
+    textColor: "text-amber-400",
+    borderColor: "border-amber-500/30",
+    link: "https://discord.com/users/896711755055632417"
   },
 ];
 
 export function Team() {
   return (
-    <div className="min-h-screen pt-28 pb-24 relative overflow-hidden">
-      {/* Ambient glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-violet-600/6 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen pt-36 pb-24 relative overflow-hidden bg-[var(--bg-primary)]">
+      {/* Dynamic Ambient Background Glows */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] max-w-[1000px] h-[600px] bg-gradient-to-b from-violet-600/10 via-fuchsia-600/5 to-transparent rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[150px] pointer-events-none" />
+      
+      {/* Animated subtle grid */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
 
-        {/* ── Hero Header ── */}
+        {/* ── Premium Hero Header ── */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-20"
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center mb-24 relative"
         >
-          <span className="inline-flex items-center gap-2 bg-violet-500/10 text-violet-400 border border-violet-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-            The Crew
-          </span>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight mb-6 leading-[1]">
-            <span className="text-white">Meet the </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400">Team.</span>
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="inline-flex items-center gap-2 bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl px-5 py-2 rounded-full text-xs font-bold uppercase tracking-[0.2em] mb-8 shadow-2xl"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+            </span>
+            <span className="bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">The Architects</span>
+          </motion.div>
+          
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-6 leading-[1.1]">
+            <span className="text-white drop-shadow-sm">Meet the </span>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 animate-gradient-x">Team.</span>
+              <motion.span 
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="absolute bottom-0 left-0 h-1.5 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full"
+              />
+            </span>
           </h1>
-          <p className="text-[var(--text-secondary)] max-w-xl mx-auto text-lg font-medium leading-relaxed">
-            The people behind every smooth trade, instant payout, and 5-star experience on Megatron.
+          <p className="text-gray-400 max-w-2xl mx-auto text-lg sm:text-xl font-medium leading-relaxed">
+            The masterminds behind every seamless transaction and premium experience on Megatron.
           </p>
         </motion.div>
 
-        {/* ── Team Grid ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* ── Ultra-Premium Glassmorphic Grid ── */}
+        <div className="flex flex-wrap justify-center gap-8 lg:gap-10">
           {teamMembers.map((member, i) => (
             <motion.div
               key={member.id}
-              initial={{ opacity: 0, y: 32 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="group relative bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] rounded-[2.5rem] overflow-hidden backdrop-blur-sm hover:border-white/10 hover:shadow-2xl transition-all duration-500"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: i * 0.15, duration: 0.6, type: "spring", stiffness: 100 }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className={`w-full max-w-[360px] relative group`}
             >
-              {/* Gradient top accent bar */}
-              <div className={`h-1 w-full bg-gradient-to-r ${member.accent}`} />
+              {/* Dynamic Glow Behind Card */}
+              <div className={`absolute -inset-0.5 bg-gradient-to-b ${member.themeColor} rounded-[24px] blur opacity-0 group-hover:opacity-20 transition duration-500`}></div>
 
-              {/* Photo */}
-              <div className="relative aspect-[4/4.5] overflow-hidden">
-                <div className={`absolute inset-0 bg-gradient-to-t from-[var(--bg-secondary)] via-transparent to-transparent z-10`} />
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-in-out"
-                />
-
-                {/* Role badge on photo */}
-                <div className="absolute top-4 left-4 z-20">
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-gradient-to-r ${member.accent} text-white shadow-lg`}>
-                    {member.role}
-                  </span>
+              {/* Main Card Body */}
+              <div className="relative h-full bg-[#0d0e12]/90 backdrop-blur-2xl rounded-[22px] overflow-hidden border border-white/10 group-hover:border-white/20 transition-all duration-500 shadow-2xl flex flex-col">
+                
+                {/* Banner Section with Smooth Fade */}
+                <div className="relative h-[130px] w-full overflow-hidden">
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                    style={{ 
+                      backgroundColor: member.bannerColor,
+                      backgroundImage: member.banner ? `url(${member.banner})` : 'none'
+                    }}
+                  />
+                  {/* Glass gradient overlay at bottom of banner to blend into card */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-[#0d0e12]"></div>
                 </div>
-              </div>
 
-              {/* Info */}
-              <div className="p-6 pt-5">
-                <div className="flex items-start justify-between gap-2 mb-3">
-                  <div>
-                    <h3 className="text-lg font-black text-white">{member.name}</h3>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <svg className="w-3.5 h-3.5 text-[#5865F2]" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-                      </svg>
-                      <span className="text-[10px] text-[var(--text-secondary)] font-bold">{member.discord}</span>
+                <div className="relative px-6 pb-6 flex-1 flex flex-col">
+                  {/* Floating Avatar & Role Badge Row */}
+                  <div className="flex justify-between items-end mb-4 -mt-[56px] relative z-20">
+                    {/* Glowing Avatar */}
+                    <div className="relative group/avatar cursor-pointer">
+                      <div className={`absolute -inset-1 bg-gradient-to-r ${member.themeColor} rounded-full opacity-50 blur-md group-hover/avatar:opacity-100 transition-opacity duration-300`}></div>
+                      <div className="w-[112px] h-[112px] rounded-full border-[4px] border-[#0d0e12] bg-[#0d0e12] relative z-10 overflow-hidden">
+                        <img
+                          src={member.avatar}
+                          alt={member.displayName}
+                          className="w-full h-full rounded-full object-cover transform transition-transform duration-500 group-hover/avatar:scale-110"
+                        />
+                      </div>
+                      {/* Premium Online Indicator */}
+                      <div className="absolute bottom-1 right-1 w-6 h-6 bg-emerald-500 border-4 border-[#0d0e12] rounded-full z-20 shadow-[0_0_10px_rgba(16,185,129,0.6)]">
+                        <div className="w-full h-full bg-emerald-400 rounded-full animate-ping opacity-75"></div>
+                      </div>
+                    </div>
+
+                    {/* Glassmorphic Role Badge */}
+                    <div className={`mb-3 relative overflow-hidden backdrop-blur-md bg-white/[0.03] border ${member.borderColor} px-4 py-1.5 rounded-full shadow-lg`}>
+                      <div className={`absolute inset-0 bg-gradient-to-r ${member.themeColor} opacity-10`}></div>
+                      <div className="relative flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${member.themeColor} shadow-[0_0_8px_currentColor] ${member.textColor}`}></div>
+                        <span className={`text-[11px] font-black uppercase tracking-widest bg-gradient-to-r ${member.themeColor} bg-clip-text text-transparent`}>
+                          {member.role}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed font-medium mb-5">
-                  {member.bio}
-                </p>
-
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-2 mb-5">
-                  <div className="bg-[var(--bg-primary)]/60 border border-[var(--border-color)] rounded-xl p-2.5 text-center">
-                    <div className="text-sm font-black text-white">{member.trades}</div>
-                    <div className="text-[9px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Trades</div>
+                  {/* Name Info */}
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-black text-white tracking-tight flex items-center gap-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all duration-300">
+                      {member.displayName}
+                    </h3>
+                    <p className="text-sm text-gray-400 font-medium tracking-wide">@{member.username}</p>
                   </div>
-                  <div className="bg-[var(--bg-primary)]/60 border border-[var(--border-color)] rounded-xl p-2.5 text-center">
-                    <div className="text-sm font-black text-white">Since {member.since}</div>
-                    <div className="text-[9px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Member</div>
-                  </div>
-                </div>
 
-                {/* CTA */}
-                <a
-                  href="https://discord.gg/fKXBF3QyzB"
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r ${member.accent} text-white text-xs font-black uppercase tracking-widest hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg`}
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-                  </svg>
-                  Message
-                </a>
+                  {/* Ultra-Sleek Bio Tag */}
+                  <div className="mb-8">
+                    <div className="relative group/bio">
+                      <div className={`absolute -inset-0.5 bg-gradient-to-r ${member.themeColor} rounded-xl blur opacity-20 group-hover/bio:opacity-40 transition duration-300`}></div>
+                      <div className="relative flex items-center gap-3 bg-black/40 backdrop-blur-xl border border-white/5 px-4 py-3 rounded-xl">
+                        <span className={`${member.textColor} drop-shadow-md animate-pulse flex items-center justify-center`}>
+                          {member.icon}
+                        </span>
+                        <span className="text-sm font-bold text-gray-200 tracking-wide">
+                          {member.bioTag}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Spacer to push button to bottom if heights differ */}
+                  <div className="flex-1"></div>
+
+                  {/* Premium Action Button */}
+                  <a
+                    href={member.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`relative w-full flex items-center justify-center py-3.5 rounded-xl font-bold text-sm tracking-wide overflow-hidden group/btn shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1`}
+                  >
+                    {/* Default State Background */}
+                    <div className={`absolute inset-0 bg-gradient-to-r ${member.themeColor} opacity-80 group-hover/btn:opacity-100 transition-opacity duration-300`}></div>
+                    
+                    {/* Glare Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[150%] group-hover/btn:translate-x-[150%] transition-transform duration-700 ease-in-out"></div>
+                    
+                    <span className="relative z-10 text-white flex items-center gap-2 drop-shadow-md">
+                      Connect Profile
+                      <svg className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* ── Bottom CTA ── */}
+        {/* ── Holographic Bottom CTA ── */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-20 bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-secondary)]/50 border border-[var(--border-color)] rounded-[2.5rem] p-10 text-center"
+          className="mt-32 relative group cursor-pointer"
         >
-          <h2 className="text-3xl font-black mb-3">
-            <span className="text-white">Want to join the </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">team?</span>
-          </h2>
-          <p className="text-[var(--text-secondary)] text-sm font-medium mb-7 max-w-md mx-auto">
-            We're always looking for dedicated MLBB enthusiasts to join us as middlemen, support agents, or account evaluators.
-          </p>
-          <a
-            href="https://discord.gg/fKXBF3QyzB"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2.5 bg-white text-black px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:scale-105 transition-transform shadow-xl"
-          >
-            <svg className="w-5 h-5 text-[#5865F2]" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-            </svg>
-            Apply on Discord
-          </a>
+          <div className="absolute -inset-1 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+          <div className="relative bg-[#0d0e12]/80 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-12 text-center overflow-hidden">
+            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-violet-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
+            
+            <h2 className="text-4xl font-black mb-4 relative z-10">
+              <span className="text-white">Become part of the </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">Legacy.</span>
+            </h2>
+            <p className="text-gray-400 text-base font-medium mb-8 max-w-lg mx-auto relative z-10">
+              We're building the future of MLBB trading. Join our elite team of middlemen, support agents, and account evaluators.
+            </p>
+            
+            <a
+              href="https://discord.gg/fKXBF3QyzB"
+              target="_blank"
+              rel="noreferrer"
+              className="relative inline-flex items-center gap-3 bg-white text-black px-10 py-4 rounded-full font-black text-sm uppercase tracking-[0.15em] hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.3)] z-10"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+              </svg>
+              Apply on Discord
+            </a>
+          </div>
         </motion.div>
 
       </div>

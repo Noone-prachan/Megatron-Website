@@ -1,41 +1,18 @@
 import express from 'express';
-import { Client, GatewayIntentBits, ChannelType, PermissionFlagsBits } from 'discord.js';
+import { ChannelType, PermissionFlagsBits } from 'discord.js';
 import axios from 'axios';
+import { discordClient as client, botReady } from '../discordClient';
 
 const router = express.Router();
-
-// Initialize Discord bot
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-});
-
-let botReady = false;
-
-client.once('ready', () => {
-  console.log(`✅ Discord bot logged in as ${client.user?.tag}`);
-  botReady = true;
-});
-
-if (process.env.DISCORD_BOT_TOKEN) {
-  client.login(process.env.DISCORD_BOT_TOKEN).catch(err => {
-    console.error('❌ Failed to login to Discord:', err);
-  });
-} else {
-  console.warn('⚠️ DISCORD_BOT_TOKEN is missing. Bot features (like automatic tickets) are temporarily disabled.');
-}
 
 /**
  * POST /api/tickets/create
  * Creates a Discord ticket for a purchase
  */
 router.post('/create', async (req, res) => {
-  const { productId, productTitle, userId, username } = req.body;
+  const { product, userId, username } = req.body;
 
-  if (!productId || !userId) {
+  if (!product || !userId) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -45,20 +22,29 @@ router.post('/create', async (req, res) => {
 
   try {
     const guild = await client.guilds.fetch(process.env.DISCORD_GUILD_ID!);
-    const isSellRequest = productId === 'sell';
+    const isSellRequest = product.id === 'sell';
+    const parentCategory = isSellRequest
+      ? process.env.DISCORD_SELL_TICKET_CHANNEL_ID
+      : process.env.DISCORD_TICKET_CHANNEL_ID;
+
+    const ticketIdStr = Date.now().toString().slice(-4);
+    const cleanUsername = (username || userId).replace(/[^a-zA-Z0-9]/g, '').toLowerCase().substring(0, 16) || 'user';
+    const ticketName = `${cleanUsername}-${isSellRequest ? 'sell' : 'buy'}-${ticketIdStr}`;
 
     // Create a private ticket channel
     const ticketChannel = await guild.channels.create({
-      name: isSellRequest ? `sell-${username || userId}-${Date.now().toString().slice(-4)}` : `ticket-${username || userId}-${Date.now().toString().slice(-4)}`,
+      name: ticketName,
       type: ChannelType.GuildText,
-      parent: process.env.DISCORD_TICKET_CHANNEL_ID, // Category ID
+      parent: parentCategory, // Category ID
       permissionOverwrites: [
         {
           id: guild.id,
+          type: 0, // Role
           deny: [PermissionFlagsBits.ViewChannel],
         },
         {
           id: userId,
+          type: 1, // Member
           allow: [
             PermissionFlagsBits.ViewChannel,
             PermissionFlagsBits.SendMessages,
@@ -69,49 +55,60 @@ router.post('/create', async (req, res) => {
     });
 
     // Send initial message to the ticket
-    if (isSellRequest) {
-      await ticketChannel.send({
-        embeds: [{
-          title: '💰 Account Selling Request',
-          description: `Hello <@${userId}>! Thank you for choosing Megatron to sell your account. Our staff will assist you with the valuation and process.`,
-          fields: [
-            {
-              name: 'Required Details',
-              value: 'To speed up the process, please reply with:\n1. Total Skins Count (and highlight any rare skins like Collector, Legend, Prime, etc.)\n2. Hero Count & current Rank\n3. Screenshots of the profile page and skins list\n4. Your expected price',
-              inline: false,
-            },
-            {
-              name: 'Safe Middleman Process',
-              value: 'Megatron guarantees a secure transaction using our official middleman system. Do not hand over account details until instructed by our staff.',
-              inline: false,
-            },
-          ],
-          color: 0xF5A623, // Orange/amber color
-          timestamp: new Date().toISOString(),
-        }],
-      });
-    } else {
-      await ticketChannel.send({
-        embeds: [{
-          title: '🎟️ New Purchase Ticket',
-          description: `Hello <@${userId}>! Thank you for your interest in purchasing an account.`,
-          fields: [
-            {
-              name: 'Product',
-              value: productTitle || `Product ID: ${productId}`,
-              inline: false,
-            },
-            {
-              name: 'Next Steps',
-              value: '1. Our team will contact you shortly\n2. Choose your payment method (eSewa, Khalti, IME Pay)\n3. Make the payment\n4. Receive your account details',
-              inline: false,
-            },
-          ],
-          color: 0x5865F2,
-          timestamp: new Date().toISOString(),
-        }],
-      });
+    const embedDescription = isSellRequest 
+      ? `Welcome <@${userId}>!\n\nThank you for creating a support ticket. Our team will assist you shortly.\n\n**<a:hash:1510067600682520638> Category:** Account Sell\n**<a:diamond:1510067602641129615> Ticket ID:** ${ticketIdStr}\n\n**<a:coolannounce:1508500386783170651> Required Details:**\nTo speed up the process, please reply with:\n<a:arrow:1510067622840897616> Total Skins Count & rare skins\n<a:arrow:1510067622840897616> Hero Count & current Rank\n<a:arrow:1510067622840897616> Screenshots of the profile\n<a:arrow:1510067622840897616> Your expected price`
+      : `Welcome <@${userId}>!\n\nThank you for creating a support ticket. Our team will assist you shortly.\n\n**<a:hash:1510067600682520638> Category:** Account Buy\n**<a:diamond:1510067602641129615> Ticket ID:** ${ticketIdStr}\n**<a:cart:1508500534049374319> Product:** ${product.title || product.id}\n\nOur team will contact you shortly to process your payment and deliver the account details.`;
+
+    const messagePayload: any = {
+      content: `<@${userId}> <@&1486401825669382215>`,
+      embeds: [{
+        author: {
+          name: username || 'User',
+        },
+        title: '<a:crown:1510067613483667477> Support Ticket',
+        description: embedDescription,
+        color: 0x2B2D31, // Dark Discord color
+        timestamp: new Date().toISOString(),
+      }],
+    };
+
+    // If it's a buy request and we have product data, attach a rich embed
+    if (!isSellRequest && product.title) {
+      const productEmbed: any = {
+        title: `<a:diamond:1510067602641129615> ${product.title}`,
+        description: `**<a:cart:1508500534049374319> Buyer is interested in this account.**\n\n${product.description}`,
+        fields: [
+          { name: '<a:coin:1510067577853050880> Price', value: `**Rs. ${product.price}**`, inline: true },
+          { name: '<a:stars:1510067630579388427> Level', value: `**${product.level}**`, inline: true },
+          { name: '<a:crown:1510067613483667477> Rank', value: `**${product.collectionRank}**`, inline: true },
+          { name: '<a:sakura:1508500342856355930> Skins', value: `**${product.skins || 0}**`, inline: true },
+          { name: '<a:hash:1510067600682520638> Heroes', value: `**${product.heroes || 0}**`, inline: true },
+        ],
+        color: 0xbef264, // App Accent Color
+      };
+
+      if (product.image) {
+        if (product.image.startsWith('data:image')) {
+          const matches = product.image.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+          if (matches) {
+            const extension = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+            const base64Data = matches[2];
+            const buffer = Buffer.from(base64Data, 'base64');
+            
+            messagePayload.files = [{
+              attachment: buffer,
+              name: `product.${extension}`
+            }];
+            productEmbed.image = { url: `attachment://product.${extension}` };
+          }
+        } else if (product.image.startsWith('http')) {
+          productEmbed.image = { url: product.image };
+        }
+      }
+      messagePayload.embeds.push(productEmbed);
     }
+
+    await ticketChannel.send(messagePayload);
 
     // Notify admin channel / category channel
     const adminChannel = await guild.channels.fetch(process.env.DISCORD_TICKET_CHANNEL_ID!);
@@ -221,6 +218,77 @@ router.post('/close', async (req, res) => {
   } catch (error) {
     console.error('Error closing ticket:', error);
     res.status(500).json({ error: 'Failed to close ticket' });
+  }
+});
+
+/**
+ * POST /api/tickets/announce
+ * Sends an announcement for a new product listing
+ */
+router.post('/announce', async (req, res) => {
+  const { product } = req.body;
+  
+  if (!product || !botReady) {
+    return res.status(503).json({ error: 'Discord bot is not ready or missing product data' });
+  }
+
+  try {
+    const guild = await client.guilds.fetch(process.env.DISCORD_GUILD_ID!);
+    const channelId = process.env.ANNOUNCEMENT_CHANNEL_ID;
+    if (!channelId) {
+      return res.status(400).json({ error: 'ANNOUNCEMENT_CHANNEL_ID is not set' });
+    }
+    
+    const channel = await guild.channels.fetch(channelId);
+    
+    if (channel?.isTextBased()) {
+      const messagePayload: any = {
+        content: `<a:coolannounce:1508500386783170651> **New Account Listed!** <a:coolannounce:1508500386783170651>\n||@everyone||`,
+        embeds: [{
+          title: `<a:diamond:1510067602641129615> ${product.title}`,
+          description: `**<a:rightarrow:1508500500604256370> A premium account has just dropped in the Megatron Marketplace!**\n\n${product.description}\n\n**<a:cart:1508500534049374319> Grab it before it's sold!**`,
+          fields: [
+            { name: '<a:coin:1510067577853050880> Price', value: `**Rs. ${product.price}**`, inline: true },
+            { name: '<a:stars:1510067630579388427> Level', value: `**${product.level}**`, inline: true },
+            { name: '<a:crown:1510067613483667477> Rank', value: `**${product.collectionRank}**`, inline: true },
+            { name: '<a:sakura:1508500342856355930> Skins', value: `**${product.skins}**`, inline: true },
+            { name: '<a:hash:1510067600682520638> Heroes', value: `**${product.heroes}**`, inline: true },
+          ],
+          color: 0x5865F2, // Discord Blurple
+          footer: {
+            text: 'Megatron Marketplace',
+          },
+          timestamp: new Date().toISOString(),
+        }],
+      };
+
+      if (product.image) {
+        if (product.image.startsWith('data:image')) {
+          const matches = product.image.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+          if (matches) {
+            const extension = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+            const base64Data = matches[2];
+            const buffer = Buffer.from(base64Data, 'base64');
+            
+            messagePayload.files = [{
+              attachment: buffer,
+              name: `product.${extension}`
+            }];
+            messagePayload.embeds[0].image = { url: `attachment://product.${extension}` };
+          }
+        } else if (product.image.startsWith('http')) {
+          messagePayload.embeds[0].image = { url: product.image };
+        }
+      }
+
+      await channel.send(messagePayload);
+      res.json({ success: true, message: 'Announcement sent successfully' });
+    } else {
+      res.status(400).json({ error: 'Announcement channel not found or not text-based' });
+    }
+  } catch (error: any) {
+    console.error('Error sending announcement:', error);
+    res.status(500).json({ error: 'Failed to send announcement', message: error.message });
   }
 });
 

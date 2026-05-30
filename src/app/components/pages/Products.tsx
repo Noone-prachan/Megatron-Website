@@ -1,17 +1,47 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ProductCard } from "../products/ProductCard";
+import { ProductCard } from "../ProductCard";
 import { useProducts } from "../../context/ProductContext";
+import { useReviews } from "../../context/ReviewContext";
+import { Zap, Medal, Gem, Crown, Search, X, ChevronDown, Filter, Star, Loader2, MessageSquare, Quote, CheckCircle2 } from "lucide-react";
+import { api } from "../../../lib/api";
 
-const categories = [
-  { id: "all", label: "All", icon: "⚡" },
-  { id: "warrior", label: "Warrior", icon: "🗡️" },
-  { id: "elite", label: "Elite", icon: "🛡️" },
-  { id: "master", label: "Master", icon: "⚔️" },
-  { id: "grandmaster", label: "Grandmaster", icon: "🏆" },
-  { id: "epic", label: "Epic", icon: "💎" },
-  { id: "legend", label: "Legend", icon: "👑" },
-  { id: "mythic", label: "Mythic", icon: "🌟" },
+const collectionRanks = [
+  { 
+    id: "all", 
+    label: "All", 
+    icon: <svg className="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 2L2 13h9l-1 9 11-12h-9l1-8z"/></svg>
+  },
+  { 
+    id: "expert collector", 
+    label: "Expert Collector", 
+    icon: <svg className="w-4 h-4 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+  },
+  { 
+    id: "renowned collector", 
+    label: "Renowned Collector", 
+    icon: <svg className="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  },
+  { 
+    id: "exalted collector", 
+    label: "Exalted Collector", 
+    icon: <svg className="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3 6 7 1-5 5 1.5 7-6.5-3.5L5.5 21 7 14l-5-5 7-1z"/><circle cx="12" cy="11.5" r="2.5" fill="currentColor"/></svg>
+  },
+  { 
+    id: "mega collector", 
+    label: "Mega Collector", 
+    icon: <svg className="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2L2 8l10 14L22 8l-4-6H6zM12 19L5 9h14l-7 10z"/></svg>
+  },
+  { 
+    id: "world collector", 
+    label: "World Collector", 
+    icon: <svg className="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor"><path d="M2 4l3 11h14l3-11-5 4-5-6-5 6-5-4zm2 14h16v2H4z"/></svg>
+  },
+  { 
+    id: "galaxy collector", 
+    label: "Galaxy Collector", 
+    icon: <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 5 6-1-4 4 2 6-6-3-6 3 2-6-4-4 6 1z"/><path d="M5 21a10 10 0 0 0 14 0" stroke="currentColor" strokeWidth="2" fill="none"/></svg>
+  },
 ];
 
 const DISCORD_SVG = (
@@ -22,14 +52,54 @@ const DISCORD_SVG = (
 
 export function Products() {
   const { products } = useProducts();
+  const { reviews } = useReviews();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedRank, setSelectedRank] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement | null>(null);
+  const [isRankOpen, setIsRankOpen] = useState(false);
+  const rankRef = useRef<HTMLDivElement | null>(null);
+
+  const [isSelling, setIsSelling] = useState(false);
+  const [sellStatus, setSellStatus] = useState<"idle" | "success" | "error">("idle");
+  const [sellMessage, setSellMessage] = useState("");
+
+  const handleSellClick = async () => {
+    const userId = localStorage.getItem("discord_id");
+    const username = localStorage.getItem("discord_username") || "User";
+    
+    if (!userId) {
+      setSellStatus("error");
+      setSellMessage("Please login with Discord first to sell an account.");
+      return;
+    }
+
+    setIsSelling(true);
+    setSellStatus("idle");
+    try {
+      const res = await api.createTicket(
+        { id: 'sell', title: 'Account Sell Request', price: 0, description: '', image: '', level: 0, heroes: 0, skins: 0, collectionRank: '' },
+        userId,
+        username
+      );
+      if (res.success) {
+        setSellStatus("success");
+        setSellMessage("Ticket created! Please check your Discord.");
+      } else {
+        setSellStatus("error");
+        setSellMessage(res.error || "Failed to create ticket.");
+      }
+    } catch (err) {
+      setSellStatus("error");
+      setSellMessage("An unexpected error occurred.");
+    } finally {
+      setIsSelling(false);
+    }
+  };
 
   const filteredProducts = products
-    .filter(p => selectedCategory === "all" || p.rank.toLowerCase().includes(selectedCategory))
+    .filter(p => selectedRank === "all" || (p.collectionRank && p.collectionRank.toLowerCase() === selectedRank))
     .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === "price-low") return a.price - b.price;
@@ -43,12 +113,20 @@ export function Products() {
       if (isSortOpen && sortRef.current && !sortRef.current.contains(e.target as Node)) {
         setIsSortOpen(false);
       }
+      if (isRankOpen && rankRef.current && !rankRef.current.contains(e.target as Node)) {
+        setIsRankOpen(false);
+      }
     }
-    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setIsSortOpen(false); }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setIsSortOpen(false);
+        setIsRankOpen(false);
+      }
+    }
     document.addEventListener("click", onDocClick);
     document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("click", onDocClick); document.removeEventListener("keydown", onKey); };
-  }, [isSortOpen]);
+  }, [isSortOpen, isRankOpen]);
 
   const sortLabels: Record<string, string> = {
     featured: "Featured",
@@ -73,45 +151,46 @@ export function Products() {
           transition={{ duration: 0.5 }}
           className="mb-14"
         >
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
-            <div>
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-8">
+            <div className="flex-1">
               <span className="inline-flex items-center gap-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-5">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                 Live Marketplace
               </span>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1] mb-4">
-                <span className="text-white">The </span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300">Marketplace</span>
+              <h1 className="flex flex-col font-black tracking-tight leading-[0.9] mb-4 uppercase">
+                <span className="text-4xl min-[400px]:text-5xl sm:text-6xl lg:text-7xl text-[var(--text-primary)]">THE</span>
+                <span className="text-5xl min-[400px]:text-6xl sm:text-7xl lg:text-[5.5rem] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300 break-words -ml-1">MARKETPLACE</span>
               </h1>
-              <p className="text-[var(--text-secondary)] text-lg max-w-xl font-medium leading-relaxed">
+              <p className="text-[var(--text-secondary)] text-base sm:text-lg max-w-xl font-medium leading-relaxed mb-6 lg:mb-0">
                 Verified MLBB accounts with instant delivery, lifetime warranty &amp; full email access.
               </p>
             </div>
 
-            <a
-              href="https://discord.gg/fKXBF3QyzB"
-              target="_blank"
-              rel="noreferrer"
-              className="group shrink-0 bg-gradient-to-r from-[#5865F2] to-indigo-500 hover:from-[#4752C4] hover:to-indigo-600 text-white px-7 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest inline-flex items-center gap-3 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all"
-            >
-              {DISCORD_SVG}
-              Sell Your Account
-            </a>
-          </div>
-
-          {/* Stats bar */}
-          <div className="mt-8 flex flex-wrap gap-6">
-            {[
-              { label: "Total Listings", value: products.length },
-              { label: "Delivered Today", value: "24+" },
-              { label: "Satisfaction Rate", value: "100%" },
-              { label: "Avg. Delivery", value: "< 5 min" },
-            ].map((stat) => (
-              <div key={stat.label} className="flex items-center gap-3 bg-[var(--bg-secondary)]/50 border border-[var(--border-color)] rounded-2xl px-5 py-3 backdrop-blur-sm">
-                <span className="text-xl font-black text-white">{stat.value}</span>
-                <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">{stat.label}</span>
-              </div>
-            ))}
+            {/* Right Side: Latest Reviews */}
+            <div className="w-full lg:w-[400px] shrink-0 flex flex-col gap-4">
+              {reviews && reviews.slice(0, 2).map((review, idx) => (
+                <div key={review.id || idx} className="bg-[var(--bg-secondary)]/60 border border-[var(--border-color)] rounded-2xl p-4 backdrop-blur-sm relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-5">
+                    <Star className="w-16 h-16" />
+                  </div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-1 mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "fill-[var(--bg-primary)] text-[var(--border-color)]"}`} />
+                      ))}
+                      {idx === 0 && <span className="ml-2 text-[10px] uppercase tracking-wider font-black text-[var(--text-secondary)]">Latest Review</span>}
+                    </div>
+                    <p className="text-sm text-[var(--text-primary)] font-medium line-clamp-3 italic mb-3">
+                      "{review.comment}"
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-blue-400">{review.name.length > 15 ? `User ${review.name.substring(0, 10)}...` : review.name}</span>
+                      <span className="text-[10px] font-bold text-[var(--text-secondary)]">{review.date}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
 
@@ -122,25 +201,24 @@ export function Products() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-8 space-y-4"
         >
-          {/* Category chips */}
-          <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-none">
-            {categories.map((cat) => {
-              const count = cat.id === "all"
+          {/* Desktop Rank Chips */}
+          <div className="hidden sm:flex flex-wrap gap-2 pb-1">
+            {collectionRanks.map((rank) => {
+              const count = rank.id === "all"
                 ? products.length
-                : products.filter(p => p.rank.toLowerCase().includes(cat.id)).length;
-              const active = selectedCategory === cat.id;
+                : products.filter(p => p.collectionRank && p.collectionRank.toLowerCase() === rank.id).length;
+              const active = selectedRank === rank.id;
               return (
                 <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 border ${
-                    active
-                      ? "bg-white text-black border-white shadow-lg shadow-white/10"
-                      : "bg-[var(--bg-secondary)]/60 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-white hover:border-white/20 backdrop-blur-sm"
-                  }`}
+                  key={rank.id}
+                  onClick={() => { setSelectedRank(rank.id); setIsRankOpen(false); }}
+                  className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 border ${active
+                    ? "bg-white text-black border-white shadow-lg shadow-white/10"
+                    : "bg-[var(--bg-secondary)]/60 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-white hover:border-white/20 backdrop-blur-sm"
+                    }`}
                 >
-                  <span>{cat.icon}</span>
-                  <span>{cat.label}</span>
+                  <span>{rank.icon}</span>
+                  <span>{rank.label}</span>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${active ? "bg-black/10 text-black" : "bg-[var(--bg-primary)] text-[var(--text-secondary)]"}`}>
                     {count}
                   </span>
@@ -149,36 +227,83 @@ export function Products() {
             })}
           </div>
 
-          {/* Search + Sort */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative flex items-center bg-[var(--bg-secondary)]/60 border border-[var(--border-color)] rounded-xl h-12 px-2 backdrop-blur-sm focus-within:border-white/30 transition-colors">
-              <svg className="ml-3 shrink-0 w-4 h-4 text-[var(--text-secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-              </svg>
+          {/* Search + Sort + Mobile Rank */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full bg-[var(--bg-secondary)]/30 backdrop-blur-md p-2 rounded-3xl border border-white/5 shadow-inner">
+
+            {/* Mobile Rank Dropdown */}
+            <div className="relative w-full sm:hidden" ref={rankRef}>
+              <button
+                onClick={() => setIsRankOpen(!isRankOpen)}
+                className="w-full flex items-center justify-between px-6 h-14 rounded-2xl bg-black/40 border border-white/10 text-sm font-bold text-white transition-all focus:ring-2 focus:ring-blue-500/50 hover:border-blue-500/30"
+              >
+                <span className="flex items-center gap-3">
+                  <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
+                    <Filter className="w-4 h-4" />
+                  </div>
+                  {collectionRanks.find(r => r.id === selectedRank)?.label || "Rank"}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isRankOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              <AnimatePresence>
+                {isRankOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
+                  >
+                    {collectionRanks.map((rank) => (
+                      <button
+                         key={rank.id}
+                         onClick={() => { setSelectedRank(rank.id); setIsRankOpen(false); }}
+                         className={`w-full text-left px-5 py-3.5 text-sm font-bold transition-all flex items-center justify-between group ${selectedRank === rank.id ? "bg-blue-500/10 text-blue-400" : "text-gray-300 hover:bg-white/5 hover:text-white"}`}
+                       >
+                         <div className="flex items-center gap-3">
+                           <div className={`p-1.5 rounded-lg transition-colors ${selectedRank === rank.id ? "bg-blue-500/20" : "bg-white/5 group-hover:bg-white/10"}`}>
+                             {rank.icon}
+                           </div>
+                           {rank.label}
+                         </div>
+                         {selectedRank === rank.id && <CheckCircle2 className="w-4 h-4 text-blue-400" />}
+                       </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Search Bar */}
+            <div className="w-full sm:flex-1 relative flex items-center bg-black/40 border border-white/10 rounded-2xl h-14 px-4 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500/50 transition-all hover:border-white/20">
+              <Search className="shrink-0 w-5 h-5 text-gray-400 mr-3" />
               <input
                 type="text"
                 placeholder="Search accounts, ranks, skins..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none pl-3 pr-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]"
+                className="flex-1 min-w-0 bg-transparent border-none outline-none w-full text-sm font-medium text-white placeholder:text-gray-500"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="mr-1 w-6 h-6 rounded-full bg-[var(--bg-primary)] text-[var(--text-secondary)] flex items-center justify-center hover:text-white transition-colors">
-                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <button onClick={() => setSearchQuery("")} className="ml-2 p-1.5 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
 
-            <div className="relative w-full sm:w-52" ref={sortRef}>
+            {/* Sort Dropdown */}
+            <div className="relative w-full sm:w-56" ref={sortRef}>
               <button
                 onClick={() => setIsSortOpen(!isSortOpen)}
-                className="w-full flex items-center justify-between px-5 h-12 rounded-xl bg-[var(--bg-secondary)]/60 border border-[var(--border-color)] text-sm font-bold text-[var(--text-primary)] transition-all backdrop-blur-sm hover:border-white/20"
+                className="w-full flex items-center justify-between px-6 h-14 rounded-2xl bg-black/40 border border-white/10 text-sm font-bold text-white transition-all focus:ring-2 focus:ring-blue-500/50 hover:border-blue-500/30"
               >
-                <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4 text-[var(--text-secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+                <span className="flex items-center gap-3">
+                  <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M7 12h10M11 18h2" /></svg>
+                  </div>
                   {sortLabels[sortBy]}
                 </span>
-                <svg className={`w-4 h-4 text-[var(--text-secondary)] transition-transform ${isSortOpen ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isSortOpen ? "rotate-180" : ""}`} />
               </button>
 
               <AnimatePresence>
@@ -188,16 +313,16 @@ export function Products() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.97 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-[calc(100%+0.5rem)] right-0 w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl shadow-2xl z-50 overflow-hidden"
+                    className="absolute top-[calc(100%+0.5rem)] right-0 w-full bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
                   >
                     {Object.entries(sortLabels).map(([id, label]) => (
                       <button
                         key={id}
                         onClick={() => { setSortBy(id); setIsSortOpen(false); }}
-                        className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors flex items-center justify-between ${sortBy === id ? "text-blue-400 bg-blue-500/5" : "text-[var(--text-primary)] hover:bg-[var(--bg-primary)]"}`}
+                        className={`w-full text-left px-5 py-3.5 text-sm font-bold transition-all flex items-center justify-between group ${sortBy === id ? "bg-blue-500/10 text-blue-400" : "text-gray-300 hover:bg-white/5 hover:text-white"}`}
                       >
                         {label}
-                        {sortBy === id && <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" d="M5 13l4 4L19 7"/></svg>}
+                        {sortBy === id && <CheckCircle2 className="w-4 h-4 text-blue-400" />}
                       </button>
                     ))}
                   </motion.div>
@@ -211,7 +336,7 @@ export function Products() {
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-[var(--text-secondary)] font-medium">
             Showing <span className="text-white font-bold">{filteredProducts.length}</span> account{filteredProducts.length !== 1 ? "s" : ""}
-            {selectedCategory !== "all" && <> in <span className="text-blue-400 font-bold capitalize">{selectedCategory}</span></>}
+            {selectedRank !== "all" && <> in <span className="text-blue-400 font-bold capitalize">{selectedRank}</span></>}
           </p>
         </div>
 
@@ -232,7 +357,7 @@ export function Products() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05, duration: 0.3 }}
                 >
-                  <ProductCard product={product as any} />
+                  <ProductCard product={product} />
                 </motion.div>
               ))}
             </motion.div>
@@ -245,14 +370,14 @@ export function Products() {
               className="py-32 text-center bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] rounded-[2.5rem] backdrop-blur-sm"
             >
               <div className="w-16 h-16 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center mx-auto mb-6">
-                <svg className="w-7 h-7 text-[var(--text-secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <svg className="w-7 h-7 text-[var(--text-secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
               </div>
-              <h3 className="text-xl font-black text-white mb-2">No accounts found</h3>
+              <h3 className="text-xl font-black text-[var(--text-primary)] mb-2">No accounts found</h3>
               <p className="text-[var(--text-secondary)] text-sm font-medium mb-8 max-w-xs mx-auto">
                 Try adjusting your search or filters to find what you're looking for.
               </p>
               <button
-                onClick={() => { setSearchQuery(""); setSelectedCategory("all"); }}
+                onClick={() => { setSearchQuery(""); setSelectedRank("all"); }}
                 className="bg-white text-black px-6 py-3 rounded-xl text-sm font-black uppercase tracking-wider hover:scale-105 transition-transform shadow-lg"
               >
                 Clear All Filters
@@ -260,6 +385,67 @@ export function Products() {
             </motion.div>
           )}
         </AnimatePresence>
+
+
+
+        {/* ── Sell Your Account CTA Section ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mt-20 relative overflow-hidden rounded-[3rem] bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl"
+        >
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/3" />
+
+          <div className="relative z-10 p-10 sm:p-14 md:p-20 flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-400 p-[2px] shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+              <div className="w-full h-full rounded-full bg-black/80 backdrop-blur-sm flex items-center justify-center text-blue-400">
+                <MessageSquare className="w-10 h-10" />
+              </div>
+            </div>
+
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">
+              Ready to Sell Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Account?</span>
+            </h2>
+
+            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
+              Skip the middleman. Create a ticket directly with our team to get a quick valuation and sell your account safely for the best market price.
+            </p>
+
+            <div className="flex flex-col items-center gap-4">
+              <button
+                onClick={handleSellClick}
+                disabled={isSelling}
+                className={`group bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white px-10 py-5 rounded-2xl font-black text-sm sm:text-base uppercase tracking-widest inline-flex items-center gap-4 shadow-[0_0_30px_rgba(59,130,246,0.4)] hover:shadow-[0_0_50px_rgba(59,130,246,0.6)] hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none`}
+              >
+                {isSelling ? (
+                  <>
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    Creating Ticket...
+                  </>
+                ) : (
+                  <>
+                    {DISCORD_SVG}
+                    Open Sell Ticket
+                  </>
+                )}
+              </button>
+
+              {sellStatus === "error" && (
+                <div className="text-red-400 bg-red-500/10 border border-red-500/20 px-6 py-3 rounded-xl text-sm font-bold animate-in fade-in slide-in-from-bottom-2">
+                  {sellMessage}
+                </div>
+              )}
+              {sellStatus === "success" && (
+                <div className="text-[#bef264] bg-[#bef264]/10 border border-[#bef264]/20 px-6 py-3 rounded-xl text-sm font-bold animate-in fade-in slide-in-from-bottom-2">
+                  {sellMessage}
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
 
       </div>
     </div>

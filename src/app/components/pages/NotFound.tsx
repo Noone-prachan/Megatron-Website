@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { Home, Search } from "lucide-react";
 
@@ -16,8 +16,8 @@ export function NotFound() {
           404
         </motion.div>
 
-        <h1 className="text-2xl font-bold text-white mb-3">Page Not Found</h1>
-        <p className="text-white/35 mb-10">The page you're looking for doesn't exist or has been moved.</p>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Page Not Found</h1>
+        <p className="text-[var(--text-secondary)] mb-10">The page you're looking for doesn't exist or has been moved.</p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link to="/">

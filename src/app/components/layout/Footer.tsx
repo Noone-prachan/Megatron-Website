@@ -1,12 +1,12 @@
-import { Link } from "react-router";
-import { 
-  ShoppingCart, 
-  Star, 
-  Users, 
-  HelpCircle, 
-  BarChart2, 
-  Shield, 
-  FileText, 
+import { Link } from "react-router-dom";
+import {
+  ShoppingCart,
+  Star,
+  Users,
+  HelpCircle,
+  BarChart2,
+  Shield,
+  FileText,
   RefreshCw,
   Instagram
 } from "lucide-react";
@@ -28,8 +28,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { href: "#", icon: Instagram },
-    { href: "#", icon: TikTokIcon },
+    { href: "https://www.tiktok.com/@megatron.mlstore?_r=1&_t=ZS-96lfryZhdI2", icon: TikTokIcon },
     { href: "https://discord.gg/fKXBF3QyzB", icon: DiscordIcon },
   ];
 
@@ -54,15 +53,15 @@ export function Footer() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-48 bg-[var(--accent)]/5 blur-3xl pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
+
         {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
-          
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-16 mb-16">
+
           {/* Brand Column (Left) */}
-          <div className="lg:col-span-3 flex flex-col">
+          <div className="lg:col-span-4 flex flex-col">
             <Link to="/" className="flex items-center gap-3 mb-6">
               <img src="/images/megatronlogo.png" alt="Megatron Logo" className="h-12 w-auto object-contain" />
-              <span className="font-black text-2xl tracking-tight text-[var(--text-primary)]">Megatron</span>
+              <span className="text-2xl tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "'Venite Adoremus', sans-serif" }}>Megatron</span>
             </Link>
             <p className="text-[var(--text-secondary)] text-sm mb-8 leading-relaxed max-w-xs">
               The premier marketplace for premium MLBB accounts. Engineered for trust, speed, and absolute quality.
@@ -77,7 +76,7 @@ export function Footer() {
           </div>
 
           {/* PAGES Grid Column (Middle-Left) */}
-          <div className="lg:col-span-6 flex flex-col">
+          <div className="lg:col-span-5 flex flex-col">
             <div className="flex items-center gap-2 mb-6">
               <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
               <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase">Pages</h3>
@@ -114,7 +113,7 @@ export function Footer() {
           </div>
 
           {/* LEGAL Column (Middle-Right) */}
-          <div className="lg:col-span-3 flex flex-col">
+          <div className="lg:col-span-3 flex flex-col lg:justify-self-end">
             <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase mb-6">Legal</h3>
             <div className="flex flex-col gap-2">
               {legalLinks.map(({ href, label, icon: Icon }) => (
@@ -132,14 +131,14 @@ export function Footer() {
 
         {/* Footer Bottom Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-[var(--border-color)]">
-           <p className="text-[var(--text-secondary)] text-[11px] font-bold tracking-widest uppercase">
-             © {currentYear} Megatron. All rights reserved.
-           </p>
-           <div className="flex items-center gap-6">
-             <Link to="/team" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[11px] font-bold tracking-widest uppercase transition-colors">Staff</Link>
-             <Link to="/reviews" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[11px] font-bold tracking-widest uppercase transition-colors">Vote</Link>
-             <a href="https://discord.gg/fKXBF3QyzB" target="_blank" rel="noopener noreferrer" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[11px] font-bold tracking-widest uppercase transition-colors">Discord</a>
-           </div>
+          <p className="text-[var(--text-secondary)] text-[11px] font-bold tracking-widest uppercase">
+            © {currentYear} Megatron. All rights reserved.
+          </p>
+          <div className="flex items-center gap-6">
+            <Link to="/team" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[11px] font-bold tracking-widest uppercase transition-colors">Staff</Link>
+            <Link to="/reviews" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[11px] font-bold tracking-widest uppercase transition-colors">Vote</Link>
+            <a href="https://discord.gg/fKXBF3QyzB" target="_blank" rel="noopener noreferrer" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[11px] font-bold tracking-widest uppercase transition-colors">Discord</a>
+          </div>
         </div>
 
       </div>

@@ -23,8 +23,11 @@ export function ProductCard({ product, sold = false }: ProductCardProps) {
   return (
     <Link 
       to={sold ? "#" : `/products/${product.id}`} 
-      className={`group flex flex-col rounded-3xl border border-[var(--border-color)] bg-gradient-to-b from-[var(--bg-secondary)] to-[var(--bg-primary)] hover:border-[var(--text-primary)] hover:shadow-2xl transition-all duration-300 overflow-hidden ${sold ? "opacity-60 pointer-events-none grayscale" : ""}`}
+      className={`group flex flex-col rounded-3xl border border-white/5 bg-[#111318]/80 backdrop-blur-xl hover:bg-[#161922] hover:border-white/20 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 overflow-hidden relative ${sold ? "opacity-60 pointer-events-none grayscale" : ""}`}
     >
+      {/* Subtle top glare */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
       {/* Image Container */}
       <div className="relative aspect-[4/3] w-full bg-[var(--bg-primary)] overflow-hidden">
         <img 
@@ -55,19 +58,19 @@ export function ProductCard({ product, sold = false }: ProductCardProps) {
         
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 text-[10px] uppercase tracking-widest font-bold text-[var(--text-secondary)] mb-6">
-          <div className="bg-[var(--bg-primary)]/50 backdrop-blur-sm border border-[var(--border-color)] px-4 py-2.5 rounded-2xl flex justify-between items-center transition-colors group-hover:border-[var(--text-secondary)]/50 shadow-inner">
+          <div className="bg-white/5 border border-white/5 px-4 py-2.5 rounded-2xl flex justify-between items-center transition-colors group-hover:border-white/10 group-hover:bg-white/10">
             <span>Rank</span> 
             <span className="text-[var(--text-primary)] truncate ml-2 max-w-[60px]" title={product.rank}>{product.rank}</span>
           </div>
-          <div className="bg-[var(--bg-primary)]/50 backdrop-blur-sm border border-[var(--border-color)] px-4 py-2.5 rounded-2xl flex justify-between items-center transition-colors group-hover:border-[var(--text-secondary)]/50 shadow-inner">
+          <div className="bg-white/5 border border-white/5 px-4 py-2.5 rounded-2xl flex justify-between items-center transition-colors group-hover:border-white/10 group-hover:bg-white/10">
             <span>Level</span> 
             <span className="text-[var(--text-primary)]">{product.level}</span>
           </div>
-          <div className="bg-[var(--bg-primary)]/50 backdrop-blur-sm border border-[var(--border-color)] px-4 py-2.5 rounded-2xl flex justify-between items-center transition-colors group-hover:border-[var(--text-secondary)]/50 shadow-inner">
+          <div className="bg-white/5 border border-white/5 px-4 py-2.5 rounded-2xl flex justify-between items-center transition-colors group-hover:border-white/10 group-hover:bg-white/10">
             <span>Skins</span> 
             <span className="text-[var(--text-primary)]">{product.skins}</span>
           </div>
-          <div className="bg-[var(--bg-primary)]/50 backdrop-blur-sm border border-[var(--border-color)] px-4 py-2.5 rounded-2xl flex justify-between items-center transition-colors group-hover:border-[var(--text-secondary)]/50 shadow-inner">
+          <div className="bg-white/5 border border-white/5 px-4 py-2.5 rounded-2xl flex justify-between items-center transition-colors group-hover:border-white/10 group-hover:bg-white/10">
             <span>Heroes</span> 
             <span className="text-[var(--text-primary)]">{product.heroes}</span>
           </div>

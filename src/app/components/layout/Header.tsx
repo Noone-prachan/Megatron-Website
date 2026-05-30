@@ -1,4 +1,9 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "react-router-dom";
+
+// NOTE: This app uses RouterProvider + createBrowserRouter.
+// If you ever see errors like "Cannot destructure property 'basename' of useContext(...) as it is null",
+// it usually means Link/useLocation is being rendered outside a router context.
+
 import { Menu, X, Sun, Moon, Home, ShoppingBag, Star, Users, User, BarChart } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -27,7 +32,6 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
     { path: "/products", label: "Products" },
     { path: "/reviews", label: "Reviews" },
     { path: "/team", label: "Team" },
-    { path: "/faq", label: "FAQ" },
     { path: "/orders", label: "Orders" },
   ];
 
@@ -112,11 +116,10 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
               <Link
                 key={item.label}
                 to={item.path}
-                className={`text-sm font-bold transition-all duration-200 px-5 py-2 rounded-full ${
-                  location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path))
-                    ? "bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-md" 
-                    : "text-[var(--nav-text)] hover:text-[var(--nav-text-hover)] hover:bg-[var(--bg-secondary)]"
-                }`}
+                className={`text-sm font-bold transition-all duration-200 px-5 py-2 rounded-full ${location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path))
+                  ? "bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-md"
+                  : "text-[var(--nav-text)] hover:text-[var(--nav-text-hover)] hover:bg-[var(--bg-secondary)]"
+                  }`}
               >
                 {item.label}
               </Link>
@@ -130,8 +133,8 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
 
         {/* Desktop Currency Toggle */}
         <div className="hidden md:flex bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-full p-1 shadow-inner h-[40px] items-center">
-           <button onClick={() => setCurrency('USD')} className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${currency === 'USD' ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>USD</button>
-           <button onClick={() => setCurrency('NPR')} className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${currency === 'NPR' ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>NPR</button>
+          <button onClick={() => setCurrency('USD')} className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${currency === 'USD' ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>USD</button>
+          <button onClick={() => setCurrency('NPR')} className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${currency === 'NPR' ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>NPR</button>
         </div>
 
         {/* Theme Toggle */}
@@ -161,9 +164,9 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
               {discordGlobalName ? discordGlobalName : (discordUsername ? `@${discordUsername}` : "Sign In")}
             </span>
             {discordId && (
-                <span className={`text-[10px] font-bold whitespace-nowrap leading-none uppercase tracking-wider mt-1 ${isAdmin ? 'text-red-500' : 'text-[var(--text-secondary)]'}`}>
-                  {isAdmin ? "Admin" : `@${discordUsername}`}
-                </span>
+              <span className={`text-[10px] font-bold whitespace-nowrap leading-none uppercase tracking-wider mt-1 ${isAdmin ? 'text-red-500' : 'text-[var(--text-secondary)]'}`}>
+                {isAdmin ? "Admin" : `@${discordUsername}`}
+              </span>
             )}
           </div>
 
@@ -201,8 +204,8 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
               </div>
 
               {/* Sidebar Login Area */}
-              <div 
-                className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer hover:border-[#5865F2] transition-colors mb-8" 
+              <div
+                className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer hover:border-[#5865F2] transition-colors mb-8"
                 onClick={discordId ? handleLogout : handleDiscordLogin}
               >
                 <div className="flex items-center gap-4">
@@ -247,12 +250,12 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
                     </Link>
                   )
                 })}
-                
+
                 {isAdmin && (
                   <Link
                     to="/admin"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="font-bold text-lg text-red-500 hover:text-red-400 py-3 px-4 rounded-xl hover:bg-red-500/10 transition-colors flex justify-between items-center group mt-2"
+                    className="font-bold text-lg text-red-500 hover:text-red-400 py-3 px-4 rounded-xl hover:bg-red-500/10 transition-colors flex justify-between items-center group mt-4 pt-4 border-t border-[var(--border-color)]"
                   >
                     <div className="flex items-center gap-3">
                       <Star className="w-5 h-5 text-red-500" />
@@ -268,11 +271,11 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
                 <div className="flex justify-between items-center px-1">
                   <span className="text-sm font-bold text-[var(--text-secondary)]">Currency</span>
                   <div className="flex bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-full p-1 shadow-inner">
-                     <button onClick={() => setCurrency('USD')} className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${currency === 'USD' ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>USD</button>
-                     <button onClick={() => setCurrency('NPR')} className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${currency === 'NPR' ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>NPR</button>
+                    <button onClick={() => setCurrency('USD')} className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${currency === 'USD' ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>USD</button>
+                    <button onClick={() => setCurrency('NPR')} className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${currency === 'NPR' ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>NPR</button>
                   </div>
                 </div>
-                
+
                 {/* Theme Toggle */}
                 <div className="flex justify-between items-center px-1">
                   <span className="text-sm font-bold text-[var(--text-secondary)]">Theme</span>

@@ -5,55 +5,19 @@ import { useState, useEffect } from "react";
 import { api } from "../../../lib/api";
 
 function ReviewCard({ review, onRemove }: { review: Review, onRemove: (id: string) => void }) {
-  const [user, setUser] = useState<{ global_name: string, avatar: string } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const ADMIN_IDS = ['913826949820997654', '570146481663770634', '850383604404322304'];
   const discordId = localStorage.getItem("discord_id");
   const isAdmin = discordId ? ADMIN_IDS.includes(discordId) : false;
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      setIsLoading(true);
-      try {
-        const { data } = await api.get(`/user/${review.name}`);
-        setUser(data);
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUser();
-  }, [review.name]);
-
-  if (isLoading) {
-    return (
-      <div className="p-8 rounded-[2rem] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-sm animate-pulse">
-        <div className="flex gap-1 mb-6">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="w-5 h-5 bg-[var(--border-color)] rounded-sm" />
-          ))}
-        </div>
-        <div className="h-4 bg-[var(--border-color)] rounded w-3/4 mb-2"></div>
-        <div className="h-4 bg-[var(--border-color)] rounded w-1/2 mb-8"></div>
-        <div className="flex items-center gap-4 pt-6 border-t border-[var(--border-color)] mt-auto">
-          <div className="w-12 h-12 rounded-full bg-[var(--border-color)]"></div>
-          <div>
-            <div className="h-4 bg-[var(--border-color)] rounded w-24 mb-2"></div>
-            <div className="h-3 bg-[var(--border-color)] rounded w-16"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const avatarUrl = user
-    ? `https://cdn.discordapp.com/avatars/${review.name}/${user.avatar}.png`
-    : `https://api.dicebear.com/7.x/initials/svg?seed=${review.name}`;
+  const avatarUrl = review.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${review.name}`;
 
   return (
-    <div className={`p-8 rounded-[2rem] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group`}>
-      <Quote className="absolute top-6 right-6 w-12 h-12 text-[var(--border-color)] opacity-20 group-hover:scale-110 group-hover:opacity-40 transition-all duration-500" />
+    <div className={`relative p-8 rounded-[2rem] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-sm hover:shadow-2xl hover:shadow-yellow-500/10 hover:-translate-y-2 hover:border-yellow-500/30 transition-all duration-500 overflow-hidden group`}>
+      {/* Subtle Background Glow on Hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <Quote className="absolute -top-4 -right-4 w-24 h-24 text-[var(--border-color)] opacity-10 group-hover:scale-110 group-hover:-rotate-12 group-hover:text-yellow-500/20 transition-all duration-700 ease-out z-0" />
+      
       <div className="relative z-10 flex flex-col h-full">
         {isAdmin && (
           <button
@@ -66,19 +30,19 @@ function ReviewCard({ review, onRemove }: { review: Review, onRemove: (id: strin
         )}
         <div className="flex gap-1 mb-6">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} className={`w-5 h-5 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'fill-[var(--border-color)] text-[var(--border-color)]'}`} />
+            <Star key={i} className={`w-5 h-5 transition-all duration-300 ${i < review.rating ? 'fill-yellow-400 text-yellow-400 group-hover:scale-110' : 'fill-[var(--border-color)] text-[var(--border-color)]'} ${i < review.rating ? `delay-[${i * 50}ms]` : ''}`} />
           ))}
         </div>
-        <p className="text-[var(--text-primary)] font-medium text-base leading-relaxed mb-8 flex-1">
+        <p className="text-[var(--text-primary)] font-medium text-base leading-relaxed mb-8 flex-1 group-hover:text-white transition-colors duration-300 relative z-10">
           "{review.comment}"
         </p>
-        <div className="flex items-center gap-4 pt-6 border-t border-[var(--border-color)] mt-auto">
-          <div className={`w-12 h-12 rounded-full border border-[var(--border-color)] overflow-hidden shrink-0 bg-[var(--bg-primary)]`}>
-            <img src={avatarUrl} alt={user?.global_name || review.name} className="w-full h-full object-cover" />
+        <div className="flex items-center gap-4 pt-6 border-t border-[var(--border-color)] mt-auto group-hover:border-yellow-500/20 transition-colors duration-300">
+          <div className={`w-12 h-12 rounded-full border-2 border-[var(--border-color)] group-hover:border-yellow-500/50 group-hover:shadow-[0_0_15px_rgba(234,179,8,0.3)] transition-all duration-500 overflow-hidden shrink-0 bg-[var(--bg-primary)]`}>
+            <img src={avatarUrl} alt={review.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
           </div>
           <div>
             <h4 className="font-bold text-[var(--text-primary)] text-sm flex items-center gap-1.5">
-              {user?.global_name || 'Anonymous User'}
+              {review.name || 'Verified Customer'}
               {review.verified && (
                 <ShieldCheck className="w-4 h-4 text-blue-500" />
               )}

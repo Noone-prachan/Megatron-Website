@@ -3,6 +3,7 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 export interface Review {
   id: string;
   name: string;
+  avatar?: string;
   comment: string;
   rating: number;
   verified: boolean;
@@ -20,7 +21,7 @@ const ReviewContext = createContext<ReviewContextType | undefined>(undefined);
 const initialReviews: Review[] = [
   {
     id: "1",
-    name: "1195056016409231463",
+    name: "Verified Customer",
     comment: "Its my 2nd time buying id from here and every time they gain my trust more and more❤️ best store and better store keep going buddy❤️",
     rating: 5,
     verified: true,
@@ -28,7 +29,7 @@ const initialReviews: Review[] = [
   },
   {
     id: "2",
-    name: "1494357531357872128",
+    name: "Verified Customer",
     comment: "I bought an account from here and had a very good experience. They guided me properly through the whole process and were very trustworthy and helpful. Everything worked smoothly, and their support was quick and professional. Highly recommended!",
     rating: 5,
     verified: true,
@@ -36,7 +37,7 @@ const initialReviews: Review[] = [
   },
   {
     id: "3",
-    name: "1251248171514855526",
+    name: "Verified Customer",
     comment: "Its my second time selling And the service was fast Thanks for helping",
     rating: 5,
     verified: true,
@@ -44,30 +45,50 @@ const initialReviews: Review[] = [
   },
   {
     id: "4",
-    name: "839683580506406932",
+    name: "Verified Customer",
     comment: "“It’s my 4th time selling AC here, and every time he earns my trust. The service is always fast and reliable.”",
     rating: 5,
     verified: true,
     date: "1 month ago",
   },
+  {
+    id: "5",
+    name: "Verified Customer",
+    comment: "Bought a mythical glory account and everything went perfectly. The transition was smooth and they were very helpful answering my questions. Best marketplace out there!",
+    rating: 5,
+    verified: true,
+    date: "2 months ago",
+  },
 ];
+
+import { api } from "../../lib/api";
 
 export function ReviewProvider({ children }: { children: ReactNode }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Clear old data and force a refresh from initialReviews
-    localStorage.removeItem("megatron_reviews");
-    setReviews(initialReviews);
-    setIsLoaded(true);
+    const fetchReviews = async () => {
+      try {
+        const res = await api.getReviews();
+        if (res.success && res.reviews) {
+          const formattedReviews = res.reviews.map(r => ({
+            ...r,
+            verified: true // all vouches from the vouch channel are assumed verified
+          }));
+          setReviews(formattedReviews);
+        } else {
+          setReviews(initialReviews);
+        }
+      } catch (error) {
+        console.error("Failed to fetch Discord reviews:", error);
+        setReviews(initialReviews);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    fetchReviews();
   }, []);
-
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem("megatron_reviews", JSON.stringify(reviews));
-    }
-  }, [reviews, isLoaded]);
 
   const addReview = (review: Omit<Review, 'id' | 'date'>) => {
     const newReview: Review = {

@@ -3,6 +3,7 @@ import { useProducts, Product } from "../../context/ProductContext";
 import { useCurrency } from "../../context/CurrencyContext";
 import { Plus, Edit2, Trash2, ArrowLeft, Tag } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "../../../lib/api";
 
 export function ProductsManager() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
@@ -12,7 +13,7 @@ export function ProductsManager() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<Partial<Product>>({
-    title: "", level: 1, rank: "Warrior 3", skins: 0, heroes: 0, price: 0,
+    title: "", level: 1, collectionRank: "Expert Collector", skins: 0, heroes: 0, price: 0,
     image: "", images: [], category: "starter", description: "",
     dedicatedId: "", tags: [], features: [], badge: undefined, featured: false
   });
@@ -41,7 +42,7 @@ export function ProductsManager() {
     });
   };
 
-  const handleAddSubmit = (e: React.FormEvent) => {
+  const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newProduct = {
       ...formData,
@@ -51,9 +52,27 @@ export function ProductsManager() {
 
     addProduct(newProduct);
 
-    // Simulate webhook
-    console.log("MOCK WEBHOOK: Sent announcement to Discord for new product:", newProduct.title);
-    toast.success(`Announcement for ${newProduct.title} sent to Discord!`);
+    // Call backend to send Discord announcement
+    try {
+      // ApiClient currently exposes typed methods; use fetch for this custom endpoint.
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3001/api"}/tickets/announce`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(localStorage.getItem("auth_token")
+            ? { Authorization: `Bearer ${localStorage.getItem("auth_token")}` }
+            : {}),
+        },
+        body: JSON.stringify({ product: newProduct }),
+      });
+
+      if (!res.ok) throw new Error(`Announcement request failed (${res.status})`);
+
+      toast.success(`Announcement for ${newProduct.title} sent to Discord!`);
+    } catch (error) {
+      console.error("Failed to announce:", error);
+      toast.error(`Listing created, but failed to send Discord announcement.`);
+    }
 
     setView("list");
   };
@@ -96,76 +115,89 @@ export function ProductsManager() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Title</label>
-                <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
+                <input type="text" required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Dedicated ID (3 Letters)</label>
-                <input type="text" maxLength={3} value={formData.dedicatedId || ""} onChange={e => setFormData({...formData, dedicatedId: e.target.value.toUpperCase()})} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" placeholder="e.g. ABC" />
+                <input type="text" maxLength={3} value={formData.dedicatedId || ""} onChange={e => setFormData({ ...formData, dedicatedId: e.target.value.toUpperCase() })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" placeholder="e.g. ABC" />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Price (Base)</label>
-                <input type="number" step="0.01" required value={formData.price} onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
+                <input type="number" step="0.01" required value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2 text-[var(--accent)]">Discount Price</label>
-                <input type="number" step="0.01" value={formData.discountPrice || ""} onChange={e => setFormData({...formData, discountPrice: e.target.value ? parseFloat(e.target.value) : undefined})} className="w-full bg-[var(--bg-primary)] border border-[var(--accent)]/50 rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" placeholder="Leave empty for no discount" />
+                <input type="number" step="0.01" value={formData.discountPrice || ""} onChange={e => setFormData({ ...formData, discountPrice: e.target.value ? parseFloat(e.target.value) : undefined })} className="w-full bg-[var(--bg-primary)] border border-[var(--accent)]/50 rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" placeholder="Leave empty for no discount" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Category</label>
-                <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value as any})} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none">
+                <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value as any })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none">
                   <option value="starter">Starter</option>
                   <option value="mid-tier">Mid-Tier</option>
                   <option value="premium">Premium</option>
                   <option value="collector">Collector</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Collection Rank</label>
+                <select value={formData.collectionRank} onChange={e => setFormData({ ...formData, collectionRank: e.target.value })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none">
+                  <option value="Expert Collector">Expert Collector</option>
+                  <option value="Renowned Collector">Renowned Collector</option>
+                  <option value="Exalted Collector">Exalted Collector</option>
+                  <option value="Mega Collector">Mega Collector</option>
+                  <option value="World Collector">World Collector</option>
+                  <option value="Galaxy Collector">Galaxy Collector</option>
+                </select>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-               <div>
+              <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Level</label>
-                <input type="number" required value={formData.level} onChange={e => setFormData({...formData, level: parseInt(e.target.value)})} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
+                <input type="number" required value={formData.level} onChange={e => setFormData({ ...formData, level: parseInt(e.target.value) })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Skins</label>
-                <input type="number" required value={formData.skins} onChange={e => setFormData({...formData, skins: parseInt(e.target.value)})} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
+                <input type="number" required value={formData.skins} onChange={e => setFormData({ ...formData, skins: parseInt(e.target.value) })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Heroes</label>
-                <input type="number" required value={formData.heroes} onChange={e => setFormData({...formData, heroes: parseInt(e.target.value)})} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
+                <input type="number" required value={formData.heroes} onChange={e => setFormData({ ...formData, heroes: parseInt(e.target.value) })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Custom Badge</label>
                 <input
                   type="text"
                   value={formData.badge || ""}
-                  onChange={e => setFormData({...formData, badge: e.target.value})}
+                  onChange={e => setFormData({ ...formData, badge: e.target.value })}
                   className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none"
                   placeholder="e.g. Premium, Hot"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl p-4">
-              <input
-                type="checkbox"
-                id="featuredToggle"
-                checked={!!formData.featured}
-                onChange={e => setFormData({...formData, featured: e.target.checked})}
-                className="w-5 h-5 accent-[var(--accent)] cursor-pointer"
-              />
-              <label htmlFor="featuredToggle" className="text-sm font-bold text-[var(--text-primary)] cursor-pointer select-none">
-                Mark as Featured Product
-              </label>
-              <span className="text-xs text-[var(--text-secondary)] ml-2">(Featured products appear in a dedicated slider on the home page)</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="featuredToggle"
+                  checked={!!formData.featured}
+                  onChange={e => setFormData({ ...formData, featured: e.target.checked })}
+                  className="w-5 h-5 accent-[var(--accent)] cursor-pointer shrink-0"
+                />
+                <label htmlFor="featuredToggle" className="text-sm font-bold text-[var(--text-primary)] cursor-pointer select-none">
+                  Mark as Featured Product
+                </label>
+              </div>
+              <span className="text-xs text-[var(--text-secondary)] sm:ml-2">(Featured products appear in a dedicated slider on the home page)</span>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Description</label>
-              <textarea rows={3} required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none"></textarea>
+              <textarea rows={3} required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] outline-none"></textarea>
             </div>
 
             <div>
@@ -187,10 +219,10 @@ export function ProductsManager() {
                   <div className="flex flex-wrap gap-4 mt-2">
                     {/* Render primary image if images array is empty but primary exists (legacy support) */}
                     {(!formData.images || formData.images.length === 0) && formData.image && (
-                       <div className="w-24 h-24 rounded-xl overflow-hidden bg-[var(--bg-primary)] border-2 border-[var(--accent)] relative group">
-                          <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
-                          <div className="absolute top-1 left-1 bg-[var(--accent)] text-white text-[8px] font-bold px-2 py-0.5 rounded-full">Primary</div>
-                       </div>
+                      <div className="w-24 h-24 rounded-xl overflow-hidden bg-[var(--bg-primary)] border-2 border-[var(--accent)] relative group">
+                        <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                        <div className="absolute top-1 left-1 bg-[var(--accent)] text-white text-[8px] font-bold px-2 py-0.5 rounded-full">Primary</div>
+                      </div>
                     )}
                     {formData.images?.map((img, index) => (
                       <div key={index} className={`w-24 h-24 rounded-xl overflow-hidden bg-[var(--bg-primary)] relative group ${index === 0 ? 'border-2 border-[var(--accent)]' : 'border border-[var(--border-color)]'}`}>
@@ -213,7 +245,7 @@ export function ProductsManager() {
                   </div>
                 ) : (
                   <div className="w-full h-24 rounded-xl border border-dashed border-[var(--border-color)] flex items-center justify-center">
-                     <span className="text-xs text-[var(--text-secondary)]">No Images Uploaded</span>
+                    <span className="text-xs text-[var(--text-secondary)]">No Images Uploaded</span>
                   </div>
                 )}
               </div>
@@ -232,7 +264,7 @@ export function ProductsManager() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
           <h1 className="text-3xl font-black text-[var(--text-primary)]">Products Manager</h1>
           <p className="text-[var(--text-secondary)] mt-1">Manage marketplace listings, discounts, and tags.</p>
@@ -240,13 +272,13 @@ export function ProductsManager() {
         <button
           onClick={() => {
             setFormData({
-              title: "", level: 1, rank: "Warrior 3", skins: 0, heroes: 0, price: 0,
+              title: "", level: 1, collectionRank: "Expert Collector", skins: 0, heroes: 0, price: 0,
               image: "", images: [], category: "starter", description: "",
               dedicatedId: "", tags: [], features: [], badge: undefined, featured: false
             });
             setView("add");
           }}
-          className="bg-[var(--text-primary)] text-[var(--bg-primary)] hover:bg-[var(--text-secondary)] flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold shadow-md transition-colors"
+          className="bg-[var(--text-primary)] text-[var(--bg-primary)] hover:bg-[var(--text-secondary)] flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold shadow-md transition-colors w-full sm:w-auto justify-center"
         >
           <Plus className="w-4 h-4" /> Add Product
         </button>

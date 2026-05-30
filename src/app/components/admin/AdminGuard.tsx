@@ -1,14 +1,26 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router";
+import { Outlet, Navigate } from "react-router-dom";
+import { api } from "../../../lib/api";
 
 export function AdminGuard() {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    // TEMPORARY BYPASS: Automatically authorize everyone as requested by user
-    setAuthorized(true);
-    setLoading(false);
+    const ADMIN_IDS = ['913826949820997654', '570146481663770634', '850383604404322304'];
+    
+    // Securely check backend with the user's token
+    api.getCurrentUser().then(user => {
+      if (user && ADMIN_IDS.includes(user.id)) {
+        setAuthorized(true);
+      } else {
+        setAuthorized(false);
+      }
+      setLoading(false);
+    }).catch(() => {
+      setAuthorized(false);
+      setLoading(false);
+    });
   }, []);
 
   if (loading) {
@@ -19,5 +31,6 @@ export function AdminGuard() {
     );
   }
 
-  return authorized ? <Outlet /> : null;
+  // If authorized, render the nested admin routes. Otherwise, redirect to home.
+  return authorized ? <Outlet /> : <Navigate to="/" replace />;
 }

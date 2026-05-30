@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import { Root } from "./components/Root";
 import { Home } from "./components/pages/Home";
 import { Products } from "./components/pages/Products";
@@ -23,39 +23,39 @@ import { AnnouncementManager } from "./components/admin/AnnouncementManager";
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: Root,
+    element: <Root />,
+    errorElement: <NotFound />,
     children: [
-      { index: true, Component: Home },
-      { path: "products", Component: Products },
-      { path: "products/:id", Component: ProductDetail },
-      { path: "reviews", Component: Reviews },
-      { path: "team", Component: Team },
-      { path: "orders", Component: Orders },
-      { path: "faq", Component: FAQ },
-      { path: "privacy", Component: Privacy },
-      { path: "terms", Component: Terms },
-      { path: "refund", Component: Refund },
-      { path: "auth/discord/callback", Component: AuthCallback },
-      { path: "auth/success", Component: AuthCallback },
-      { path: "auth/error", Component: AuthCallback },
+      { index: true, element: <Home /> },
+      { path: "products", element: <Products /> },
+      { path: "products/:id", element: <ProductDetail /> },
+      { path: "reviews", element: <Reviews /> },
+      { path: "team", element: <Team /> },
+      { path: "orders", element: <Orders /> },
+      { path: "faq", element: <FAQ /> },
+      { path: "privacy", element: <Privacy /> },
+      { path: "terms", element: <Terms /> },
+      { path: "refund", element: <Refund /> },
+      { path: "auth/discord/callback", element: <AuthCallback /> },
+      { path: "auth/success", element: <AuthCallback /> },
+      { path: "auth/error", element: <AuthCallback /> },
     ],
   },
   {
-    path: "/admin",
-    Component: AdminGuard,
+    element: <AdminGuard />,
     children: [
       {
-        path: "",
-        Component: AdminLayout,
+        path: "/admin",
+        element: <AdminLayout />,
         children: [
-          { index: true, Component: AnalyticsPage },
-          { path: "products", Component: ProductsManager },
-          { path: "orders", Component: OrdersManager },
-          { path: "history", Component: HistoryPage },
-          { path: "announcement", Component: AnnouncementManager },
+          { index: true, element: <AnalyticsPage /> },
+          { path: "products", element: <ProductsManager /> },
+          { path: "orders", element: <OrdersManager /> },
+          { path: "history", element: <HistoryPage /> },
+          { path: "announcement", element: <AnnouncementManager /> },
         ],
       },
     ],
   },
-  { path: "*", Component: NotFound }
+  { path: "*", element: <NotFound /> }
 ]);

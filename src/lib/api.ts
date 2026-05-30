@@ -62,6 +62,22 @@ class ApiClient {
     return response.json();
   }
 
+  // Generic methods
+  async post<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'GET',
+    });
+  }
+
   // Authentication
   async loginWithDiscord() {
     window.location.href = `${API_BASE_URL}/auth/discord`;
@@ -91,8 +107,7 @@ class ApiClient {
 
   // Tickets
   async createTicket(data: {
-    productId: string;
-    productTitle: string;
+    product: any;
     userId: string;
     username: string;
   }) {
@@ -112,6 +127,21 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ ticketId }),
     });
+  }
+
+  // Reviews
+  async getReviews() {
+    return this.request<{
+      success: boolean;
+      reviews: Array<{
+        id: string;
+        name: string;
+        avatar: string;
+        rating: number;
+        comment: string;
+        date: string;
+      }>;
+    }>('/reviews');
   }
 
   // Payments

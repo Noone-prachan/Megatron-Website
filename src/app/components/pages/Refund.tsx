@@ -27,7 +27,7 @@ export function Refund() {
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-[var(--accent)]/5 blur-[120px] pointer-events-none rounded-full"></div>
 
       <div className="max-w-4xl mx-auto px-6 relative z-10">
-        
+
         {/* Header */}
         <div className="text-center mb-16">
           <motion.div
@@ -64,9 +64,9 @@ export function Refund() {
           transition={{ delay: 0.3 }}
           className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[2.5rem] p-8 sm:p-12 shadow-xl backdrop-blur-md space-y-8 text-left"
         >
-          {sections.map((section, idx) => (
-            <div key={idx} className="border-b border-[var(--border-color)] pb-6 last:border-0 last:pb-0">
-              <h2 className="text-xl font-bold text-white mb-3">{section.title}</h2>
+          {sections.map((section) => (
+            <div key={section.title} className="border-b border-[var(--border-color)] pb-6 last:border-0 last:pb-0">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] mb-3">{section.title}</h2>
               <p className="text-[var(--text-secondary)] text-sm leading-relaxed font-medium">
                 {section.content}
               </p>

@@ -1,6 +1,7 @@
-import { Outlet, NavLink, Link } from "react-router";
-import { LayoutDashboard, ShoppingCart, Clock, Megaphone, BarChart, Sun, Moon } from "lucide-react";
+import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
+import { LayoutDashboard, ShoppingCart, Clock, Megaphone, BarChart, Sun, Moon, ArrowLeft, Menu } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import { useState, useEffect } from "react";
 
 export function AdminLayout() {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -8,6 +9,13 @@ export function AdminLayout() {
   const discordUsername = localStorage.getItem("discord_username");
   const discordGlobalName = localStorage.getItem("discord_global_name");
   const discordAvatar = localStorage.getItem("discord_avatar");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Close sidebar on navigation to a new page
+    setSidebarOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
@@ -31,8 +39,19 @@ export function AdminLayout() {
   ];
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] p-6 flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-primary)]">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-30 w-64 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] p-6 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+      >
         <div className="flex items-center gap-3 mb-8">
           <Link to="/">
             <img src="/images/megatronlogo.png" alt="Megatron Logo" className="h-10 w-auto object-contain" />
@@ -46,10 +65,9 @@ export function AdminLayout() {
               to={item.to}
               end={item.to === "/admin"}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-lg font-semibold transition-colors ${
-                  isActive
-                    ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-[var(--text-primary)]"
+                `flex items-center gap-3 px-4 py-2 rounded-lg font-semibold transition-colors ${isActive
+                  ? "bg-[var(--accent)]/10 text-[var(--accent)]"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-[var(--text-primary)]"
                 }`
               }
             >
@@ -58,7 +76,16 @@ export function AdminLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="flex flex-col gap-4">
+        <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
+          <Link
+            to="/"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Site</span>
+          </Link>
+        </div>
+        <div className="flex flex-col gap-4 mt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src={avatarUrl} alt="avatar" className="w-10 h-10 rounded-full" />
@@ -80,8 +107,22 @@ export function AdminLayout() {
           </button>
         </div>
       </aside>
-      <main className="flex-1 p-6 bg-[var(--bg-primary)]">
-        <Outlet />
+      <main className="lg:pl-64">
+        <div className="sticky top-0 z-10 flex items-center justify-between p-4 bg-[var(--bg-secondary)]/80 backdrop-blur-sm border-b border-[var(--border-color)] lg:hidden">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+          <Link to="/admin" className="font-bold text-lg">
+            Admin Panel
+          </Link>
+          <div className="w-10" /> {/* Spacer to balance the button */}
+        </div>
+        <div className="p-6">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
