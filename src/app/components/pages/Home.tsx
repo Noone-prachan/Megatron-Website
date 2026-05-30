@@ -614,7 +614,7 @@ export function Home() {
               className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-4 flex flex-col items-center justify-center transition-all duration-300 shadow-xl backdrop-blur-md min-h-[400px]"
             >
               <iframe
-                src="https://e.widgetbot.io/channels/1486062330466013409"
+                src="https://discord.com/widget?id=1486062330466013409&theme=dark"
                 width="100%"
                 height="100%"
                 allowTransparency="true"
