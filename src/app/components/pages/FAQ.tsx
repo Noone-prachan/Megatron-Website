@@ -44,85 +44,116 @@ export function FAQ() {
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-[var(--accent)]/5 blur-[120px] pointer-events-none rounded-full"></div>
       <div className="absolute bottom-1/4 right-10 w-[300px] h-[300px] bg-red-500/5 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-4xl mx-auto px-6 relative z-10">
-        
-        {/* Header */}
-        <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
-          >
-            <HelpCircle className="w-4 h-4" />
-            Support Hub
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-5xl font-black text-white mb-6 uppercase tracking-tight"
-            style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
-          >
-            Frequently Asked Questions
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-[var(--text-secondary)] text-lg max-w-xl mx-auto font-medium"
-          >
-            Everything you need to know about buying, payment verification, and our lifetime warranty.
-          </motion.p>
-        </div>
-
-        {/* FAQ Accordion List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="space-y-4"
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <motion.div 
+          layout
+          transition={{ type: "spring", stiffness: 220, damping: 26 }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
         >
-          {faqs.map((faq, idx) => {
-            const isOpen = openFaq === idx;
-            return (
-              <motion.div
-                key={idx}
-                layout="position"
-                className="bg-[var(--bg-secondary)]/30 border border-[var(--border-color)] hover:border-[var(--text-secondary)]/20 rounded-[2rem] transition-all duration-300 overflow-hidden shadow-md"
-              >
-                <button
-                  onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full flex items-center justify-between gap-4 p-6 md:p-8 text-left focus:outline-none"
-                >
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[9px] font-black tracking-widest text-[var(--text-secondary)] uppercase bg-[var(--bg-primary)] border border-[var(--border-color)] px-2.5 py-0.5 rounded-md w-fit">
-                      {faq.category}
-                    </span>
-                    <span className="text-sm md:text-base font-bold text-[var(--text-primary)]">
-                      {faq.q}
-                    </span>
-                  </div>
-                  <div className={`w-8 h-8 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center shrink-0 transition-transform duration-500 ${isOpen ? 'rotate-180 text-red-500 border-red-500/20' : 'text-[var(--text-secondary)]'}`}>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </div>
-                </button>
+          
+          {/* Left Column: Header */}
+          <motion.div
+            layout
+            transition={{ type: "spring", stiffness: 220, damping: 26 }}
+            className={`text-left flex flex-col justify-start transition-all duration-500 ${
+              openFaq !== null 
+                ? "lg:col-span-4 opacity-75" 
+                : "lg:col-span-5 opacity-100"
+            }`}
+          >
+            <motion.div layout className="mb-4">
+              <span className="inline-flex items-center gap-2 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">
+                <HelpCircle className="w-4 h-4" />
+                Support Hub
+              </span>
+            </motion.div>
+            
+            <motion.h1
+              layout="position"
+              className={`font-black text-white mb-6 uppercase tracking-tight transition-all duration-500 ${
+                openFaq !== null 
+                  ? "text-2xl md:text-3xl lg:text-4xl" 
+                  : "text-4xl md:text-5xl lg:text-6xl"
+              }`}
+              style={{ fontFamily: "'Venite Adoremus', sans-serif", lineHeight: "1.1" }}
+            >
+              Frequently Asked<br />Questions
+            </motion.h1>
+            
+            <motion.p
+              layout="position"
+              className={`text-[var(--text-secondary)] font-medium max-w-sm transition-all duration-500 ${
+                openFaq !== null ? "text-xs opacity-60" : "text-lg"
+              }`}
+            >
+              Everything you need to know about buying, payment verification, and our lifetime warranty.
+            </motion.p>
+          </motion.div>
 
-                {/* Expandable answer panel */}
-                <motion.div
-                  initial={false}
-                  animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-6 pb-6 md:px-8 md:pb-8 pt-1 text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed border-t border-[var(--border-color)] bg-[var(--bg-primary)]/10">
-                    {faq.a}
-                  </div>
-                </motion.div>
-              </motion.div>
-            );
-          })}
+          {/* Right Column: FAQ Accordion List */}
+          <motion.div
+            layout
+            transition={{ type: "spring", stiffness: 220, damping: 26 }}
+            className={`space-y-0 transition-all duration-500 ${
+              openFaq !== null ? "lg:col-span-8" : "lg:col-span-7"
+            }`}
+          >
+            <div className="border-t border-[var(--border-color)]">
+              {faqs.map((faq, idx) => {
+                const isOpen = openFaq === idx;
+                return (
+                  <motion.div
+                    key={idx}
+                    layout
+                    transition={{ type: "spring", stiffness: 220, damping: 26 }}
+                    className={`border-b border-[var(--border-color)] transition-all duration-300 ${
+                      isOpen 
+                        ? "bg-[var(--bg-secondary)]/10 -translate-x-0 lg:-translate-x-6 pl-4 lg:pl-6 pr-4 border-l-4 border-l-[var(--accent)]" 
+                        : "hover:bg-[var(--bg-secondary)]/5 hover:pl-2"
+                    }`}
+                  >
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? null : idx)}
+                      className="w-full flex items-center justify-between gap-6 py-6 text-left focus:outline-none"
+                    >
+                      <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-4">
+                        <span className={`text-[9px] font-black tracking-widest uppercase transition-colors shrink-0 ${
+                          isOpen ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
+                        }`}>
+                          {faq.category}
+                        </span>
+                        <span className={`text-sm md:text-base font-bold transition-colors ${
+                          isOpen ? "text-[var(--text-primary)]" : "text-[var(--text-primary)]/80 hover:text-[var(--text-primary)]"
+                        }`}>
+                          {faq.q}
+                        </span>
+                      </div>
+                      <div className={`w-6 h-6 flex items-center justify-center shrink-0 transition-all duration-300 text-[var(--text-secondary)] ${
+                        isOpen ? 'rotate-45 text-[var(--accent)]' : ''
+                      }`}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                      </div>
+                    </button>
+
+                    {/* Expandable answer panel */}
+                    <motion.div
+                      initial={false}
+                      animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pb-6 text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed">
+                        {faq.a}
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+
         </motion.div>
 
         {/* CTA Support */}
@@ -130,7 +161,7 @@ export function FAQ() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-16 bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-secondary)]/50 border border-[var(--border-color)] p-8 rounded-[2rem] text-center flex flex-col items-center shadow-lg"
+          className="mt-24 bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-secondary)]/50 border border-[var(--border-color)] p-8 rounded-[2rem] text-center flex flex-col items-center shadow-lg"
         >
           <h3 className="text-xl font-bold text-white mb-3">Still have questions?</h3>
           <p className="text-[var(--text-secondary)] text-sm mb-6 max-w-md font-medium">

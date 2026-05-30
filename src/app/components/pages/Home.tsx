@@ -637,123 +637,169 @@ export function Home() {
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--accent)]/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-red-500/5 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-          <span className="text-[10px] font-bold tracking-widest text-[var(--accent)] uppercase bg-[var(--accent)]/10 border border-[var(--accent)]/20 px-3.5 py-1 rounded-full mb-6 inline-block">
-            Support Center
-          </span>
-          <h2 
-            className="text-4xl md:text-5xl font-black text-[var(--text-primary)] mb-4 tracking-tight uppercase"
-            style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <motion.div 
+            layout
+            transition={{ type: "spring", stiffness: 220, damping: 26 }}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
           >
-            Frequently Asked<br />Questions
-          </h2>
-          <p className="text-xs md:text-sm text-[var(--text-secondary)] font-medium max-w-lg mx-auto mb-16 uppercase tracking-wider">
-            Got questions? We've got answers. Explore our comprehensive FAQ or contact support.
-          </p>
-
-          {/* Accordion List */}
-          <div className="space-y-4 text-left">
-            {[
-              {
-                q: "How do I purchase a Mobile Legends account?",
-                category: "BUYING",
-                a: "Browse our marketplace, select your desired account, and click 'Buy Now'. You can complete your payment via eSewa, Khalti, or other options, after which a secure delivery ticket is opened automatically."
-              },
-              {
-                q: "What happens after my payment is successfully verified?",
-                category: "DELIVERY",
-                a: "Our automated system creates a private ticket channel on our official Discord server. Our staff will immediately guide you through securing and transferring the account credentials to you."
-              },
-              {
-                q: "Can I sell or trade-in my own MLBB account here?",
-                category: "SELLING",
-                a: "Yes! Use the 'Sell Account' CTA on our homepage. This connects to our Discord bot to spin up a private ticket where our appraisers will verify your account skins, level, and offer a competitive payout."
-              },
-              {
-                q: "What safety measures do you take against account recovery?",
-                category: "SECURITY",
-                a: "We implement a strict vetting process for all sellers, check original creation details, and require complete account binding transfers. We stand behind our sales with reliable buyer protection guidelines."
-              },
-              {
-                q: "Which localized payment gateways are supported?",
-                category: "PAYMENTS",
-                a: "We support a range of secure payment options, including eSewa, Khalti, IME Pay, and select credit/debit options. Contact support in the Discord server if you require alternative methods."
-              },
-              {
-                q: "How does the Megatron Escrow service work?",
-                category: "ESCROW",
-                a: "Our verified server middlemen secure the seller's account credentials and hold the buyer's payment. Once the buyer completes securing the account, we release the funds to the seller, preventing any fraud."
-              }
-            ]
-              .slice(0, showAllFaqs ? 6 : 3)
-              .map((faq, idx) => {
-                const isOpen = openFaq === idx;
-                return (
-                  <motion.div
-                    key={idx}
-                    layout="position"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    transition={{ duration: 0.3 }}
-                    className="bg-[var(--bg-secondary)]/30 border border-[var(--border-color)] hover:border-[var(--text-secondary)]/20 rounded-[2rem] transition-all duration-300 overflow-hidden shadow-md"
-                  >
-                    <button
-                      onClick={() => setOpenFaq(isOpen ? null : idx)}
-                      className="w-full flex items-center justify-between gap-4 p-6 md:p-8 text-left focus:outline-none"
-                    >
-                      <div className="flex flex-col gap-2">
-                        <span className="text-[9px] font-black tracking-widest text-[var(--text-secondary)] uppercase bg-[var(--bg-primary)] border border-[var(--border-color)] px-2.5 py-0.5 rounded-md w-fit">
-                          {faq.category}
-                        </span>
-                        <span className="text-sm md:text-base font-bold text-[var(--text-primary)]">
-                          {faq.q}
-                        </span>
-                      </div>
-                      <div className={`w-8 h-8 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center shrink-0 transition-transform duration-500 ${isOpen ? 'rotate-180 text-red-500 border-red-500/20' : 'text-[var(--text-secondary)]'}`}>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                      </div>
-                    </button>
-
-                    {/* Expandable answer panel */}
-                    <motion.div
-                      initial={false}
-                      animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-6 pb-6 md:px-8 md:pb-8 pt-1 text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed border-t border-[var(--border-color)] bg-[var(--bg-primary)]/10">
-                        {faq.a}
-                      </div>
-                    </motion.div>
-                  </motion.div>
-                );
-              })}
-          </div>
-
-          {/* Show More / Collapse Button */}
-          <div className="mt-12 flex justify-center">
-            <button
-              onClick={() => {
-                setShowAllFaqs(!showAllFaqs);
-                setOpenFaq(null);
-              }}
-              className="group relative px-8 py-3 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--text-secondary)]/30 text-xs font-bold uppercase tracking-widest text-[var(--text-primary)] inline-flex items-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 shadow-md"
+            {/* Left Column: FAQ Header */}
+            <motion.div
+              layout
+              transition={{ type: "spring", stiffness: 220, damping: 26 }}
+              className={`text-left flex flex-col justify-start transition-all duration-500 ${
+                openFaq !== null 
+                  ? "lg:col-span-4 opacity-75" 
+                  : "lg:col-span-5 opacity-100"
+              }`}
             >
-              <span>{showAllFaqs ? "Collapse FAQs" : "Show More FAQs"}</span>
-              <svg 
-                className={`w-3 h-3 transition-transform duration-300 ${showAllFaqs ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2.5" 
-                viewBox="0 0 24 24"
+              <motion.div layout className="mb-4">
+                <span className="text-[10px] font-bold tracking-widest text-[var(--accent)] uppercase bg-[var(--accent)]/10 border border-[var(--accent)]/20 px-3.5 py-1 rounded-full inline-block">
+                  FAQs
+                </span>
+              </motion.div>
+
+              <motion.h2 
+                layout="position"
+                className={`font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight transition-all duration-500 ${
+                  openFaq !== null 
+                    ? "text-2xl md:text-3xl lg:text-4xl" 
+                    : "text-4xl md:text-5xl lg:text-6xl"
+                }`}
+                style={{ fontFamily: "'Venite Adoremus', sans-serif", lineHeight: "1.1" }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
-            </button>
-          </div>
+                Frequently Asked<br />Questions
+              </motion.h2>
+
+              <motion.p 
+                layout="position"
+                className={`text-[var(--text-secondary)] font-medium max-w-sm transition-all duration-500 ${
+                  openFaq !== null ? "text-xs opacity-60" : "text-sm"
+                }`}
+              >
+                Got questions? We've got answers. Explore our detailed FAQ sections to get instant help.
+              </motion.p>
+            </motion.div>
+
+            {/* Right Column: Interactive FAQ Rows */}
+            <motion.div
+              layout
+              transition={{ type: "spring", stiffness: 220, damping: 26 }}
+              className={`space-y-0 transition-all duration-500 ${
+                openFaq !== null ? "lg:col-span-8" : "lg:col-span-7"
+              }`}
+            >
+              <div className="border-t border-[var(--border-color)]">
+                {[
+                  {
+                    q: "How do I purchase a Mobile Legends account?",
+                    category: "BUYING",
+                    a: "Browse our marketplace, select your desired account, and click 'Buy Now'. You can complete your payment via eSewa, Khalti, or other options, after which a secure delivery ticket is opened automatically."
+                  },
+                  {
+                    q: "What happens after my payment is successfully verified?",
+                    category: "DELIVERY",
+                    a: "Our automated system creates a private ticket channel on our official Discord server. Our staff will immediately guide you through securing and transferring the account credentials to you."
+                  },
+                  {
+                    q: "Can I sell or trade-in my own MLBB account here?",
+                    category: "SELLING",
+                    a: "Yes! Use the 'Sell Account' CTA on our homepage. This connects to our Discord bot to spin up a private ticket where our appraisers will verify your account skins, level, and offer a competitive payout."
+                  },
+                  {
+                    q: "What safety measures do you take against account recovery?",
+                    category: "SECURITY",
+                    a: "We implement a strict vetting process for all sellers, check original creation details, and require complete account binding transfers. We stand behind our sales with reliable buyer protection guidelines."
+                  },
+                  {
+                    q: "Which localized payment gateways are supported?",
+                    category: "PAYMENTS",
+                    a: "We support a range of secure payment options, including eSewa, Khalti, IME Pay, and select credit/debit options. Contact support in the Discord server if you require alternative methods."
+                  },
+                  {
+                    q: "How does the Megatron Escrow service work?",
+                    category: "ESCROW",
+                    a: "Our verified server middlemen secure the seller's account credentials and hold the buyer's payment. Once the buyer completes securing the account, we release the funds to the seller, preventing any fraud."
+                  }
+                ]
+                  .slice(0, showAllFaqs ? 6 : 3)
+                  .map((faq, idx) => {
+                    const isOpen = openFaq === idx;
+                    return (
+                      <motion.div
+                        key={idx}
+                        layout
+                        transition={{ type: "spring", stiffness: 220, damping: 26 }}
+                        className={`border-b border-[var(--border-color)] transition-all duration-300 ${
+                          isOpen 
+                            ? "bg-[var(--bg-secondary)]/10 -translate-x-0 lg:-translate-x-6 pl-4 lg:pl-6 pr-4 border-l-4 border-l-[var(--accent)]" 
+                            : "hover:bg-[var(--bg-secondary)]/5 hover:pl-2"
+                        }`}
+                      >
+                        <button
+                          onClick={() => setOpenFaq(isOpen ? null : idx)}
+                          className="w-full flex items-center justify-between gap-6 py-6 text-left focus:outline-none"
+                        >
+                          <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-4">
+                            <span className={`text-[9px] font-black tracking-widest uppercase transition-colors shrink-0 ${
+                              isOpen ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
+                            }`}>
+                              {faq.category}
+                            </span>
+                            <span className={`text-sm md:text-base font-bold transition-colors ${
+                              isOpen ? "text-[var(--text-primary)]" : "text-[var(--text-primary)]/80 hover:text-[var(--text-primary)]"
+                            }`}>
+                              {faq.q}
+                            </span>
+                          </div>
+                          <div className={`w-6 h-6 flex items-center justify-center shrink-0 transition-all duration-300 text-[var(--text-secondary)] ${
+                            isOpen ? 'rotate-45 text-[var(--accent)]' : ''
+                          }`}>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                          </div>
+                        </button>
+
+                        {/* Expandable answer panel */}
+                        <motion.div
+                          initial={false}
+                          animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+                          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pb-6 text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed">
+                            {faq.a}
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    );
+                  })}
+              </div>
+
+              {/* Show More / Collapse Button */}
+              <div className="mt-12 flex justify-start">
+                <button
+                  onClick={() => {
+                    setShowAllFaqs(!showAllFaqs);
+                    setOpenFaq(null);
+                  }}
+                  className="group relative px-8 py-3.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--text-secondary)]/30 text-xs font-bold uppercase tracking-widest text-[var(--text-primary)] inline-flex items-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 shadow-md"
+                >
+                  <span>{showAllFaqs ? "Collapse FAQs" : "Show More FAQs"}</span>
+                  <svg 
+                    className={`w-3 h-3 transition-transform duration-300 ${showAllFaqs ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2.5" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
