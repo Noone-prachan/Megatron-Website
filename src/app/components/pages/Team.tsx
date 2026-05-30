@@ -15,8 +15,9 @@ export function Team() {
           <p className="inline-block px-4 py-1.5 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-full text-xs font-black tracking-widest uppercase mb-6">
             The Crew
           </p>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[var(--text-primary)] mb-6">
-            Meet the Team.
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6">
+            <span className="text-white">Meet the </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400">Team.</span>
           </h1>
           <p className="text-[var(--text-secondary)] max-w-2xl mx-auto text-lg font-medium">
             Dedicated professionals committed to providing the most secure and reliable Mobile Legends account trading experience in Nepal.

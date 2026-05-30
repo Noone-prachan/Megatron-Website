@@ -180,10 +180,13 @@ export function Home() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-widest mb-6 leading-[1.1] text-[var(--text-primary)] uppercase drop-shadow-lg"
-                style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-widest mb-6 leading-[1.1] uppercase drop-shadow-lg"
               >
-                DIGITAL PRODUCTS<br />& SERVICES
+                <span className="text-white">DIGITAL </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400">PRODUCTS</span>
+                <br />
+                <span className="text-white">&amp; </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">SERVICES</span>
               </motion.h1>
 
               <motion.ul
@@ -270,9 +273,13 @@ export function Home() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-4 leading-[1.1] text-[var(--text-primary)] drop-shadow-md"
+              className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-4 leading-[1.1] drop-shadow-md"
             >
-              Built different.<br />By design.
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400">Built </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-500">different.</span>
+              <br />
+              <span className="text-white">By </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-600">design.</span>
             </motion.h2>
 
             <motion.p
@@ -324,9 +331,10 @@ export function Home() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6"
+              className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6"
             >
-              Featured Accounts
+              <span className="text-white">Featured </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300">Accounts</span>
             </motion.h2>
           </div>
 
@@ -377,10 +385,13 @@ export function Home() {
               </motion.div>
 
               <h2
-                className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight leading-[1.1]"
-                style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 uppercase tracking-tight leading-[1.1]"
               >
-                Turn Your Skins<br />Into Real Cash
+                <span className="text-white">Turn Your </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400">Skins</span>
+                <br />
+                <span className="text-white">Into </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400">Real Cash</span>
               </h2>
 
               <p
@@ -493,10 +504,10 @@ export function Home() {
               Community Hub
             </div>
             <h2
-              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight leading-[1.1]"
-              style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 uppercase tracking-tight leading-[1.1]"
             >
-              Enter The <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5865F2] to-blue-400">Megatron Corps</span>
+              <span className="text-white">Enter The </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5865F2] via-blue-400 to-indigo-300">Megatron Corps</span>
             </h2>
             <p className="text-[var(--text-secondary)] text-lg max-w-2xl font-medium leading-relaxed">
               Connect with thousands of Mobile Legends players. Trade under secure middleman escrow, get live stock alerts, and win exclusive giveaways.
@@ -692,7 +703,10 @@ export function Home() {
                 }`}
                 style={{ fontFamily: "'Venite Adoremus', sans-serif", lineHeight: "1.1" }}
               >
-                Frequently Asked<br />Questions
+                <span className="text-white">Frequently </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-orange-400">Asked</span>
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">Questions</span>
               </motion.h2>
 
               <motion.p 

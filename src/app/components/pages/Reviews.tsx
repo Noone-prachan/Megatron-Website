@@ -107,8 +107,9 @@ export function Reviews() {
     <div className="pt-32 pb-24 min-h-screen flex flex-col items-center">
       <div className="max-w-7xl mx-auto px-6 w-full">
         <div className="text-center mb-16">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[var(--text-primary)] mb-6">
-            Trusted by<br/>Thousands
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6">
+            <span className="text-white">Trusted by</span><br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400">Thousands</span>
           </h1>
           <p className="text-[var(--text-secondary)] max-w-xl mx-auto text-lg font-medium">
             Don't just take our word for it. Read what our customers have to say about their verified purchases.
