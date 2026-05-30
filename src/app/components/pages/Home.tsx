@@ -709,9 +709,10 @@ export function Home() {
 
               {/* Opened FAQ container under the text */}
               <div className="relative">
-                <AnimatePresence>
+                <AnimatePresence mode="popLayout">
                   {openFaq !== null && (
                     <motion.div
+                      key={`opened-faq-${openFaq}`}
                       layoutId={`faq-item-${openFaq}`}
                       className="mt-8 bg-[var(--bg-secondary)]/50 border border-[var(--accent)]/30 rounded-[2.5rem] p-6 lg:p-8 text-left shadow-2xl border-l-4 border-l-[var(--accent)] relative overflow-hidden"
                       transition={{ type: "spring", stiffness: 220, damping: 26 }}
