@@ -31,13 +31,11 @@ export function Home() {
   const [showTopBtn, setShowTopBtn] = useState(false);
   const { products } = useProducts();
   const { reviews } = useReviews();
-  
+
   const [discordStats, setDiscordStats] = useState({
     totalMembers: 2500,
     onlineMembers: 400
   });
-  const [discordChannels, setDiscordChannels] = useState<any[]>([]);
-  const [discordMembers, setDiscordMembers] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDiscordStats = async () => {
@@ -50,8 +48,6 @@ export function Home() {
               totalMembers: data.totalMembers,
               onlineMembers: data.onlineMembers
             });
-            setDiscordChannels(data.channels || []);
-            setDiscordMembers(data.members || []);
           }
         }
       } catch (err) {
@@ -63,7 +59,7 @@ export function Home() {
     const interval = setInterval(fetchDiscordStats, 60000);
     return () => clearInterval(interval);
   }, []);
-  
+
   // Get featured products from context, fallback to static array if none exist
   const contextFeatured = products.filter(p => p.featured).slice(0, 4);
   const displayFeatured = contextFeatured.length > 0 ? contextFeatured : featuredProducts as unknown as Product[];
@@ -90,7 +86,7 @@ export function Home() {
         userId,
         username: username || "Unknown",
       });
-      
+
       toast.success("A selling ticket has been successfully created in our Discord server!");
       if (res && (res as any).ticketUrl) {
         window.open((res as any).ticketUrl, "_blank");
@@ -220,7 +216,7 @@ export function Home() {
 
       {/* ═══ WHY MEGATRON ═══ */}
       <section id="why-megatron" className="py-24 border-b border-[var(--border-color)] bg-[var(--bg-primary)] relative">
-        
+
         {/* Animated Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[var(--accent)]/5 to-transparent opacity-50 pointer-events-none"></div>
 
@@ -256,10 +252,10 @@ export function Home() {
             </motion.p>
           </div>
         </div>
-        
+
         {/* Timeline starts naturally without extra margin since there's no black block to hide under */}
         <div className="max-w-7xl mx-auto px-6 w-full relative z-10 pt-10">
-          
+
           {/* Branching Design (Timeline) */}
           <div className="relative">
             {/* Central Vertical Line */}
@@ -334,7 +330,7 @@ export function Home() {
 
         <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-            
+
             {/* Left Column: Visual description & Timeline steps */}
             <div className="lg:col-span-7 flex flex-col text-left">
               <motion.div
@@ -346,20 +342,20 @@ export function Home() {
                 <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
                 Want to sell?
               </motion.div>
-              
+
               <h2
                 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight leading-[1.1]"
                 style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
               >
                 Turn Your Skins<br />Into Real Cash
               </h2>
-              
+
               <p
                 className="text-[var(--text-secondary)] text-lg mb-10 max-w-xl font-medium leading-relaxed"
               >
                 Tired of your MLBB account? Hand it over to us! Megatron offers the most competitive valuations, quick evaluations, and instant payouts via secure middleman systems.
               </p>
-              
+
               {/* Vertical steps */}
               <div className="space-y-6">
                 {[
@@ -434,7 +430,7 @@ export function Home() {
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                   </div>
                 </button>
-                
+
                 <p className="text-[var(--text-secondary)] text-[10px] font-bold tracking-wide text-center mt-4 uppercase">
                   ⚡ Powered by Megatron Bot • Secure Escrow
                 </p>
@@ -476,7 +472,7 @@ export function Home() {
 
           {/* Three-Column Bento Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-            
+
             {/* Card 1: The Community Stats */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -535,7 +531,7 @@ export function Home() {
                 </div>
               </a>
             </motion.div>
-            
+
             {/* Card 2: Features List */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -551,9 +547,9 @@ export function Home() {
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { 
-                      label: "Verified Escrow", 
-                      val: "Trade safely via certified server middlemen.", 
+                    {
+                      label: "Verified Escrow",
+                      val: "Trade safely via certified server middlemen.",
                       icon: (
                         <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -561,9 +557,9 @@ export function Home() {
                       ),
                       tag: "SECURE"
                     },
-                    { 
-                      label: "Flash Restocks", 
-                      val: "Instant ping alerts on new account drops.", 
+                    {
+                      label: "Flash Restocks",
+                      val: "Instant ping alerts on new account drops.",
                       icon: (
                         <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -571,9 +567,9 @@ export function Home() {
                       ),
                       tag: "FAST"
                     },
-                    { 
-                      label: "Account Valuations", 
-                      val: "Get free worth appraisals on your MLBB accounts.", 
+                    {
+                      label: "Account Valuations",
+                      val: "Get free worth appraisals on your MLBB accounts.",
                       icon: (
                         <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -581,9 +577,9 @@ export function Home() {
                       ),
                       tag: "FREE"
                     },
-                    { 
-                      label: "24/7 Live Support", 
-                      val: "Open support tickets directly in the guild.", 
+                    {
+                      label: "24/7 Live Support",
+                      val: "Open support tickets directly in the guild.",
                       icon: (
                         <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.58 9 8z" />
@@ -608,79 +604,25 @@ export function Home() {
                 </div>
               </div>
             </motion.div>
-            
+
             {/* Card 3: The Live Widget */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between text-left relative overflow-hidden transition-all duration-300 shadow-xl backdrop-blur-md min-h-[400px]"
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-4 flex flex-col items-center justify-center transition-all duration-300 shadow-xl backdrop-blur-md min-h-[400px]"
             >
-              <div>
-                <span className="text-[10px] font-bold tracking-widest text-[#5865F2] uppercase bg-[#5865F2]/10 border border-[#5865F2]/20 px-3.5 py-1 rounded-full mb-6 inline-block">Live Voice Status</span>
-                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-6 leading-tight uppercase" style={{ fontFamily: "'Venite Adoremus', sans-serif" }}>
-                  Voice<br />Channels
-                </h3>
-
-                {/* List of VCs */}
-                <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1 relative z-10 scrollbar-thin scrollbar-thumb-white/10">
-                  {discordChannels && discordChannels.length > 0 ? (
-                    discordChannels.map((chan: any) => {
-                      // Get members in this channel
-                      const membersInChan = discordMembers.filter((m: any) => m.channel_id === chan.id);
-
-                      return (
-                        <div key={chan.id} className="bg-[var(--bg-primary)]/40 border border-[var(--border-color)] rounded-xl p-3 flex flex-col gap-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {/* Speaker Voice Channel Icon */}
-                              <svg className="w-4 h-4 text-[#10b981]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
-                              </svg>
-                              <span className="text-xs font-bold text-[var(--text-primary)]">{chan.name}</span>
-                            </div>
-                            <span className="text-[9px] font-bold text-[var(--text-secondary)] uppercase bg-[var(--bg-primary)] px-2 py-0.5 rounded border border-[var(--border-color)]">
-                              {membersInChan.length} Active
-                            </span>
-                          </div>
-
-                          {/* Members list inside VC */}
-                          {membersInChan.length > 0 && (
-                            <div className="flex flex-wrap gap-2 pl-6 mt-1">
-                              {membersInChan.map((member: any) => (
-                                <div key={member.id} className="flex items-center gap-1.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-full pl-1 pr-2 py-0.5 text-[10px] text-[var(--text-secondary)]">
-                                  <img src={member.avatar_url} alt={member.username} className="w-4 h-4 rounded-full" />
-                                  <span className="font-semibold max-w-[80px] truncate">{member.username}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="text-center py-8 text-xs text-[var(--text-secondary)] font-medium">
-                      No active voice channels found or widget is disabled.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <a
-                href="https://discord.gg/fKXBF3QyzB"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative w-full bg-[#5865F2] hover:bg-[#4752C4] text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest inline-flex items-center justify-center gap-3 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] mt-6 overflow-hidden z-10"
+              <iframe
+                src="https://discord.com/widget?id=1486062330466013409&theme=dark"
+                width="350"
+                height="500"
+                allowTransparency={true}
+                frameBorder="0"
+                sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                className="rounded-[2rem] border border-[var(--border-color)] shadow-inner max-w-full"
               >
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-glare pointer-events-none" />
-                <span>Join Voice Chat</span>
-                <div className="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center group-hover:rotate-12 transition-transform">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
-                  </svg>
-                </div>
-              </a>
+              </iframe>
             </motion.div>
 
           </div>
@@ -696,25 +638,25 @@ export function Home() {
 const useScrollToTop = () => {
   useEffect(() => {
     function onScroll() {
-      setTimeout(() => {}, 0); // noop to ensure effect hook captured
+      setTimeout(() => { }, 0); // noop to ensure effect hook captured
     }
   }, []);
 };
 
 function TimelineFeature({ feature, index }: { feature: any, index: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  
+
   // Track this element's position in the viewport
   const { scrollYProgress } = useScroll({
     target: ref,
     // Start fading when the top of the element hits 300px from the top of the viewport
     // Fully faded out when it hits 150px from the top
-    offset: ["start 300px", "start 150px"] 
+    offset: ["start 300px", "start 150px"]
   });
-  
+
   // Map scroll progress to opacity (1 down to 0)
   const opacityFade = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  
+
   const isEven = index % 2 === 0;
 
   return (
