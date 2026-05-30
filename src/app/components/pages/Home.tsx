@@ -505,14 +505,13 @@ export function Home() {
 
           {/* Three-Column Bento Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-
             {/* Card 1: The Community Stats */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between text-left relative overflow-hidden group transition-all duration-300 shadow-xl backdrop-blur-md"
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between text-left relative overflow-hidden group transition-all duration-300 shadow-xl backdrop-blur-md lg:h-[540px]"
             >
               {/* Giant Discord Watermark Logo */}
               <div className="absolute -bottom-10 -right-10 text-[#5865F2]/5 group-hover:text-[#5865F2]/8 group-hover:-translate-y-3 transition-all duration-500 pointer-events-none">
@@ -571,7 +570,7 @@ export function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-red-500/20 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between text-left relative overflow-hidden transition-all duration-300 shadow-xl backdrop-blur-md"
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-red-500/20 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between text-left relative overflow-hidden transition-all duration-300 shadow-xl backdrop-blur-md lg:h-[540px] overflow-y-hidden"
             >
               <div>
                 <span className="text-[10px] font-bold tracking-widest text-red-500 uppercase bg-red-500/10 border border-red-500/20 px-3.5 py-1 rounded-full mb-6 inline-block">The Perks</span>
@@ -584,7 +583,7 @@ export function Home() {
                       label: "Verified Escrow",
                       val: "Trade safely via certified server middlemen.",
                       icon: (
-                        <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
                       ),
@@ -594,7 +593,7 @@ export function Home() {
                       label: "Flash Restocks",
                       val: "Instant ping alerts on new account drops.",
                       icon: (
-                        <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                       ),
@@ -604,7 +603,7 @@ export function Home() {
                       label: "Account Valuations",
                       val: "Get free worth appraisals on your MLBB accounts.",
                       icon: (
-                        <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       ),
@@ -614,7 +613,7 @@ export function Home() {
                       label: "24/7 Live Support",
                       val: "Open support tickets directly in the guild.",
                       icon: (
-                        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.58 9 8z" />
                         </svg>
                       ),
@@ -644,12 +643,12 @@ export function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-4 flex flex-col items-center justify-center transition-all duration-300 shadow-xl backdrop-blur-md h-full w-full"
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-4 flex flex-col items-center justify-center transition-all duration-300 shadow-xl backdrop-blur-md lg:h-[540px] w-full"
             >
               <iframe
                 src="https://discord.com/widget?id=1486062330466013409&theme=dark"
                 width="100%"
-                height="500"
+                height="508"
                 allowTransparency={true}
                 frameBorder="0"
                 sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
