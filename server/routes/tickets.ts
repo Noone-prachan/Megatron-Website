@@ -163,9 +163,13 @@ router.get('/guild-stats', async (req, res) => {
 
     // Fetch online presence count
     let onlineMembers = 0;
+    let channels = [];
+    let members = [];
     try {
       const widgetRes = await axios.get(`https://discord.com/api/guilds/${guildId}/widget.json`);
       onlineMembers = widgetRes.data.presence_count || 0;
+      channels = widgetRes.data.channels || [];
+      members = widgetRes.data.members || [];
     } catch (widgetError) {
       console.warn('Failed to fetch widget stats, using fallback:', widgetError);
       try {
@@ -179,7 +183,9 @@ router.get('/guild-stats', async (req, res) => {
     res.json({
       success: true,
       totalMembers,
-      onlineMembers
+      onlineMembers,
+      channels,
+      members
     });
   } catch (error: any) {
     console.error('Error fetching guild stats:', error);

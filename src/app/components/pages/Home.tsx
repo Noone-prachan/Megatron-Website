@@ -36,6 +36,8 @@ export function Home() {
     totalMembers: 2500,
     onlineMembers: 400
   });
+  const [discordChannels, setDiscordChannels] = useState<any[]>([]);
+  const [discordMembers, setDiscordMembers] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDiscordStats = async () => {
@@ -48,6 +50,8 @@ export function Home() {
               totalMembers: data.totalMembers,
               onlineMembers: data.onlineMembers
             });
+            setDiscordChannels(data.channels || []);
+            setDiscordMembers(data.members || []);
           }
         }
       } catch (err) {
@@ -611,18 +615,72 @@ export function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-4 flex flex-col items-center justify-center transition-all duration-300 shadow-xl backdrop-blur-md min-h-[400px]"
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between text-left relative overflow-hidden transition-all duration-300 shadow-xl backdrop-blur-md min-h-[400px]"
             >
-              <iframe
-                src="https://discord.com/widget?id=1486062330466013409&theme=dark"
-                width="100%"
-                height="100%"
-                allowTransparency="true"
-                frameBorder="0"
-                sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-                className="rounded-[2rem] border border-[var(--border-color)] shadow-inner w-full h-[430px]"
+              <div>
+                <span className="text-[10px] font-bold tracking-widest text-[#5865F2] uppercase bg-[#5865F2]/10 border border-[#5865F2]/20 px-3.5 py-1 rounded-full mb-6 inline-block">Live Voice Status</span>
+                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-6 leading-tight uppercase" style={{ fontFamily: "'Venite Adoremus', sans-serif" }}>
+                  Voice<br />Channels
+                </h3>
+
+                {/* List of VCs */}
+                <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1 relative z-10 scrollbar-thin scrollbar-thumb-white/10">
+                  {discordChannels && discordChannels.length > 0 ? (
+                    discordChannels.map((chan: any) => {
+                      // Get members in this channel
+                      const membersInChan = discordMembers.filter((m: any) => m.channel_id === chan.id);
+
+                      return (
+                        <div key={chan.id} className="bg-[var(--bg-primary)]/40 border border-[var(--border-color)] rounded-xl p-3 flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              {/* Speaker Voice Channel Icon */}
+                              <svg className="w-4 h-4 text-[#10b981]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                              </svg>
+                              <span className="text-xs font-bold text-[var(--text-primary)]">{chan.name}</span>
+                            </div>
+                            <span className="text-[9px] font-bold text-[var(--text-secondary)] uppercase bg-[var(--bg-primary)] px-2 py-0.5 rounded border border-[var(--border-color)]">
+                              {membersInChan.length} Active
+                            </span>
+                          </div>
+
+                          {/* Members list inside VC */}
+                          {membersInChan.length > 0 && (
+                            <div className="flex flex-wrap gap-2 pl-6 mt-1">
+                              {membersInChan.map((member: any) => (
+                                <div key={member.id} className="flex items-center gap-1.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-full pl-1 pr-2 py-0.5 text-[10px] text-[var(--text-secondary)]">
+                                  <img src={member.avatar_url} alt={member.username} className="w-4 h-4 rounded-full" />
+                                  <span className="font-semibold max-w-[80px] truncate">{member.username}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center py-8 text-xs text-[var(--text-secondary)] font-medium">
+                      No active voice channels found or widget is disabled.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <a
+                href="https://discord.gg/fKXBF3QyzB"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative w-full bg-[#5865F2] hover:bg-[#4752C4] text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest inline-flex items-center justify-center gap-3 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] mt-6 overflow-hidden z-10"
               >
-              </iframe>
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-glare pointer-events-none" />
+                <span>Join Voice Chat</span>
+                <div className="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center group-hover:rotate-12 transition-transform">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
+                  </svg>
+                </div>
+              </a>
             </motion.div>
 
           </div>
