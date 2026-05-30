@@ -186,3 +186,13 @@ button, a {
 .animate-pulse-bg {
   animation: pulseBg 15s ease-in-out infinite;
 }
+
+/* Glare animation for button hover */
+@keyframes glare {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-glare {
+  animation: glare 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
