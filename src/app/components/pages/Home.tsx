@@ -515,14 +515,58 @@ export function Home() {
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { label: "Verified Escrow Escort", val: "🛡️ Safe trading with certified middleman staff." },
-                    { label: "Flash Restock Updates", val: "⚡ Fast notices on hot rare-skin accounts." },
-                    { label: "Giveaway Drops", val: "🎁 Free diamond top-ups and accounts weekly." },
-                    { label: "24/7 Live Support", val: "💬 Ticketing bot active around the clock." }
+                    { 
+                      label: "Verified Escrow", 
+                      val: "Trade safely via certified server middlemen.", 
+                      icon: (
+                        <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      ),
+                      tag: "SECURE"
+                    },
+                    { 
+                      label: "Flash Restocks", 
+                      val: "Instant ping alerts on new account drops.", 
+                      icon: (
+                        <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      ),
+                      tag: "FAST"
+                    },
+                    { 
+                      label: "Weekly Giveaways", 
+                      val: "Win free diamond packages and accounts.", 
+                      icon: (
+                        <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 0h4m-4 0H8m12 3v9a2 2 0 01-2 2H6a2 2 0 01-2-2v-9m16 0H4" />
+                        </svg>
+                      ),
+                      tag: "FREE"
+                    },
+                    { 
+                      label: "24/7 Live Support", 
+                      val: "Open support tickets directly in the guild.", 
+                      icon: (
+                        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.58 9 8z" />
+                        </svg>
+                      ),
+                      tag: "ONLINE"
+                    }
                   ].map((item, idx) => (
-                    <div key={idx} className="border-b border-[var(--border-color)] pb-3 last:border-0 last:pb-0">
-                      <span className="text-xs font-bold text-[var(--text-primary)] block mb-0.5">{item.label}</span>
-                      <span className="text-xs text-[var(--text-secondary)] font-medium leading-relaxed block">{item.val}</span>
+                    <div key={idx} className="flex gap-4 items-start p-3.5 rounded-2xl bg-[var(--bg-primary)]/40 border border-[var(--border-color)] hover:border-[var(--text-secondary)]/30 transition-all duration-300 group">
+                      <div className="w-10 h-10 rounded-xl bg-[var(--bg-secondary)] flex items-center justify-center shrink-0 border border-[var(--border-color)] group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        {item.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                          <span className="text-xs font-bold text-[var(--text-primary)]">{item.label}</span>
+                          <span className="text-[8px] font-black tracking-widest text-[var(--text-secondary)] uppercase bg-[var(--bg-primary)] border border-[var(--border-color)] px-2 py-0.5 rounded-md">{item.tag}</span>
+                        </div>
+                        <span className="text-[11px] text-[var(--text-secondary)] font-medium leading-relaxed block">{item.val}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
