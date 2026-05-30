@@ -1,0 +1,363 @@
+import { motion, useInView, useScroll, useTransform } from "motion/react";
+import { Link } from "react-router";
+import { useState, useRef, useEffect } from "react";
+import { ProductCard } from "../products/ProductCard";
+import { Star, Shield, Zap, Users, CheckCircle2 } from "lucide-react";
+import { useProducts, Product } from "../../context/ProductContext";
+import { useReviews } from "../../context/ReviewContext";
+
+const features = [
+  { id: "01", title: "Instant Delivery", desc: "Credentials emailed within minutes of payment — fully automated, no delays." },
+  { id: "02", title: "Lifetime Warranty", desc: "Account stops working? We replace it for free. No questions, no hassle." },
+  { id: "03", title: "Encrypted & Private", desc: "All transactions secured. Your data is never stored beyond what's necessary." },
+  { id: "04", title: "Lowest Prices", desc: "We monitor the market constantly to guarantee the most competitive rates." },
+  { id: "05", title: "24/7 Live Support", desc: "Real humans available any time of day. Average response time under 5 minutes." },
+  { id: "06", title: "Pre-Verified Accounts", desc: "Every account is tested before sale. You always receive a working product." },
+];
+
+const featuredProducts = [
+  { id: "1", title: "HYPER BASED PREMIUM ACCOUNT", level: 69, rank: "Exalted 1", skins: 315, heroes: 131, price: 99.90, image: "/images/account-preview.png", badge: "Hot" as const },
+  { id: "2", title: "EPIC STARTER BUNDLE", level: 45, rank: "Legend 3", skins: 150, heroes: 89, price: 49.90, image: "/images/skins-collection.png", badge: "New" as const },
+  { id: "3", title: "MYTHIC GLORY ACCOUNT", level: 78, rank: "Mythic Glory", skins: 420, heroes: 150, price: 149.90, image: "/images/hero-banner.png", badge: "Premium" as const },
+  { id: "4", title: "COLLECTOR'S EDITION", level: 82, rank: "Mythical Immortal", skins: 500, heroes: 160, price: 199.90, image: "/images/account-preview.png", badge: "Rare" as const },
+];
+
+
+
+export function Home() {
+  const [activeFeature, setActiveFeature] = useState<string>("04");
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  const { products } = useProducts();
+  const { reviews } = useReviews();
+  
+  // Get featured products from context, fallback to static array if none exist
+  const contextFeatured = products.filter(p => p.featured).slice(0, 4);
+  const displayFeatured = contextFeatured.length > 0 ? contextFeatured : featuredProducts as unknown as Product[];
+
+  return (
+    <div className="min-h-screen flex flex-col transition-colors duration-300">
+
+      {/* ═══ HERO ═══ */}
+      <section className="relative min-h-[90vh] flex items-center border-b border-[var(--border-color)] overflow-hidden pt-24 pb-12">
+        {/* Background Image */}
+        <div className="absolute inset-0 bg-[url('/images/hero-banner.png')] bg-cover bg-center opacity-40 animate-pulse-bg" />
+
+        {/* Animated Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)] via-[var(--bg-primary)]/80 to-[var(--bg-primary)]/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent opacity-90" />
+
+        <div className="relative z-20 max-w-[100rem] mx-auto px-6 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-40 xl:gap-64 items-center justify-between">
+
+            {/* Left Column: Big Animated Logo */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 1, type: "spring", bounce: 0.4 }}
+              className="flex justify-center lg:justify-end"
+            >
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 animate-pulse transition-opacity duration-500"></div>
+                <img
+                  src="/images/megatronlogo.png"
+                  alt="Megatron Logo"
+                  className="w-64 h-64 sm:w-80 sm:h-80 lg:w-[28rem] lg:h-[28rem] object-contain drop-shadow-2xl relative z-10 hover:rotate-[360deg] transition-transform duration-[2000ms] ease-in-out"
+                />
+              </div>
+            </motion.div>
+
+            {/* Right Column: Text & Buttons */}
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="inline-flex items-center gap-2 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                Official Extended Services
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-widest mb-6 leading-[1.1] text-[var(--text-primary)] uppercase drop-shadow-lg"
+                style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
+              >
+                DIGITAL PRODUCTS<br />& SERVICES
+              </motion.h1>
+
+              <motion.ul
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-left space-y-4 mb-10 text-[var(--text-secondary)] font-medium max-w-md mx-auto lg:mx-0"
+              >
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[var(--accent)] shrink-0" />
+                  <span><strong className="text-[var(--text-primary)]">MLBB</strong> Topups & Premium Accounts</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[var(--accent)] shrink-0" />
+                  <span><strong className="text-[var(--text-primary)]">Robux</strong> & Discord Nitro</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[var(--accent)] shrink-0" />
+                  <span><strong className="text-[var(--text-primary)]">Valorant Points</strong> & Minecoins</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[var(--accent)] shrink-0" />
+                  <span><strong className="text-[var(--text-primary)]">Gift Cards:</strong> Steam, PSN, Apple & More</span>
+                </li>
+              </motion.ul>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex flex-col sm:flex-row gap-4 w-full justify-center lg:justify-start mb-16"
+              >
+                <Link to="/products" className="group flex items-center justify-center gap-2 bg-[var(--text-primary)] text-[var(--bg-primary)] px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest transition-all shadow-lg hover:shadow-xl hover:scale-105">
+                  <span>Browse Products</span>
+                  <div className="w-5 h-5 bg-[var(--bg-primary)] text-[var(--text-primary)] rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                  </div>
+                </Link>
+                <Link to="/reviews" className="group flex items-center justify-center gap-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest transition-all shadow-sm hover:shadow-md hover:border-[var(--text-primary)]">
+                  <span>Read Reviews</span>
+                </Link>
+              </motion.div>
+            </div>
+
+          </div>
+        </div>
+        {/* Scroll indicator (bottom center) */}
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-8 z-10">
+          <button
+            aria-label="Scroll down"
+            onClick={() => document.getElementById('why-megatron')?.scrollIntoView({ behavior: 'smooth' })}
+            className="flex flex-col items-center gap-2 text-[12px] text-[var(--text-secondary)] uppercase tracking-widest opacity-90"
+          >
+            <span className="select-none">Scroll</span>
+            <span className="w-6 h-6 flex items-center justify-center rounded-full border border-[var(--border-color)] text-[var(--text-secondary)]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-bounce">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      {/* ═══ WHY MEGATRON ═══ */}
+      <section id="why-megatron" className="py-24 border-b border-[var(--border-color)] bg-[var(--bg-primary)] relative">
+        
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[var(--accent)]/5 to-transparent opacity-50 pointer-events-none"></div>
+
+        {/* Transparent Sticky Header */}
+        <div className="sticky top-[72px] z-30 pt-12 pb-16 pointer-events-none">
+          <div className="max-w-7xl mx-auto px-6 w-full text-center flex flex-col items-center relative z-20 pointer-events-auto">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4"
+            >
+              <Shield className="w-4 h-4" />
+              Why Megatron?
+            </motion.p>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-4 leading-[1.1] text-[var(--text-primary)] drop-shadow-md"
+            >
+              Built different.<br />By design.
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-[var(--text-secondary)] text-lg max-w-2xl leading-relaxed mx-auto"
+            >
+              We're not just another seller. Every detail is engineered for trust, speed, and your peace of mind.
+            </motion.p>
+          </div>
+        </div>
+        
+        {/* Timeline starts naturally without extra margin since there's no black block to hide under */}
+        <div className="max-w-7xl mx-auto px-6 w-full relative z-10 pt-10">
+          
+          {/* Branching Design (Timeline) */}
+          <div className="relative">
+            {/* Central Vertical Line */}
+            <div className="absolute left-6 md:left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-[var(--border-color)] via-[var(--border-color)] to-transparent md:-translate-x-1/2"></div>
+
+            <div className="flex flex-col gap-12 sm:gap-16">
+              {features.map((feature, index) => (
+                <TimelineFeature key={feature.id} feature={feature} index={index} />
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ═══ FEATURED ACCOUNTS ═══ */}
+      <section className="py-24 border-b border-[var(--border-color)] relative overflow-hidden">
+        {/* Subtle mesh background for featured */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-primary)] via-[var(--bg-secondary)]/30 to-[var(--bg-primary)] pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
+          <div className="text-center mb-16 flex flex-col items-center">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 bg-blue-500/10 text-blue-500 border border-blue-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
+            >
+              <Star className="w-4 h-4" />
+              Marketplace
+            </motion.p>
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6"
+            >
+              Featured Accounts
+            </motion.h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayFeatured.map((product, i) => (
+              <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <ProductCard product={product as any} />
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-16 flex justify-center"
+          >
+            <Link to="/products" className="group flex items-center gap-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--text-primary)] text-[var(--text-primary)] px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-sm hover:shadow-md">
+              <span>View All Accounts</span>
+              <div className="group-hover:translate-x-1 transition-transform">
+                →
+              </div>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══ CTA ═══ */}
+      <section className="py-24">
+        <div className="max-w-6xl mx-auto px-6 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[2.5rem] p-10 sm:p-20 relative overflow-hidden shadow-sm flex flex-col md:flex-row items-center justify-between gap-12"
+          >
+            {/* Subtle background mesh */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[var(--text-primary)]/5 to-transparent pointer-events-none"></div>
+            
+            <div className="relative z-10 text-center md:text-left flex-1">
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 text-[var(--text-primary)] tracking-tight leading-[1.1]">
+                Ready to dominate<br/>the battlefield?
+              </h2>
+              <p className="text-[var(--text-secondary)] mb-0 text-lg max-w-xl font-medium">
+                Join our growing community. Secure your premium Mobile Legends account today.
+              </p>
+            </div>
+
+            <div className="relative z-10 shrink-0">
+              <Link to="/products" className="group bg-[var(--text-primary)] text-[var(--bg-primary)] px-8 py-5 rounded-full font-bold text-sm uppercase tracking-widest inline-flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                <span>Enter Marketplace</span>
+                <div className="w-8 h-8 rounded-full bg-[var(--bg-primary)] text-[var(--text-primary)] flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+// Scroll-to-top behavior: show button when scrolled down
+// (Placed after component to avoid interfering with SSR)
+const useScrollToTop = () => {
+  useEffect(() => {
+    function onScroll() {
+      setTimeout(() => {}, 0); // noop to ensure effect hook captured
+    }
+  }, []);
+};
+
+function TimelineFeature({ feature, index }: { feature: any, index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  
+  // Track this element's position in the viewport
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    // Start fading when the top of the element hits 300px from the top of the viewport
+    // Fully faded out when it hits 150px from the top
+    offset: ["start 300px", "start 150px"] 
+  });
+  
+  // Map scroll progress to opacity (1 down to 0)
+  const opacityFade = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  
+  const isEven = index % 2 === 0;
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{ opacity: opacityFade }}
+      className={`relative flex flex-col md:flex-row items-center w-full group ${isEven ? 'md:flex-row-reverse' : ''}`}
+    >
+      {/* Node on Line */}
+      <div className="absolute left-6 md:left-1/2 w-10 h-10 rounded-full bg-[var(--bg-primary)] border-4 border-[var(--border-color)] group-hover:border-[var(--accent)] shadow-lg -translate-x-1/2 flex items-center justify-center z-10 text-[var(--text-secondary)] group-hover:text-[var(--accent)] transition-all duration-300">
+        <span className="font-bold text-sm">{index + 1}</span>
+      </div>
+
+      {/* Content Box (Removed md:w-full to fix overlapping numbers!) */}
+      <div className={`ml-16 md:ml-0 md:w-1/2 ${isEven ? 'md:pl-16' : 'md:pr-16'} w-[calc(100%-4rem)] flex ${isEven ? 'justify-start' : 'justify-end'}`}>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-8 rounded-[2rem] shadow-sm hover:shadow-2xl hover:border-[var(--text-secondary)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden w-full max-w-lg text-left"
+        >
+          {/* Smaller Background Number to prevent overlap */}
+          <div className="absolute top-4 right-6 text-[var(--border-color)] font-black text-6xl opacity-20 pointer-events-none group-hover:text-[var(--accent)] group-hover:-translate-y-2 group-hover:opacity-10 transition-all duration-500 origin-top-right">
+            {feature.id}
+          </div>
+
+          <div className="relative z-10 pr-12">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-3 flex items-center gap-3">
+              {feature.title}
+            </h3>
+
+            <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
+              {feature.desc}
+            </p>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Empty Space for the other side */}
+      <div className="hidden md:block md:w-1/2"></div>
+    </motion.div>
+  );
+}
