@@ -5,6 +5,8 @@ import { ProductCard } from "../products/ProductCard";
 import { Star, Shield, Zap, Users, CheckCircle2 } from "lucide-react";
 import { useProducts, Product } from "../../context/ProductContext";
 import { useReviews } from "../../context/ReviewContext";
+import { toast } from "sonner";
+import { api } from "../../../lib/api";
 
 const features = [
   { id: "01", title: "Instant Delivery", desc: "Credentials emailed within minutes of payment — fully automated, no delays." },
@@ -33,6 +35,41 @@ export function Home() {
   // Get featured products from context, fallback to static array if none exist
   const contextFeatured = products.filter(p => p.featured).slice(0, 4);
   const displayFeatured = contextFeatured.length > 0 ? contextFeatured : featuredProducts as unknown as Product[];
+
+  const [isCreatingTicket, setIsCreatingTicket] = useState(false);
+
+  const handleSellAccountTicket = async () => {
+    const userId = localStorage.getItem("discord_id");
+    const username = localStorage.getItem("discord_username");
+
+    if (!userId) {
+      toast.info("Please sign in with Discord to create a ticket.");
+      setTimeout(() => {
+        window.location.href = `${import.meta.env.VITE_API_URL}/auth/discord`;
+      }, 1500);
+      return;
+    }
+
+    try {
+      setIsCreatingTicket(true);
+      const res = await api.post("/tickets/create", {
+        productId: "sell",
+        productTitle: "Sell Account Request",
+        userId,
+        username: username || "Unknown",
+      });
+      
+      toast.success("A selling ticket has been successfully created in our Discord server!");
+      if (res && (res as any).ticketUrl) {
+        window.open((res as any).ticketUrl, "_blank");
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to create a ticket. Please try again later.");
+    } finally {
+      setIsCreatingTicket(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300">
@@ -271,20 +308,24 @@ export function Home() {
             
             <div className="relative z-10 text-center md:text-left flex-1">
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 text-[var(--text-primary)] tracking-tight leading-[1.1]">
-                Ready to dominate<br/>the battlefield?
+                Want to sell<br/>your account?
               </h2>
               <p className="text-[var(--text-secondary)] mb-0 text-lg max-w-xl font-medium">
-                Join our growing community. Secure your premium Mobile Legends account today.
+                Turn your Mobile Legends: Bang Bang account into cash. Open a ticket with our bot to start a secure middleman process instantly.
               </p>
             </div>
 
             <div className="relative z-10 shrink-0">
-              <Link to="/products" className="group bg-[var(--text-primary)] text-[var(--bg-primary)] px-8 py-5 rounded-full font-bold text-sm uppercase tracking-widest inline-flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all">
-                <span>Enter Marketplace</span>
+              <button
+                onClick={handleSellAccountTicket}
+                disabled={isCreatingTicket}
+                className="group bg-[var(--text-primary)] text-[var(--bg-primary)] px-8 py-5 rounded-full font-bold text-sm uppercase tracking-widest inline-flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50"
+              >
+                <span>{isCreatingTicket ? "Creating Ticket..." : "Sell Your Account"}</span>
                 <div className="w-8 h-8 rounded-full bg-[var(--bg-primary)] text-[var(--text-primary)] flex items-center justify-center group-hover:translate-x-1 transition-transform">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </div>
-              </Link>
+              </button>
             </div>
           </motion.div>
         </div>

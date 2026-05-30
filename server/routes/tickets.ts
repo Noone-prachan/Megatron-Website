@@ -44,10 +44,11 @@ router.post('/create', async (req, res) => {
 
   try {
     const guild = await client.guilds.fetch(process.env.DISCORD_GUILD_ID!);
+    const isSellRequest = productId === 'sell';
 
     // Create a private ticket channel
     const ticketChannel = await guild.channels.create({
-      name: `ticket-${userId}-${Date.now()}`,
+      name: isSellRequest ? `sell-${username || userId}-${Date.now().toString().slice(-4)}` : `ticket-${username || userId}-${Date.now().toString().slice(-4)}`,
       type: ChannelType.GuildText,
       parent: process.env.DISCORD_TICKET_CHANNEL_ID, // Category ID
       permissionOverwrites: [
@@ -67,40 +68,63 @@ router.post('/create', async (req, res) => {
     });
 
     // Send initial message to the ticket
-    await ticketChannel.send({
-      embeds: [{
-        title: '🎟️ New Purchase Ticket',
-        description: `Hello <@${userId}>! Thank you for your interest in purchasing an account.`,
-        fields: [
-          {
-            name: 'Product',
-            value: productTitle || `Product ID: ${productId}`,
-            inline: false,
-          },
-          {
-            name: 'Next Steps',
-            value: '1. Our team will contact you shortly\n2. Choose your payment method (eSewa, Khalti, IME Pay)\n3. Make the payment\n4. Receive your account details',
-            inline: false,
-          },
-        ],
-        color: 0x5865F2,
-        timestamp: new Date().toISOString(),
-      }],
-    });
+    if (isSellRequest) {
+      await ticketChannel.send({
+        embeds: [{
+          title: '💰 Account Selling Request',
+          description: `Hello <@${userId}>! Thank you for choosing Megatron to sell your account. Our staff will assist you with the valuation and process.`,
+          fields: [
+            {
+              name: 'Required Details',
+              value: 'To speed up the process, please reply with:\n1. Total Skins Count (and highlight any rare skins like Collector, Legend, Prime, etc.)\n2. Hero Count & current Rank\n3. Screenshots of the profile page and skins list\n4. Your expected price',
+              inline: false,
+            },
+            {
+              name: 'Safe Middleman Process',
+              value: 'Megatron guarantees a secure transaction using our official middleman system. Do not hand over account details until instructed by our staff.',
+              inline: false,
+            },
+          ],
+          color: 0xF5A623, // Orange/amber color
+          timestamp: new Date().toISOString(),
+        }],
+      });
+    } else {
+      await ticketChannel.send({
+        embeds: [{
+          title: '🎟️ New Purchase Ticket',
+          description: `Hello <@${userId}>! Thank you for your interest in purchasing an account.`,
+          fields: [
+            {
+              name: 'Product',
+              value: productTitle || `Product ID: ${productId}`,
+              inline: false,
+            },
+            {
+              name: 'Next Steps',
+              value: '1. Our team will contact you shortly\n2. Choose your payment method (eSewa, Khalti, IME Pay)\n3. Make the payment\n4. Receive your account details',
+              inline: false,
+            },
+          ],
+          color: 0x5865F2,
+          timestamp: new Date().toISOString(),
+        }],
+      });
+    }
 
-    // Notify admin channel
+    // Notify admin channel / category channel
     const adminChannel = await guild.channels.fetch(process.env.DISCORD_TICKET_CHANNEL_ID!);
     if (adminChannel?.isTextBased()) {
       await adminChannel.send({
         content: `🔔 New ticket created: ${ticketChannel}`,
         embeds: [{
-          title: 'New Purchase Request',
+          title: isSellRequest ? 'New Sell Request' : 'New Purchase Request',
           fields: [
-            { name: 'User', value: `<@${userId}> (${username})`, inline: true },
-            { name: 'Product', value: productTitle || productId, inline: true },
-            { name: 'Ticket', value: ticketChannel.toString(), inline: true },
+            { name: 'User', value: `<@${userId}> (${username || 'Unknown'})`, inline: true },
+            { name: 'Request Type', value: isSellRequest ? 'Account Selling' : (productTitle || productId), inline: true },
+            { name: 'Ticket Channel', value: ticketChannel.toString(), inline: true },
           ],
-          color: 0x00ff00,
+          color: isSellRequest ? 0xf5a623 : 0x00ff00,
         }],
       });
     }
