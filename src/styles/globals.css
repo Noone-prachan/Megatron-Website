@@ -10,7 +10,15 @@
 
 @font-face {
   font-family: 'Venite Adoremus';
-  src: url('/fonts/venite-adoremus.ttf') format('truetype');
+  src: url('/fonts/VeniteAdoremus-rgRBA.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Venite Adoremus Straight';
+  src: url('/fonts/VeniteAdoremusStraight-Yzo6v.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
