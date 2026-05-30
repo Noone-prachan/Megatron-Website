@@ -414,90 +414,141 @@ export function Home() {
       </section>
 
       {/* ═══ DISCORD COMMUNITY SECTION ═══ */}
-      <section className="py-24 relative overflow-hidden bg-[var(--bg-primary)]">
-        {/* Intense background glow effects */}
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#5865F2]/5 blur-[120px] pointer-events-none rounded-full" />
-        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--accent)]/3 blur-[120px] pointer-events-none rounded-full" />
+      <section className="py-24 relative overflow-hidden bg-[var(--bg-primary)] border-b border-[var(--border-color)]">
+        {/* Glowing background circles */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[#5865F2]/5 blur-[160px] pointer-events-none rounded-full" />
+        <div className="absolute bottom-1/4 left-1/3 w-[400px] h-[250px] bg-red-500/3 blur-[120px] pointer-events-none rounded-full" />
 
-        <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
-          <div className="bg-[var(--bg-secondary)]/50 border border-[var(--border-color)] rounded-[3rem] p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl backdrop-blur-md">
-            {/* Soft grid background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#5865F2]/5 via-transparent to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-6 w-full relative z-10 text-center">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-16 flex flex-col items-center"
+          >
+            <div className="inline-flex items-center gap-2 bg-[#5865F2]/10 text-[#5865F2] border border-[#5865F2]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
+              <span className="w-2 h-2 rounded-full bg-[#5865F2] animate-pulse" />
+              Community Hub
+            </div>
+            <h2
+              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight leading-[1.1]"
+              style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
+            >
+              Enter The <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5865F2] to-blue-400">Megatron Corps</span>
+            </h2>
+            <p className="text-[var(--text-secondary)] text-lg max-w-2xl font-medium leading-relaxed">
+              Connect with thousands of Mobile Legends players. Trade under secure middleman escrow, get live stock alerts, and win exclusive giveaways.
+            </p>
+          </motion.div>
+
+          {/* Three-Column Bento Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
             
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-              
-              {/* Left Side: Premium typography & features */}
-              <div className="lg:col-span-7 flex flex-col text-left">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="inline-flex items-center gap-2 bg-[#5865F2]/10 text-[#5865F2] border border-[#5865F2]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 w-fit"
-                >
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#5865F2] animate-pulse" />
-                  Official Hub
-                </motion.div>
-                
-                <h2
-                  className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight leading-[1.1]"
-                  style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
-                >
-                  Join The<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5865F2] via-blue-400 to-indigo-400">Megatron Corps</span>
-                </h2>
-                
-                <p
-                  className="text-[var(--text-secondary)] text-lg mb-8 max-w-xl font-medium leading-relaxed"
-                >
-                  Connect with thousands of Mobile Legends players. Trade accounts under official middlemen, participate in exclusive giveaways, and chat live with top-tier gamers.
-                </p>
-                
-                {/* Features bento style grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            {/* Card 1: The Community Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between text-left relative overflow-hidden group transition-all duration-300 shadow-xl backdrop-blur-md"
+            >
+              {/* Giant Discord Watermark Logo */}
+              <div className="absolute -bottom-10 -right-10 text-[#5865F2]/5 group-hover:text-[#5865F2]/8 group-hover:-translate-y-3 transition-all duration-500 pointer-events-none">
+                <svg width="240" height="240" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
+                </svg>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold tracking-widest text-[#5865F2] uppercase bg-[#5865F2]/10 border border-[#5865F2]/20 px-3.5 py-1 rounded-full mb-6 inline-block">The Guild</span>
+                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-6 leading-tight uppercase" style={{ fontFamily: "'Venite Adoremus', sans-serif" }}>
+                  Join the<br />Corps
+                </h3>
+                <div className="space-y-6 relative z-10">
+                  <div>
+                    <span className="block text-4xl font-black text-white leading-none">2,500+</span>
+                    <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Registered Members</span>
+                  </div>
+                  <div>
+                    <span className="block text-4xl font-black text-[#10b981] leading-none flex items-center gap-2">
+                      400+
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-ping" />
+                    </span>
+                    <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Online Gamers</span>
+                  </div>
+                  <div>
+                    <span className="block text-4xl font-black text-amber-500 leading-none">1,200+</span>
+                    <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Verified Vouches</span>
+                  </div>
+                </div>
+              </div>
+
+              <a
+                href="https://discord.gg/fKXBF3QyzB"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative w-full bg-[#5865F2] hover:bg-[#4752C4] text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest inline-flex items-center justify-center gap-3 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] mt-8 overflow-hidden z-10"
+              >
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-glare pointer-events-none" />
+                <span>Invite Link</span>
+                <div className="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center group-hover:rotate-12 transition-transform">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
+                  </svg>
+                </div>
+              </a>
+            </motion.div>
+            
+            {/* Card 2: Features List */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-red-500/20 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between text-left relative overflow-hidden transition-all duration-300 shadow-xl backdrop-blur-md"
+            >
+              <div>
+                <span className="text-[10px] font-bold tracking-widest text-red-500 uppercase bg-red-500/10 border border-red-500/20 px-3.5 py-1 rounded-full mb-6 inline-block">The Perks</span>
+                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-6 leading-tight uppercase" style={{ fontFamily: "'Venite Adoremus', sans-serif" }}>
+                  Exclusive<br />Benefits
+                </h3>
+                <div className="space-y-4">
                   {[
-                    { title: "24/7 Verified Escrow", desc: "Never get scammed. Trade securely with our certified staff middlemen.", icon: "🛡️" },
-                    { title: "Live Stock Alerts", desc: "Be the first to know when legendary, rare skin accounts drop.", icon: "⚡" },
-                    { title: "Active Gaming Chat", desc: "Share gameplay, build teams, and chat with 2,500+ active players.", icon: "💬" },
-                    { title: "Exclusive Giveaways", desc: "Win free diamond top-ups and high-value MLBB accounts weekly.", icon: "🎁" }
-                  ].map((feat, idx) => (
-                    <div key={idx} className="bg-[var(--bg-primary)]/40 border border-[var(--border-color)] rounded-2xl p-5 hover:border-[#5865F2]/30 transition-all duration-300">
-                      <div className="text-2xl mb-3">{feat.icon}</div>
-                      <h4 className="font-bold text-sm text-[var(--text-primary)] mb-1">{feat.title}</h4>
-                      <p className="text-xs text-[var(--text-secondary)] font-medium leading-relaxed">{feat.desc}</p>
+                    { label: "Verified Escrow Escort", val: "🛡️ Safe trading with certified middleman staff." },
+                    { label: "Flash Restock Updates", val: "⚡ Fast notices on hot rare-skin accounts." },
+                    { label: "Giveaway Drops", val: "🎁 Free diamond top-ups and accounts weekly." },
+                    { label: "24/7 Live Support", val: "💬 Ticketing bot active around the clock." }
+                  ].map((item, idx) => (
+                    <div key={idx} className="border-b border-[var(--border-color)] pb-3 last:border-0 last:pb-0">
+                      <span className="text-xs font-bold text-[var(--text-primary)] block mb-0.5">{item.label}</span>
+                      <span className="text-xs text-[var(--text-secondary)] font-medium leading-relaxed block">{item.val}</span>
                     </div>
                   ))}
                 </div>
-
-                <a
-                  href="https://discord.gg/fKXBF3QyzB"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative bg-[#5865F2] hover:bg-[#4752C4] text-white px-8 py-4.5 rounded-2xl font-bold text-xs uppercase tracking-widest inline-flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all hover:scale-[1.03] active:scale-[0.98] overflow-hidden w-fit"
-                >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-glare pointer-events-none" />
-                  <span>Connect to Server</span>
-                  <div className="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center group-hover:rotate-12 transition-transform">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
-                    </svg>
-                  </div>
-                </a>
               </div>
-              
-              {/* Right Side: Standard Discord Widget frame */}
-              <div className="lg:col-span-5 w-full flex justify-center">
-                <iframe
-                  src="https://discord.com/widget?id=1486062330466013409&theme=dark"
-                  width="100%"
-                  height="480"
-                  allowTransparency="true"
-                  frameBorder="0"
-                  sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-                  className="rounded-[2.5rem] border border-[var(--border-color)] shadow-2xl w-full max-w-md h-[480px]"
-                >
-                </iframe>
-              </div>
+            </motion.div>
+            
+            {/* Card 3: The Live Widget */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-4 flex flex-col items-center justify-center transition-all duration-300 shadow-xl backdrop-blur-md min-h-[400px]"
+            >
+              <iframe
+                src="https://discord.com/widget?id=1486062330466013409&theme=dark"
+                width="100%"
+                height="100%"
+                allowTransparency="true"
+                frameBorder="0"
+                sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                className="rounded-[2rem] border border-[var(--border-color)] shadow-inner w-full h-[430px]"
+              >
+              </iframe>
+            </motion.div>
 
-            </div>
           </div>
         </div>
       </section>
