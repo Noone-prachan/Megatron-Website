@@ -294,40 +294,208 @@ export function Home() {
         </div>
       </section>
 
-      {/* ═══ CTA ═══ */}
-      <section className="py-24">
-        <div className="max-w-6xl mx-auto px-6 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[2.5rem] p-10 sm:p-20 relative overflow-hidden shadow-sm flex flex-col md:flex-row items-center justify-between gap-12"
-          >
-            {/* Subtle background mesh */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--text-primary)]/5 to-transparent pointer-events-none"></div>
+      {/* ═══ SELL ACCOUNT SECTION ═══ */}
+      <section className="py-24 border-b border-[var(--border-color)] relative overflow-hidden bg-[var(--bg-primary)]">
+        {/* Subtle glowing elements */}
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-72 h-72 bg-[var(--accent)]/5 blur-[120px] pointer-events-none rounded-full" />
+        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-72 h-72 bg-blue-500/5 blur-[120px] pointer-events-none rounded-full" />
+
+        <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             
-            <div className="relative z-10 text-center md:text-left flex-1">
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 text-[var(--text-primary)] tracking-tight leading-[1.1]">
-                Want to sell<br/>your account?
+            {/* Left Column: Visual description & Timeline steps */}
+            <div className="lg:col-span-7 flex flex-col text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="inline-flex items-center gap-2 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 w-fit"
+              >
+                <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
+                Want to sell?
+              </motion.div>
+              
+              <h2
+                className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight leading-[1.1]"
+                style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
+              >
+                Turn Your Skins<br />Into Real Cash
               </h2>
-              <p className="text-[var(--text-secondary)] mb-0 text-lg max-w-xl font-medium">
-                Turn your Mobile Legends: Bang Bang account into cash. Open a ticket with our bot to start a secure middleman process instantly.
+              
+              <p
+                className="text-[var(--text-secondary)] text-lg mb-10 max-w-xl font-medium leading-relaxed"
+              >
+                Tired of your MLBB account? Hand it over to us! Megatron offers the most competitive valuations, quick evaluations, and instant payouts via secure middleman systems.
               </p>
+              
+              {/* Vertical steps */}
+              <div className="space-y-6">
+                {[
+                  { step: "01", title: "Submit Account Specs", desc: "List your rare skins, current rank, and match statistics in your ticket." },
+                  { step: "02", title: "Professional Evaluation", desc: "Our specialists inspect and offer a real-time market value quote." },
+                  { step: "03", title: "Instant Payout", desc: "Receive your payment via eSewa, Khalti, IME Pay, or Bank transfer immediately." }
+                ].map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="flex gap-4 items-start group"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] group-hover:border-[var(--accent)] flex items-center justify-center shrink-0 font-bold text-sm text-[var(--text-secondary)] group-hover:text-[var(--accent)] transition-colors">
+                      {item.step}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-base text-[var(--text-primary)] mb-1">{item.title}</h4>
+                      <p className="text-sm text-[var(--text-secondary)] max-w-md font-medium leading-relaxed">{item.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
 
-            <div className="relative z-10 shrink-0">
-              <button
-                onClick={handleSellAccountTicket}
-                disabled={isCreatingTicket}
-                className="group bg-[var(--text-primary)] text-[var(--bg-primary)] px-8 py-5 rounded-full font-bold text-sm uppercase tracking-widest inline-flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50"
+            {/* Right Column: Premium Interactive Form Preview Card */}
+            <div className="lg:col-span-5">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[3rem] p-8 sm:p-10 shadow-2xl backdrop-blur-md relative overflow-hidden"
               >
-                <span>{isCreatingTicket ? "Creating Ticket..." : "Sell Your Account"}</span>
-                <div className="w-8 h-8 rounded-full bg-[var(--bg-primary)] text-[var(--text-primary)] flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                {/* Accent glow on card */}
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[var(--accent)]/10 rounded-full blur-2xl pointer-events-none" />
+
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-3">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent)]" />
+                  Request Valuation
+                </h3>
+
+                <div className="space-y-4 mb-8 text-left">
+                  <div>
+                    <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-2">Estimate Skins Count</label>
+                    <div className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-secondary)] font-medium">
+                      e.g., 200+ Skins (Collector, Lightborn)
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-2">Current Rank</label>
+                    <div className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-secondary)] font-medium">
+                      e.g., Mythic Glory
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-2">Your Target Price</label>
+                    <div className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm text-[var(--text-secondary)] font-medium">
+                      e.g., NPR 15,000 / USD 120
+                    </div>
+                  </div>
                 </div>
-              </button>
+
+                <button
+                  onClick={handleSellAccountTicket}
+                  disabled={isCreatingTicket}
+                  className="w-full group bg-[var(--text-primary)] text-[var(--bg-primary)] hover:bg-[var(--text-primary)]/90 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98] disabled:opacity-50"
+                >
+                  <span>{isCreatingTicket ? "Connecting to Bot..." : "Create Selling Ticket"}</span>
+                  <div className="w-7 h-7 rounded-full bg-[var(--bg-primary)] text-[var(--text-primary)] flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                  </div>
+                </button>
+                
+                <p className="text-[var(--text-secondary)] text-[10px] font-bold tracking-wide text-center mt-4 uppercase">
+                  ⚡ Powered by Megatron Bot • Secure Escrow
+                </p>
+              </motion.div>
             </div>
-          </motion.div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ DISCORD COMMUNITY SECTION ═══ */}
+      <section className="py-24 relative overflow-hidden bg-[var(--bg-primary)]">
+        {/* Discord color background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#5865F2]/5 blur-[150px] pointer-events-none rounded-full" />
+
+        <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
+          <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[3rem] p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#5865F2]/5 via-transparent to-transparent pointer-events-none" />
+            
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              
+              {/* Left Side: Rich text info and invites */}
+              <div className="lg:col-span-7 flex flex-col text-left">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="inline-flex items-center gap-2 bg-[#5865F2]/10 text-[#5865F2] border border-[#5865F2]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 w-fit"
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#5865F2] animate-pulse" />
+                  Active Discord Community
+                </motion.div>
+                
+                <h2
+                  className="text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-6 uppercase tracking-tight leading-[1.1]"
+                  style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
+                >
+                  Join Hundreds of<br />Active Gamers
+                </h2>
+                
+                <p
+                  className="text-[var(--text-secondary)] text-lg mb-8 max-w-xl font-medium leading-relaxed"
+                >
+                  Become a part of our official Megatron Discord Server. Chat with other buyers and sellers, participate in regular account giveaways, receive instant stock updates, and trade with absolute confidence under 24/7 staff supervision.
+                </p>
+                
+                {/* Stats indicators */}
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <div className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 text-center">
+                    <span className="block text-2xl font-black text-white leading-none">2,500+</span>
+                    <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Members</span>
+                  </div>
+                  <div className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 text-center">
+                    <span className="block text-2xl font-black text-[#10b981] leading-none">400+</span>
+                    <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Online</span>
+                  </div>
+                  <div className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 text-center">
+                    <span className="block text-2xl font-black text-amber-500 leading-none">1,200+</span>
+                    <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Vouches</span>
+                  </div>
+                </div>
+
+                <a
+                  href="https://discord.gg/fKXBF3QyzB"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group bg-[#5865F2] hover:bg-[#4752C4] text-white px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest inline-flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all w-fit"
+                >
+                  <span>Connect on Discord</span>
+                  <div className="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
+                    </svg>
+                  </div>
+                </a>
+              </div>
+              
+              {/* Right Side: Live Discord Widget Frame */}
+              <div className="lg:col-span-5 w-full flex justify-center">
+                <iframe
+                  src="https://discord.com/widget?id=1486062330466013409&theme=dark"
+                  width="100%"
+                  height="340"
+                  allowTransparency="true"
+                  frameBorder="0"
+                  sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                  className="rounded-[2.5rem] border border-[var(--border-color)] shadow-2xl w-full max-w-sm"
+                >
+                </iframe>
+              </div>
+
+            </div>
+          </div>
         </div>
       </section>
 

@@ -77,12 +77,12 @@ export function Footer() {
           </div>
 
           {/* PAGES Grid Column (Middle-Left) */}
-          <div className="lg:col-span-4 flex flex-col">
+          <div className="lg:col-span-6 flex flex-col">
             <div className="flex items-center gap-2 mb-6">
               <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
               <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase">Pages</h3>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {pagesList.map(({ href, label, desc, icon: Icon, external }) => {
                 const content = (
                   <div className="group flex items-center gap-3 p-3 rounded-2xl bg-[var(--bg-secondary)]/40 hover:bg-[var(--bg-secondary)]/80 border border-[var(--border-color)] hover:border-[var(--text-secondary)]/50 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] backdrop-blur-sm cursor-pointer h-full">
@@ -114,7 +114,7 @@ export function Footer() {
           </div>
 
           {/* LEGAL Column (Middle-Right) */}
-          <div className="lg:col-span-2 flex flex-col">
+          <div className="lg:col-span-3 flex flex-col">
             <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase mb-6">Legal</h3>
             <div className="flex flex-col gap-2">
               {legalLinks.map(({ href, label, icon: Icon }) => (
@@ -126,21 +126,6 @@ export function Footer() {
                 </Link>
               ))}
             </div>
-          </div>
-
-          {/* Discord Widget Column (Right) */}
-          <div className="lg:col-span-3 flex flex-col">
-             <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase mb-6">Community</h3>
-             <iframe
-                src="https://discord.com/widget?id=1486062330466013409&theme=dark"
-                width="100%"
-                height="220"
-                allowTransparency="true"
-                frameBorder="0"
-                sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-                className="rounded-xl border border-[var(--border-color)] shadow-xl w-full max-w-sm"
-              >
-              </iframe>
           </div>
 
         </div>
