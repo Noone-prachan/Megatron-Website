@@ -24,7 +24,38 @@ const featuredProducts = [
   { id: "4", title: "COLLECTOR'S EDITION", level: 82, rank: "Mythical Immortal", skins: 500, heroes: 160, price: 199.90, image: "/images/account-preview.png", badge: "Rare" as const },
 ];
 
-
+const faqsData = [
+  {
+    q: "How do I purchase a Mobile Legends account?",
+    category: "BUYING",
+    a: "Browse our marketplace, select your desired account, and click 'Buy Now'. You can complete your payment via eSewa, Khalti, or other options, after which a secure delivery ticket is opened automatically."
+  },
+  {
+    q: "What happens after my payment is successfully verified?",
+    category: "DELIVERY",
+    a: "Our automated system creates a private ticket channel on our official Discord server. Our staff will immediately guide you through securing and transferring the account credentials to you."
+  },
+  {
+    q: "Can I sell or trade-in my own MLBB account here?",
+    category: "SELLING",
+    a: "Yes! Use the 'Sell Account' CTA on our homepage. This connects to our Discord bot to spin up a private ticket where our appraisers will verify your account skins, level, and offer a competitive payout."
+  },
+  {
+    q: "What safety measures do you take against account recovery?",
+    category: "SECURITY",
+    a: "We implement a strict vetting process for all sellers, check original creation details, and require complete account binding transfers. We stand behind our sales with reliable buyer protection guidelines."
+  },
+  {
+    q: "Which localized payment gateways are supported?",
+    category: "PAYMENTS",
+    a: "We support a range of secure payment options, including eSewa, Khalti, IME Pay, and select credit/debit options. Contact support in the Discord server if you require alternative methods."
+  },
+  {
+    q: "How does the Megatron Escrow service work?",
+    category: "ESCROW",
+    a: "Our verified server middlemen secure the seller's account credentials and hold the buyer's payment. Once the buyer completes securing the account, we release the funds to the seller, preventing any fraud."
+  }
+];
 
 export function Home() {
   const [activeFeature, setActiveFeature] = useState<string>("04");
@@ -643,15 +674,11 @@ export function Home() {
             transition={{ type: "spring", stiffness: 220, damping: 26 }}
             className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
           >
-            {/* Left Column: FAQ Header */}
+            {/* Left Column: FAQ Header & Active Card */}
             <motion.div
               layout
               transition={{ type: "spring", stiffness: 220, damping: 26 }}
-              className={`text-left flex flex-col justify-start transition-all duration-500 ${
-                openFaq !== null 
-                  ? "lg:col-span-4 opacity-75" 
-                  : "lg:col-span-5 opacity-100"
-              }`}
+              className="lg:col-span-5 text-left flex flex-col justify-start"
             >
               <motion.div layout className="mb-4">
                 <span className="text-[10px] font-bold tracking-widest text-[var(--accent)] uppercase bg-[var(--accent)]/10 border border-[var(--accent)]/20 px-3.5 py-1 rounded-full inline-block">
@@ -679,99 +706,81 @@ export function Home() {
               >
                 Got questions? We've got answers. Explore our detailed FAQ sections to get instant help.
               </motion.p>
+
+              {/* Opened FAQ container under the text */}
+              <div className="relative">
+                <AnimatePresence>
+                  {openFaq !== null && (
+                    <motion.div
+                      layoutId={`faq-item-${openFaq}`}
+                      className="mt-8 bg-[var(--bg-secondary)]/50 border border-[var(--accent)]/30 rounded-[2.5rem] p-6 lg:p-8 text-left shadow-2xl border-l-4 border-l-[var(--accent)] relative overflow-hidden"
+                      transition={{ type: "spring", stiffness: 220, damping: 26 }}
+                    >
+                      <div className="flex items-center justify-between gap-4 mb-4">
+                        <span className="text-[10px] font-black tracking-widest text-[var(--accent)] uppercase bg-[var(--accent)]/10 border border-[var(--accent)]/20 px-2.5 py-0.5 rounded-md w-fit">
+                          {faqsData[openFaq].category}
+                        </span>
+                        <button
+                          onClick={() => setOpenFaq(null)}
+                          className="w-7 h-7 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-red-500 hover:border-red-500/20 flex items-center justify-center transition-all duration-300 active:scale-95 shadow-md"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <h3 className="text-base font-bold text-white mb-4 leading-snug">
+                        {faqsData[openFaq].q}
+                      </h3>
+                      <p className="text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed">
+                        {faqsData[openFaq].a}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </motion.div>
 
             {/* Right Column: Interactive FAQ Rows */}
             <motion.div
               layout
               transition={{ type: "spring", stiffness: 220, damping: 26 }}
-              className={`space-y-0 transition-all duration-500 ${
-                openFaq !== null ? "lg:col-span-8" : "lg:col-span-7"
-              }`}
+              className="lg:col-span-7 space-y-0"
             >
               <div className="border-t border-[var(--border-color)]">
-                {[
-                  {
-                    q: "How do I purchase a Mobile Legends account?",
-                    category: "BUYING",
-                    a: "Browse our marketplace, select your desired account, and click 'Buy Now'. You can complete your payment via eSewa, Khalti, or other options, after which a secure delivery ticket is opened automatically."
-                  },
-                  {
-                    q: "What happens after my payment is successfully verified?",
-                    category: "DELIVERY",
-                    a: "Our automated system creates a private ticket channel on our official Discord server. Our staff will immediately guide you through securing and transferring the account credentials to you."
-                  },
-                  {
-                    q: "Can I sell or trade-in my own MLBB account here?",
-                    category: "SELLING",
-                    a: "Yes! Use the 'Sell Account' CTA on our homepage. This connects to our Discord bot to spin up a private ticket where our appraisers will verify your account skins, level, and offer a competitive payout."
-                  },
-                  {
-                    q: "What safety measures do you take against account recovery?",
-                    category: "SECURITY",
-                    a: "We implement a strict vetting process for all sellers, check original creation details, and require complete account binding transfers. We stand behind our sales with reliable buyer protection guidelines."
-                  },
-                  {
-                    q: "Which localized payment gateways are supported?",
-                    category: "PAYMENTS",
-                    a: "We support a range of secure payment options, including eSewa, Khalti, IME Pay, and select credit/debit options. Contact support in the Discord server if you require alternative methods."
-                  },
-                  {
-                    q: "How does the Megatron Escrow service work?",
-                    category: "ESCROW",
-                    a: "Our verified server middlemen secure the seller's account credentials and hold the buyer's payment. Once the buyer completes securing the account, we release the funds to the seller, preventing any fraud."
-                  }
-                ]
+                {faqsData
                   .slice(0, showAllFaqs ? 6 : 3)
                   .map((faq, idx) => {
                     const isOpen = openFaq === idx;
+                    
+                    // Hide the active item from the right side so it flies left and others shift up
+                    if (isOpen) return null;
+
                     return (
                       <motion.div
                         key={idx}
-                        layout
+                        layoutId={`faq-item-${idx}`}
                         transition={{ type: "spring", stiffness: 220, damping: 26 }}
-                        className={`border-b border-[var(--border-color)] transition-all duration-300 ${
-                          isOpen 
-                            ? "bg-[var(--bg-secondary)]/10 -translate-x-0 lg:-translate-x-6 pl-4 lg:pl-6 pr-4 border-l-4 border-l-[var(--accent)]" 
-                            : "hover:bg-[var(--bg-secondary)]/5 hover:pl-2"
-                        }`}
+                        className="border-b border-[var(--border-color)] hover:bg-[var(--bg-secondary)]/5 hover:pl-2 transition-all duration-300"
                       >
                         <button
-                          onClick={() => setOpenFaq(isOpen ? null : idx)}
+                          onClick={() => setOpenFaq(idx)}
                           className="w-full flex items-center justify-between gap-6 py-6 text-left focus:outline-none"
                         >
                           <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-4">
-                            <span className={`text-[9px] font-black tracking-widest uppercase transition-colors shrink-0 ${
-                              isOpen ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
-                            }`}>
+                            <span className="text-[9px] font-black tracking-widest uppercase text-[var(--text-secondary)] shrink-0">
                               {faq.category}
                             </span>
-                            <span className={`text-sm md:text-base font-bold transition-colors ${
-                              isOpen ? "text-[var(--text-primary)]" : "text-[var(--text-primary)]/80 hover:text-[var(--text-primary)]"
-                            }`}>
+                            <span className="text-sm md:text-base font-bold text-[var(--text-primary)]/80 hover:text-[var(--text-primary)] transition-colors">
                               {faq.q}
                             </span>
                           </div>
-                          <div className={`w-6 h-6 flex items-center justify-center shrink-0 transition-all duration-300 text-[var(--text-secondary)] ${
-                            isOpen ? 'rotate-45 text-[var(--accent)]' : ''
-                          }`}>
+                          <div className="w-6 h-6 flex items-center justify-center shrink-0 text-[var(--text-secondary)] transition-all">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                           </div>
                         </button>
-
-                        {/* Expandable answer panel */}
-                        <motion.div
-                          initial={false}
-                          animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-                          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                          className="overflow-hidden"
-                        >
-                          <div className="pb-6 text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed">
-                            {faq.a}
-                          </div>
-                        </motion.div>
                       </motion.div>
                     );
                   })}

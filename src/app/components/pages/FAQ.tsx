@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { HelpCircle, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
@@ -51,15 +51,11 @@ export function FAQ() {
           className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
         >
           
-          {/* Left Column: Header */}
+          {/* Left Column: FAQ Header & Active Card */}
           <motion.div
             layout
             transition={{ type: "spring", stiffness: 220, damping: 26 }}
-            className={`text-left flex flex-col justify-start transition-all duration-500 ${
-              openFaq !== null 
-                ? "lg:col-span-4 opacity-75" 
-                : "lg:col-span-5 opacity-100"
-            }`}
+            className="lg:col-span-5 text-left flex flex-col justify-start"
           >
             <motion.div layout className="mb-4">
               <span className="inline-flex items-center gap-2 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">
@@ -88,66 +84,79 @@ export function FAQ() {
             >
               Everything you need to know about buying, payment verification, and our lifetime warranty.
             </motion.p>
+
+            {/* Active opened card container under FAQ Header */}
+            <div className="relative">
+              <AnimatePresence>
+                {openFaq !== null && (
+                  <motion.div
+                    layoutId={`faq-item-page-${openFaq}`}
+                    className="mt-8 bg-[var(--bg-secondary)]/50 border border-[var(--accent)]/30 rounded-[2.5rem] p-6 lg:p-8 text-left shadow-2xl border-l-4 border-l-[var(--accent)] relative overflow-hidden"
+                    transition={{ type: "spring", stiffness: 220, damping: 26 }}
+                  >
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <span className="text-[10px] font-black tracking-widest text-[var(--accent)] uppercase bg-[var(--accent)]/10 border border-[var(--accent)]/20 px-2.5 py-0.5 rounded-md w-fit">
+                        {faqs[openFaq].category}
+                      </span>
+                      <button
+                        onClick={() => setOpenFaq(null)}
+                        className="w-7 h-7 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-red-500 hover:border-red-500/20 flex items-center justify-center transition-all duration-300 active:scale-95 shadow-md"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    <h3 className="text-base font-bold text-white mb-4 leading-snug">
+                      {faqs[openFaq].q}
+                    </h3>
+                    <p className="text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed">
+                      {faqs[openFaq].a}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
 
-          {/* Right Column: FAQ Accordion List */}
+          {/* Right Column: FAQ List */}
           <motion.div
             layout
             transition={{ type: "spring", stiffness: 220, damping: 26 }}
-            className={`space-y-0 transition-all duration-500 ${
-              openFaq !== null ? "lg:col-span-8" : "lg:col-span-7"
-            }`}
+            className="lg:col-span-7 space-y-0"
           >
             <div className="border-t border-[var(--border-color)]">
               {faqs.map((faq, idx) => {
                 const isOpen = openFaq === idx;
+
+                // Hide opened item in the list on the right, other items slide up
+                if (isOpen) return null;
+
                 return (
                   <motion.div
                     key={idx}
-                    layout
+                    layoutId={`faq-item-page-${idx}`}
                     transition={{ type: "spring", stiffness: 220, damping: 26 }}
-                    className={`border-b border-[var(--border-color)] transition-all duration-300 ${
-                      isOpen 
-                        ? "bg-[var(--bg-secondary)]/10 -translate-x-0 lg:-translate-x-6 pl-4 lg:pl-6 pr-4 border-l-4 border-l-[var(--accent)]" 
-                        : "hover:bg-[var(--bg-secondary)]/5 hover:pl-2"
-                    }`}
+                    className="border-b border-[var(--border-color)] hover:bg-[var(--bg-secondary)]/5 hover:pl-2 transition-all duration-300"
                   >
                     <button
-                      onClick={() => setOpenFaq(isOpen ? null : idx)}
+                      onClick={() => setOpenFaq(idx)}
                       className="w-full flex items-center justify-between gap-6 py-6 text-left focus:outline-none"
                     >
                       <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-4">
-                        <span className={`text-[9px] font-black tracking-widest uppercase transition-colors shrink-0 ${
-                          isOpen ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
-                        }`}>
+                        <span className="text-[9px] font-black tracking-widest uppercase text-[var(--text-secondary)] shrink-0">
                           {faq.category}
                         </span>
-                        <span className={`text-sm md:text-base font-bold transition-colors ${
-                          isOpen ? "text-[var(--text-primary)]" : "text-[var(--text-primary)]/80 hover:text-[var(--text-primary)]"
-                        }`}>
+                        <span className="text-sm md:text-base font-bold text-[var(--text-primary)]/80 hover:text-[var(--text-primary)] transition-colors">
                           {faq.q}
                         </span>
                       </div>
-                      <div className={`w-6 h-6 flex items-center justify-center shrink-0 transition-all duration-300 text-[var(--text-secondary)] ${
-                        isOpen ? 'rotate-45 text-[var(--accent)]' : ''
-                      }`}>
+                      <div className="w-6 h-6 flex items-center justify-center shrink-0 text-[var(--text-secondary)] transition-all">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                       </div>
                     </button>
-
-                    {/* Expandable answer panel */}
-                    <motion.div
-                      initial={false}
-                      animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="pb-6 text-xs md:text-sm text-[var(--text-secondary)] font-medium leading-relaxed">
-                        {faq.a}
-                      </div>
-                    </motion.div>
                   </motion.div>
                 );
               })}
