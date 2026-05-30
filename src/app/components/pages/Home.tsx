@@ -643,16 +643,17 @@ export function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-4 flex flex-col items-center justify-center transition-all duration-300 shadow-xl backdrop-blur-md lg:h-[540px] w-full"
+              className="bg-[var(--bg-secondary)]/40 border border-[var(--border-color)] hover:border-[#5865F2]/30 rounded-[2.5rem] p-4 flex flex-col transition-all duration-300 shadow-xl backdrop-blur-md lg:h-[540px] w-full"
             >
               <iframe
                 src="https://discord.com/widget?id=1486062330466013409&theme=dark"
                 width="100%"
-                height="508"
+                height="100%"
                 allowTransparency={true}
                 frameBorder="0"
                 sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-                className="w-full rounded-[1.8rem] shadow-inner"
+                className="w-full flex-1 min-h-0 rounded-[1.8rem] shadow-inner"
+                style={{ flexGrow: 1 }}
               >
               </iframe>
             </motion.div>

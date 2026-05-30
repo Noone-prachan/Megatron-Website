@@ -25,6 +25,10 @@
 }
 
 @layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Venite Adoremus', sans-serif;
+  }
+
   :root {
     --bg-primary: #f8fafc;
     --bg-secondary: #ffffff;
