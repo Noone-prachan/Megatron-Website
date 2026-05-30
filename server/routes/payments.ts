@@ -53,7 +53,7 @@ router.post('/khalti/verify', async (req, res) => {
       body: JSON.stringify({ token, amount }),
     });
 
-    const data = await response.json();
+    const data = await response.json() as any;
 
     if (data.idx) {
       res.json({

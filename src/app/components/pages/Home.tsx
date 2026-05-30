@@ -32,6 +32,34 @@ export function Home() {
   const { products } = useProducts();
   const { reviews } = useReviews();
   
+  const [discordStats, setDiscordStats] = useState({
+    totalMembers: 2500,
+    onlineMembers: 400
+  });
+
+  useEffect(() => {
+    const fetchDiscordStats = async () => {
+      try {
+        const response = await fetch('/api/tickets/guild-stats');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setDiscordStats({
+              totalMembers: data.totalMembers,
+              onlineMembers: data.onlineMembers
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch Discord statistics, using cache/defaults", err);
+      }
+    };
+    fetchDiscordStats();
+    // Poll every 60 seconds
+    const interval = setInterval(fetchDiscordStats, 60000);
+    return () => clearInterval(interval);
+  }, []);
+  
   // Get featured products from context, fallback to static array if none exist
   const contextFeatured = products.filter(p => p.featured).slice(0, 4);
   const displayFeatured = contextFeatured.length > 0 ? contextFeatured : featuredProducts as unknown as Product[];
@@ -467,18 +495,22 @@ export function Home() {
                 </h3>
                 <div className="space-y-6 relative z-10">
                   <div>
-                    <span className="block text-4xl font-black text-white leading-none">2,500+</span>
+                    <span className="block text-4xl font-black text-white leading-none">
+                      {discordStats.totalMembers.toLocaleString()}
+                    </span>
                     <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Registered Members</span>
                   </div>
                   <div>
                     <span className="block text-4xl font-black text-[#10b981] leading-none flex items-center gap-2">
-                      400+
+                      {discordStats.onlineMembers.toLocaleString()}
                       <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-ping" />
                     </span>
                     <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Online Gamers</span>
                   </div>
                   <div>
-                    <span className="block text-4xl font-black text-amber-500 leading-none">1,200+</span>
+                    <span className="block text-4xl font-black text-amber-500 leading-none">
+                      {reviews.length.toLocaleString()}
+                    </span>
                     <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mt-1 block">Verified Vouches</span>
                   </div>
                 </div>
