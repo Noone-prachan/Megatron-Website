@@ -1,10 +1,13 @@
 import { Link } from "react-router";
 import { 
-  BarChart2, 
-  Users, 
-  Star, 
   ShoppingCart, 
+  Star, 
+  Users, 
   HelpCircle, 
+  BarChart2, 
+  Shield, 
+  FileText, 
+  RefreshCw,
   Instagram
 } from "lucide-react";
 
@@ -21,23 +24,28 @@ const TikTokIcon = () => (
   </svg>
 );
 
-
 export function Footer() {
   const currentYear = new Date().getFullYear();
-
-  const navLinks = {
-    Pages: [
-      { href: "/products", label: "Products", icon: ShoppingCart },
-      { href: "/reviews", label: "Reviews", icon: Star },
-      { href: "/team", label: "Our Team", icon: Users },
-      { href: "/faq", label: "FAQ", icon: HelpCircle },
-    ],
-  };
 
   const socialLinks = [
     { href: "#", icon: Instagram },
     { href: "#", icon: TikTokIcon },
     { href: "https://discord.gg/fKXBF3QyzB", icon: DiscordIcon },
+  ];
+
+  const pagesList = [
+    { href: "/products", label: "Store", desc: "Get premium accounts", icon: ShoppingCart },
+    { href: "/reviews", label: "Reviews", desc: "Verified buyer feedback", icon: Star },
+    { href: "/team", label: "Team", desc: "Meet the staff behind us", icon: Users },
+    { href: "/faq", label: "FAQ", desc: "Got questions?", icon: HelpCircle },
+    { href: "/orders", label: "Orders", desc: "Track purchases", icon: BarChart2 },
+    { href: "https://discord.gg/fKXBF3QyzB", label: "Discord", desc: "Join our server", icon: DiscordIcon, external: true }
+  ];
+
+  const legalLinks = [
+    { href: "/privacy", label: "Privacy Policy", icon: Shield },
+    { href: "/terms", label: "Terms & Conditions", icon: FileText },
+    { href: "/refund", label: "Refund Policy", icon: RefreshCw },
   ];
 
   return (
@@ -51,7 +59,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
           
           {/* Brand Column (Left) */}
-          <div className="lg:col-span-4 flex flex-col">
+          <div className="lg:col-span-3 flex flex-col">
             <Link to="/" className="flex items-center gap-3 mb-6">
               <img src="/images/megatronlogo.png" alt="Megatron Logo" className="h-12 w-auto object-contain" />
               <span className="font-black text-2xl tracking-tight text-[var(--text-primary)]">Megatron</span>
@@ -68,32 +76,65 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Navigation Columns (Middle) */}
-          <div className="lg:col-span-4 grid grid-cols-2 gap-8">
-            {Object.entries(navLinks).map(([title, links]) => (
-              <div key={title} className="flex flex-col">
-                <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase mb-6">{title}</h3>
-                <div className="flex flex-col gap-2">
-                  {links.map(({ href, label, icon: Icon }) => (
-                    <Link key={href} to={href} className="group flex items-center gap-3 p-2 -ml-2 rounded-lg hover:bg-[var(--bg-secondary)] transition-colors">
-                      <div className="w-8 h-8 rounded-md bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center justify-center group-hover:border-[var(--text-secondary)] transition-colors shadow-sm">
-                        <Icon className="w-4 h-4 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors" />
-                      </div>
-                      <span className="text-sm font-bold text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">{label}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
+          {/* PAGES Grid Column (Middle-Left) */}
+          <div className="lg:col-span-4 flex flex-col">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
+              <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase">Pages</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {pagesList.map(({ href, label, desc, icon: Icon, external }) => {
+                const content = (
+                  <div className="group flex items-center gap-3 p-3 rounded-2xl bg-[var(--bg-secondary)]/40 hover:bg-[var(--bg-secondary)]/80 border border-[var(--border-color)] hover:border-[var(--text-secondary)]/50 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] backdrop-blur-sm cursor-pointer h-full">
+                    <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center shrink-0">
+                      <Icon className="w-5 h-5 text-[var(--accent)]" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-extrabold text-[12px] tracking-wider uppercase text-[var(--text-primary)] leading-tight">{label}</span>
+                      <span className="text-[10px] font-semibold text-[var(--text-secondary)] mt-0.5 line-clamp-1 leading-none">{desc}</span>
+                    </div>
+                  </div>
+                );
+
+                if (external) {
+                  return (
+                    <a key={label} href={href} target="_blank" rel="noopener noreferrer" className="no-underline">
+                      {content}
+                    </a>
+                  );
+                }
+
+                return (
+                  <Link key={label} to={href} className="no-underline">
+                    {content}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* LEGAL Column (Middle-Right) */}
+          <div className="lg:col-span-2 flex flex-col">
+            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase mb-6">Legal</h3>
+            <div className="flex flex-col gap-2">
+              {legalLinks.map(({ href, label, icon: Icon }) => (
+                <Link key={href} to={href} className="group flex items-center gap-3 p-2 -ml-2 rounded-lg hover:bg-[var(--bg-secondary)] transition-colors">
+                  <div className="w-8 h-8 rounded-md bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center justify-center group-hover:border-[var(--text-secondary)] transition-colors shadow-sm">
+                    <Icon className="w-4 h-4 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors" />
+                  </div>
+                  <span className="text-sm font-bold text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">{label}</span>
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* Discord Widget Column (Right) */}
-          <div className="lg:col-span-4 flex flex-col">
+          <div className="lg:col-span-3 flex flex-col">
              <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-widest uppercase mb-6">Community</h3>
              <iframe
                 src="https://discord.com/widget?id=1486062330466013409&theme=dark"
                 width="100%"
-                height="400"
+                height="220"
                 allowTransparency="true"
                 frameBorder="0"
                 sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"

@@ -8,6 +8,10 @@ import { Team } from "./components/pages/Team";
 import { Orders } from "./components/pages/Orders";
 import { AuthCallback } from "./components/pages/AuthCallback";
 import { NotFound } from "./components/pages/NotFound";
+import { FAQ } from "./components/pages/FAQ";
+import { Privacy } from "./components/pages/Privacy";
+import { Terms } from "./components/pages/Terms";
+import { Refund } from "./components/pages/Refund";
 import { AdminGuard } from "./components/admin/AdminGuard";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { AnalyticsPage } from "./components/admin/AnalyticsPage";
@@ -27,6 +31,10 @@ export const router = createBrowserRouter([
       { path: "reviews", Component: Reviews },
       { path: "team", Component: Team },
       { path: "orders", Component: Orders },
+      { path: "faq", Component: FAQ },
+      { path: "privacy", Component: Privacy },
+      { path: "terms", Component: Terms },
+      { path: "refund", Component: Refund },
       { path: "auth/discord/callback", Component: AuthCallback },
       { path: "auth/success", Component: AuthCallback },
       { path: "auth/error", Component: AuthCallback },
