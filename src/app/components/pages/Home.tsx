@@ -485,11 +485,11 @@ export function Home() {
                 <iframe
                   src="https://discord.com/widget?id=1486062330466013409&theme=dark"
                   width="100%"
-                  height="340"
+                  height="500"
                   allowTransparency="true"
                   frameBorder="0"
                   sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-                  className="rounded-[2.5rem] border border-[var(--border-color)] shadow-2xl w-full max-w-sm"
+                  className="rounded-[2.5rem] border border-[var(--border-color)] shadow-2xl w-full max-w-md h-[500px]"
                 >
                 </iframe>
               </div>
