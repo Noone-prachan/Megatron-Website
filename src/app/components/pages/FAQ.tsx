@@ -19,7 +19,7 @@ export function FAQ() {
     {
       q: "Which payment methods do you accept?",
       category: "PAYMENTS",
-      a: "We support a wide variety of localized and global payment options, including eSewa, Khalti, IME Pay, and direct Bank Transfers. All transactions are securely processed and verified."
+      a: "We process payments manually through our secure Discord tickets. You can pay via eSewa, Khalti, IME Pay, or Bank Transfers once your ticket is open."
     },
     {
       q: "Are these Mobile Legends accounts safe to play on?",

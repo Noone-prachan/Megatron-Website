@@ -116,6 +116,20 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     }
   }, [products, isLoaded]);
 
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "megatron_products" && e.newValue) {
+        try {
+          setProducts(JSON.parse(e.newValue));
+        } catch (err) {
+          console.error("Failed to parse products from storage sync");
+        }
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   const addProduct = (product: Product) => {
     setProducts(prev => [product, ...prev]);
   };

@@ -3,7 +3,7 @@
  * Handles all communication with the backend server
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface User {
   id: string;
@@ -143,53 +143,41 @@ class ApiClient {
       }>;
     }>('/reviews');
   }
-
-  // Payments
-  async getPaymentMethods() {
-    return this.request<{
-      methods: Array<{
-        id: string;
-        name: string;
-        logo: string;
-        enabled: boolean;
-      }>;
-    }>('/payments/methods');
-  }
-
-  async verifyEsewaPayment(data: { oid: string; amt: number; refId: string }) {
-    return this.request<{
-      success: boolean;
-      message: string;
-      orderId: string;
-      amount: number;
-      reference: string;
-    }>('/payments/esewa/verify', {
+  // Chat
+  async initLiveChat(username: string, userId?: string) {
+    return this.request<{ success: boolean; ticketId: string }>('/chat/init', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({ username, userId }),
     });
   }
 
-  async verifyKhaltiPayment(data: { token: string; amount: number }) {
-    return this.request<{
-      success: boolean;
-      message: string;
-      paymentId: string;
-      amount: number;
-    }>('/payments/khalti/verify', {
+  async sendLiveChatMessage(ticketId: string, message: string, username: string) {
+    return this.request<{ success: boolean }>('/chat/send', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ticketId, message, username }),
     });
   }
 
-  async verifyImepayPayment(data: { transactionId: string; amount: number }) {
-    return this.request<{
-      success: boolean;
-      message: string;
-      transactionId: string;
-      amount: number;
-    }>('/payments/imepay/verify', {
+  // Analytics
+  async recordVisit() {
+    return this.request<{ success: boolean, visits: number }>('/analytics/visit', {
       method: 'POST',
-      body: JSON.stringify(data),
+    });
+  }
+
+  async getVisits() {
+    return this.request<Record<string, number>>('/analytics/visits');
+  }
+
+  // Game
+  async getLeaderboard() {
+    return this.request<{ success: boolean; leaderboard: Array<{id: string, username: string, avatar: string, score: number, date: string}> }>('/game/leaderboard');
+  }
+
+  async submitScore(score: number) {
+    return this.request<{ success: boolean; message: string }>('/game/score', {
+      method: 'POST',
+      body: JSON.stringify({ score }),
     });
   }
 }

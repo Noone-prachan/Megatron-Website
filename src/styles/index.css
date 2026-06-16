@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import './fonts.css';
 @import './tailwind.css';
 @import './globals.css';
-
 
 /* Add this to apply the gradient background for the dark theme */
 html.dark body {

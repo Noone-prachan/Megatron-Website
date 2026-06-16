@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
+import { api } from "../lib/api";
 import { CurrencyProvider } from "./context/CurrencyContext";
 import { ProductProvider } from "./context/ProductContext";
 import { AnnouncementProvider } from "./context/AnnouncementContext";
@@ -8,18 +10,31 @@ import { HistoryProvider } from "./context/HistoryContext";
 import { ReviewProvider } from "./context/ReviewContext";
 import { OrderProvider } from "./context/OrderContext";
 import { Toaster } from "sonner";
+import { HelmetProvider } from "react-helmet-async";
+import { WishlistProvider } from "./context/WishlistContext";
+import { AdminProvider } from "./context/AdminContext";
 
 export default function App() {
+  useEffect(() => {
+    // Record web visit on app load
+    api.recordVisit().catch(console.error);
+  }, []);
+
   return (
-    <ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
       <CurrencyProvider>
         <ProductProvider>
           <AnnouncementProvider>
             <HistoryProvider>
               <ReviewProvider>
                 <OrderProvider>
-                  <Toaster theme="dark" position="bottom-right" richColors />
-                  <RouterProvider router={router} />
+                  <WishlistProvider>
+                    <AdminProvider>
+                      <Toaster theme="dark" position="bottom-right" richColors />
+                      <RouterProvider router={router} />
+                    </AdminProvider>
+                  </WishlistProvider>
                 </OrderProvider>
               </ReviewProvider>
             </HistoryProvider>
@@ -27,5 +42,6 @@ export default function App() {
         </ProductProvider>
       </CurrencyProvider>
     </ThemeProvider>
+    </HelmetProvider>
   );
 }

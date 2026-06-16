@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { Product } from "../context/ProductContext";
 import { useCurrency } from "../context/CurrencyContext";
+import { useWishlist } from "../context/WishlistContext";
 import { motion } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Heart } from "lucide-react";
 
 const getBadgeStyle = (badge?: string) => {
   const lowerBadge = badge?.toLowerCase();
@@ -22,7 +23,20 @@ const getBadgeStyle = (badge?: string) => {
 
 export function ProductCard({ product }: { product: Product }) {
   const { formatPrice } = useCurrency();
+  const { wishlistIds, addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  
   const badgeStyle = getBadgeStyle(product.badge);
+  const isWished = isInWishlist(product.id);
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isWished) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product.id);
+    }
+  };
 
   return (
     <Link to={`/products/${product.dedicatedId ? product.dedicatedId.toLowerCase() : product.id}`} className="block group h-full">
@@ -32,14 +46,25 @@ export function ProductCard({ product }: { product: Product }) {
       >
         {/* Image container */}
         <div className="relative aspect-[4/3] overflow-hidden">
-          <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+          <img src={product.image} alt={product.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
           {product.badge && (
             <span className={`absolute top-4 left-4 text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg ${badgeStyle.bg} ${badgeStyle.text} border ${badgeStyle.border} backdrop-blur-sm`}>
               {product.badge}
             </span>
           )}
-          <div className="absolute bottom-4 right-4 w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+          {/* Action Buttons */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button 
+              onClick={handleWishlistClick}
+              className={`w-10 h-10 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 ${isWished ? 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)] border border-red-400' : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'}`}
+            >
+              <Heart className={`w-5 h-5 ${isWished ? 'fill-white' : ''}`} />
+            </button>
+          </div>
+
+          <div className="absolute bottom-4 right-4 w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
             <ArrowUpRight className="w-5 h-5" />
           </div>
         </div>

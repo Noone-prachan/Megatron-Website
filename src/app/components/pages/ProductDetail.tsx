@@ -2,15 +2,19 @@ import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCurrency } from "../../context/CurrencyContext";
 import { useProducts } from "../../context/ProductContext";
+import { useReviews } from "../../context/ReviewContext";
 import { useOrders } from "../../context/OrderContext";
+import { useWishlist } from "../../context/WishlistContext";
 import { motion } from "motion/react";
-import { ArrowUpRight, ShieldCheck, Twitter, Instagram, Facebook, Star, CheckCircle2 } from "lucide-react";
+import { ArrowUpRight, ShieldCheck, Twitter, Instagram, Facebook, Star, CheckCircle2, X, ChevronLeft, ChevronRight, Heart, Bell, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "../../../lib/api";
+import { useLockBodyScroll } from "../../../hooks/useLockBodyScroll";
 
 export function ProductDetail() {
   const { id } = useParams();
   const { products, deleteProduct, isLoaded } = useProducts();
+  const { reviews } = useReviews();
   const { addOrder } = useOrders();
   const product = products.find(p => p.id === id || (p.dedicatedId && p.dedicatedId.toLowerCase() === id?.toLowerCase()));
   const { formatPrice } = useCurrency();
@@ -21,6 +25,50 @@ export function ProductDetail() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [ticketUrl, setTicketUrl] = useState<string | null>(null);
   const userId = localStorage.getItem("discord_id");
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  useLockBodyScroll(isLightboxOpen || (purchaseStep !== 'idle' && purchaseStep !== 'success'));
+
+  const { wishlistIds, addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const isWished = product ? isInWishlist(product.id) : false;
+
+  const handleWishlistClick = () => {
+    if (!product) return;
+    if (isWished) removeFromWishlist(product.id);
+    else addToWishlist(product.id);
+  };
+
+  const handlePriceAlertClick = () => {
+     toast.success("Price alert set! We'll notify you if the price drops.");
+  };
+
+  const allImages = product ? [product.image, ...(product.images?.filter(img => img !== product.image) || [])] : [];
+  
+  const recommendedProducts = product 
+    ? products
+        .filter(p => p.id !== product.id && (p.category === product.category || p.collectionRank === product.collectionRank))
+        .sort((a, b) => Math.abs(a.price - product.price) - Math.abs(b.price - product.price))
+        .slice(0, 2)
+    : [];
+
+  const finalRecommendations = recommendedProducts.length > 0 
+    ? recommendedProducts 
+    : (product ? products.filter(p => p.id !== product.id).slice(0, 2) : []);
+  
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const currentIndex = allImages.indexOf(selectedImage);
+    const nextIndex = (currentIndex + 1) % allImages.length;
+    setSelectedImage(allImages[nextIndex]);
+  };
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const currentIndex = allImages.indexOf(selectedImage);
+    const prevIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+    setSelectedImage(allImages[prevIndex]);
+  };
 
   // Keep selected image in sync if product changes
   useEffect(() => {
@@ -151,8 +199,67 @@ export function ProductDetail() {
   };
 
   return (
-    <div className="pt-24 pb-24 min-h-screen bg-[var(--bg-primary)] transition-colors duration-300 relative">
+    <div className="pt-24 pb-24 min-h-screen bg-[var(--bg-primary)] transition-colors duration-300 relative overflow-hidden">
+      {/* Ambient background glows for premium feel */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-violet-600/5 rounded-full blur-[120px] pointer-events-none" />
+
       
+      {/* Lightbox Modal */}
+      {isLightboxOpen && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/95 backdrop-blur-3xl"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          {/* Close Button */}
+          <button className="absolute top-6 right-6 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors z-10 border border-white/20">
+            <X className="w-6 h-6" />
+          </button>
+          
+          {/* Main Image */}
+          <motion.img 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            src={selectedImage}
+            alt="Huge product view"
+            className="max-w-full max-h-full object-contain drop-shadow-2xl z-0"
+            onClick={(e) => e.stopPropagation()} 
+          />
+
+          {/* Nav Controls */}
+          {allImages.length > 1 && (
+            <>
+              <button 
+                onClick={handlePrevImage}
+                className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors z-10 border border-white/20"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button 
+                onClick={handleNextImage}
+                className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors z-10 border border-white/20"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+              
+              {/* Thumbnails at bottom */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-10 max-w-full overflow-x-auto p-2" onClick={(e) => e.stopPropagation()}>
+                {allImages.map((img, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`w-16 h-12 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${selectedImage === img ? 'border-[#bef264] scale-110 shadow-[0_0_15px_rgba(190,242,100,0.5)]' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                  >
+                    <img src={img} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Purchase Flow Modals */}
       {purchaseStep !== 'idle' && purchaseStep !== 'success' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xl">
@@ -161,7 +268,7 @@ export function ProductDetail() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-gradient-to-br from-[#1E1E1E]/90 to-[#121212]/95 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-xl w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
+            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[2.5rem] p-8 sm:p-10 max-w-xl w-full shadow-[0_0_50px_rgba(0,0,0,0.3)] relative overflow-hidden"
           >
             {/* Ambient Background Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-[#bef264]/10 blur-[100px] pointer-events-none rounded-full" />
@@ -174,53 +281,53 @@ export function ProductDetail() {
                     <ShieldCheck className="w-7 h-7 text-[#bef264]" />
                   </div>
                   <div className="relative z-10">
-                    <h2 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 tracking-tight leading-none mb-1">Terms of Service</h2>
+                    <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] tracking-tight leading-none mb-1">Terms of Service</h2>
                     <p className="text-[#bef264] text-xs font-black uppercase tracking-[0.2em]">Please Read Carefully</p>
                   </div>
                 </div>
 
                 <div 
-                  className="bg-black/50 backdrop-blur-xl p-6 sm:p-8 rounded-3xl h-72 overflow-y-auto mb-8 text-sm text-gray-300 border border-white/10 shadow-[inset_0_2px_20px_rgba(0,0,0,0.5)] custom-scrollbar relative"
+                  className="bg-[var(--bg-primary)]/50 backdrop-blur-xl p-6 sm:p-8 rounded-3xl h-72 overflow-y-auto mb-8 text-sm text-[var(--text-secondary)] border border-[var(--border-color)] shadow-[inset_0_2px_20px_rgba(0,0,0,0.1)] custom-scrollbar relative"
                 >
-                  <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-black/60 to-transparent pointer-events-none rounded-t-3xl" />
-                  <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-black/60 to-transparent pointer-events-none rounded-b-3xl" />
+                  <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-[var(--bg-primary)] to-transparent pointer-events-none rounded-t-3xl" />
+                  <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-[var(--bg-primary)] to-transparent pointer-events-none rounded-b-3xl" />
                   
-                  <p className="mb-6 leading-relaxed text-gray-100 text-base">Welcome to the <strong className="text-white font-black">Megatron Marketplace</strong>.</p>
+                  <p className="mb-6 leading-relaxed text-[var(--text-primary)] text-base">Welcome to the <strong className="font-black">Megatron Marketplace</strong>.</p>
                   <div className="space-y-6">
                     <div className="flex gap-4 group">
                       <span className="text-[#bef264] font-black text-lg group-hover:scale-125 transition-transform duration-300">01</span>
-                      <p className="leading-relaxed"><strong className="text-white">All Sales are Final:</strong> Due to the digital nature of the accounts, all purchases are non-refundable once the account details have been securely transferred to the buyer.</p>
+                      <p className="leading-relaxed"><strong className="text-[var(--text-primary)]">All Sales are Final:</strong> Due to the digital nature of the accounts, all purchases are non-refundable once the account details have been securely transferred to the buyer.</p>
                     </div>
                     <div className="flex gap-4 group">
                       <span className="text-[#bef264] font-black text-lg group-hover:scale-125 transition-transform duration-300">02</span>
-                      <p className="leading-relaxed"><strong className="text-white">Account Verification:</strong> You are responsible for verifying the account details provided in the Discord ticket. Our staff will act as middlemen to ensure safe delivery.</p>
+                      <p className="leading-relaxed"><strong className="text-[var(--text-primary)]">Account Verification:</strong> You are responsible for verifying the account details provided in the Discord ticket. Our staff will act as middlemen to ensure safe delivery.</p>
                     </div>
                     <div className="flex gap-4 group">
                       <span className="text-[#bef264] font-black text-lg group-hover:scale-125 transition-transform duration-300">03</span>
-                      <p className="leading-relaxed"><strong className="text-white">Prohibited Conduct:</strong> Attempting to scam, chargeback, or manipulate the ticketing system will result in an immediate and permanent ban from the marketplace and our Discord server.</p>
+                      <p className="leading-relaxed"><strong className="text-[var(--text-primary)]">Prohibited Conduct:</strong> Attempting to scam, chargeback, or manipulate the ticketing system will result in an immediate and permanent ban from the marketplace and our Discord server.</p>
                     </div>
                     <div className="flex gap-4 group">
                       <span className="text-[#bef264] font-black text-lg group-hover:scale-125 transition-transform duration-300">04</span>
-                      <p className="leading-relaxed"><strong className="text-white">Delivery Time:</strong> Staff will attend to your ticket within 24 hours. Please remain patient and do not spam ping the team.</p>
+                      <p className="leading-relaxed"><strong className="text-[var(--text-primary)]">Delivery Time:</strong> Staff will attend to your ticket within 24 hours. Please remain patient and do not spam ping the team.</p>
                     </div>
                     <div className="flex gap-4 group">
                       <span className="text-[#bef264] font-black text-lg group-hover:scale-125 transition-transform duration-300">05</span>
-                      <p className="leading-relaxed"><strong className="text-white">Security:</strong> Secure your account immediately after receiving the credentials. We are not responsible for accounts lost due to poor security practices after the handover is complete.</p>
+                      <p className="leading-relaxed"><strong className="text-[var(--text-primary)]">Security:</strong> Secure your account immediately after receiving the credentials. We are not responsible for accounts lost due to poor security practices after the handover is complete.</p>
                     </div>
                   </div>
-                  <div className="mt-8 pt-6 border-t border-white/10 text-center">
-                    <p className="text-xs text-gray-500 font-bold tracking-[0.3em] uppercase">--- End of Terms ---</p>
+                  <div className="mt-8 pt-6 border-t border-[var(--border-color)] text-center">
+                    <p className="text-xs text-[var(--text-secondary)] font-bold tracking-[0.3em] uppercase">--- End of Terms ---</p>
                   </div>
                 </div>
                 
                 <div 
-                  className={`flex items-center gap-4 mb-8 bg-gradient-to-r ${agreedToTos ? 'from-[#bef264]/20 to-transparent border-[#bef264]/50' : 'from-white/5 to-transparent border-white/10'} p-5 rounded-2xl border transition-all duration-300 cursor-pointer group hover:from-white/10`} 
+                  className={`flex items-center gap-4 mb-8 bg-gradient-to-r ${agreedToTos ? 'from-[#bef264]/20 to-transparent border-[#bef264]/50' : 'from-[var(--bg-primary)] to-transparent border-[var(--border-color)]'} p-5 rounded-2xl border transition-all duration-300 cursor-pointer group hover:from-[var(--border-color)]`} 
                   onClick={() => setAgreedToTos(!agreedToTos)}
                 >
-                  <div className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${agreedToTos ? 'bg-[#bef264] border-[#bef264] shadow-[0_0_15px_rgba(190,242,100,0.5)] scale-110' : 'border-gray-500 group-hover:border-[#bef264]'}`}>
+                  <div className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${agreedToTos ? 'bg-[#bef264] border-[#bef264] shadow-[0_0_15px_rgba(190,242,100,0.5)] scale-110' : 'border-[var(--text-secondary)] group-hover:border-[#bef264]'}`}>
                     <CheckCircle2 className={`w-5 h-5 text-black transition-all duration-300 ${agreedToTos ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`} />
                   </div>
-                  <label className={`text-base font-bold cursor-pointer select-none transition-colors duration-300 ${agreedToTos ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'}`}>
+                  <label className={`text-base font-bold cursor-pointer select-none transition-colors duration-300 ${agreedToTos ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'}`}>
                     I have read and agree to the Terms of Service
                   </label>
                 </div>
@@ -228,7 +335,7 @@ export function ProductDetail() {
                 <div className="flex gap-4 mt-auto">
                   <button 
                     onClick={() => setPurchaseStep('idle')}
-                    className="flex-1 py-4 rounded-2xl font-bold border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all hover:scale-[1.02] active:scale-95"
+                    className="flex-1 py-4 rounded-2xl font-bold border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-color)] transition-all hover:scale-[1.02] active:scale-95"
                   >
                     Cancel
                   </button>
@@ -251,16 +358,16 @@ export function ProductDetail() {
                   <img src="/images/discord-icon.svg" alt="Discord" className="w-10 h-10 drop-shadow-lg opacity-80" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                 </div>
                 
-                <h2 className="text-4xl font-black text-white mb-4 tracking-tight">Final Step!</h2>
+                <h2 className="text-4xl font-black text-[var(--text-primary)] mb-4 tracking-tight">Final Step!</h2>
                 
-                <p className="text-gray-300 mb-10 leading-relaxed max-w-sm mx-auto">
-                  Clicking <strong className="text-white">Secure Checkout</strong> will generate a private, encrypted Discord ticket where our staff will verify your payment and hand over the account details safely.
+                <p className="text-[var(--text-secondary)] mb-10 leading-relaxed max-w-sm mx-auto">
+                  Clicking <strong className="text-[var(--text-primary)]">Secure Checkout</strong> will generate a private, encrypted Discord ticket where our staff will verify your payment and hand over the account details safely.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 w-full">
                   <button 
                     onClick={() => setPurchaseStep('tos')}
-                    className="w-full sm:w-1/3 py-4 rounded-xl font-bold border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
+                    className="w-full sm:w-1/3 py-4 rounded-xl font-bold border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-[var(--border-color)] transition-all"
                   >
                     Go Back
                   </button>
@@ -305,64 +412,181 @@ export function ProductDetail() {
           {/* 1. Main Hero Card (Spans 8 cols, 2 rows) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-8 lg:row-span-2 bg-[var(--bg-secondary)] rounded-[2.5rem] p-8 sm:p-12 border border-[var(--border-color)] shadow-sm relative overflow-hidden flex flex-col justify-between"
+            className="lg:col-span-8 lg:row-span-2 bg-[var(--bg-secondary)]/80 backdrop-blur-md rounded-[2.5rem] p-8 sm:p-12 border border-[var(--border-color)] shadow-xl flex flex-col md:flex-row gap-8 overflow-hidden group relative"
           >
-            {/* Top Badge */}
-            <div className="inline-flex items-center gap-2 bg-[var(--bg-primary)] border border-[var(--border-color)] px-4 py-2 rounded-full w-fit mb-8 shadow-sm">
-              <ShieldCheck className="w-4 h-4 text-[#10b981]" />
-              <span className="text-xs font-bold text-[var(--text-primary)]">Megatron Verified</span>
-            </div>
-
-            {/* Title & Desc */}
-            <div className="max-w-md z-10">
-              <h1 className="text-4xl sm:text-5xl font-black text-[var(--text-primary)] leading-[1.1] mb-6 tracking-tight">
-                {product.title}
-              </h1>
-
-              <div className="flex items-center gap-4 mb-8">
-                <span className="text-5xl font-black text-[var(--text-secondary)] opacity-20">01</span>
-                <div className="h-[2px] w-12 bg-dashed border-b-2 border-dotted border-[var(--border-color)]" />
-                <div>
-                  <h3 className="font-bold text-[var(--text-primary)] text-sm">Premium Quality</h3>
-                  <p className="text-[var(--text-secondary)] text-xs mt-1 leading-relaxed max-w-[200px]">
-                    {product.description}
-                  </p>
-                </div>
+            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none transition-opacity duration-500 opacity-50 group-hover:opacity-100" />
+            
+            {/* Left Column Text Content */}
+            <div className="flex flex-col justify-between z-10 w-full md:w-[55%]">
+              {/* Top Badge */}
+              <div className="inline-flex items-center gap-2 bg-[var(--bg-primary)]/80 border border-[var(--border-color)] px-4 py-2 rounded-full w-fit mb-8 shadow-sm relative z-10">
+                <ShieldCheck className="w-4 h-4 text-[#10b981]" />
+                <span className="text-xs font-bold text-[var(--text-primary)]">Megatron Verified</span>
               </div>
 
-              {/* Purchase CTA */}
-              <button
-                onClick={handleInitialPurchaseClick}
-                className="group flex items-center gap-3 bg-[#bef264] hover:bg-[#a3e635] text-black px-6 py-3 rounded-full font-bold transition-all shadow-md hover:shadow-lg"
-              >
-                <span>Purchase for {formatPrice(product.price)}</span>
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-                  <ArrowUpRight className="w-4 h-4" />
-                </div>
-              </button>
-            </div>
+              {/* Title & Desc */}
+              <div className="z-10 flex-1">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[var(--text-primary)] leading-[1.1] mb-6 tracking-tight break-words">
+                  {product.title}
+                </h1>
 
-            {/* Socials Bottom Left */}
-            <div className="flex items-center gap-4 mt-12 z-10">
-              <span className="text-xs font-bold text-[var(--text-secondary)]">Share on:</span>
-              <div className="flex gap-2">
-                {[Twitter, Instagram, Facebook].map((Icon, i) => (
-                  <button key={i} className="w-8 h-8 rounded-full bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border-color)]">
-                    <Icon className="w-3.5 h-3.5" />
-                  </button>
-                ))}
+                <div className="flex items-center gap-4 mb-8">
+                  <span className="text-4xl sm:text-5xl font-black text-[var(--text-secondary)] opacity-20">01</span>
+                  <div className="h-[2px] w-8 sm:w-12 bg-dashed border-b-2 border-dotted border-[var(--border-color)]" />
+                  <div>
+                    <h3 className="font-bold text-[var(--text-primary)] text-sm">Premium Quality</h3>
+                    <p className="text-[var(--text-secondary)] text-xs mt-1 leading-relaxed max-w-[200px]">
+                      {product.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Account Quick Stats in Main Card */}
+                <div className="grid grid-cols-3 gap-3 mb-8 bg-[var(--bg-primary)]/50 backdrop-blur-sm p-4 rounded-2xl border border-[var(--border-color)]">
+                   <div>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-[#bef264] mb-1">Level</p>
+                     <p className="font-black text-xl text-[var(--text-primary)]">{product.level}</p>
+                   </div>
+                   <div className="border-l border-r border-[var(--border-color)] px-3">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-purple-400 mb-1">Rank</p>
+                     <p className="font-bold text-sm text-[var(--text-primary)] capitalize truncate">{product.collectionRank}</p>
+                   </div>
+                   <div className="pl-3">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">Win Rate</p>
+                     <p className="font-black text-xl text-[var(--text-primary)]">{product.stats?.winRate || "0%"}</p>
+                   </div>
+                </div>
+
+                {/* Purchase CTA */}
+                <button
+                  onClick={handleInitialPurchaseClick}
+                  className="group flex items-center gap-3 bg-gradient-to-r from-[#bef264] to-[#a3e635] text-black px-5 sm:px-6 py-3 rounded-full font-bold transition-all shadow-[0_0_20px_rgba(190,242,100,0.3)] hover:shadow-[0_0_30px_rgba(190,242,100,0.5)] hover:scale-105 active:scale-95 relative z-10 w-fit"
+                >
+                  <span className="text-sm sm:text-base">Purchase for {formatPrice(product.price)}</span>
+                  <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform shrink-0">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </div>
+                </button>
+              </div>
+
+              {/* Action Buttons Bottom Left */}
+              <div className="flex items-center gap-4 mt-12 z-10 flex-wrap">
+                
+                {/* Social Share */}
+                <div className="flex items-center gap-3 mr-4">
+                  <span className="text-xs font-bold text-[var(--text-secondary)]">Share on:</span>
+                  <div className="flex gap-2">
+                    {[Twitter, Instagram, Facebook].map((Icon, i) => (
+                      <button key={i} className="w-8 h-8 rounded-full bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border-color)]">
+                        <Icon className="w-3.5 h-3.5" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="w-[1px] h-6 bg-[var(--border-color)] hidden sm:block"></div>
+
+                {/* Wishlist & Compare */}
+                <div className="flex gap-2 flex-wrap">
+                   <button 
+                     onClick={handleWishlistClick}
+                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${isWished ? 'bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] border-[var(--border-color)] hover:border-[var(--text-primary)]/30 hover:text-[var(--text-primary)]'}`}
+                   >
+                     <Heart className={`w-4 h-4 ${isWished ? 'fill-red-500' : ''}`} />
+                     {isWished ? 'Saved' : 'Save'}
+                   </button>
+                   
+                   <button 
+                     onClick={handlePriceAlertClick}
+                     className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[var(--bg-primary)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-[#bef264]/50 hover:text-[#bef264] transition-all hover:shadow-[0_0_15px_rgba(190,242,100,0.2)]"
+                   >
+                     <Bell className="w-4 h-4" />
+                     Alerts
+                   </button>
+                </div>
               </div>
             </div>
 
-            {/* Big Floating Image Right */}
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-[120%] pointer-events-none opacity-90 hidden sm:block">
-              <img
-                src={selectedImage || product.image}
-                alt="Product"
-                className="w-full h-full object-contain object-right drop-shadow-2xl scale-110 transition-all duration-500"
-              />
+            {/* Right Column Image */}
+            <div 
+              className="w-full md:w-[45%] flex items-center justify-center cursor-zoom-in group/img z-10"
+              onClick={() => setIsLightboxOpen(true)}
+            >
+              <div className="relative w-full aspect-[3/4] sm:aspect-square md:aspect-[3/4] rounded-2xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-primary)]/50 shadow-inner">
+                <img
+                  src={selectedImage || product.image}
+                  alt="Product"
+                  className="w-full h-full object-contain p-2 drop-shadow-2xl scale-100 transition-all duration-500 group-hover/img:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                   <span className="bg-black/50 text-white px-4 py-2 rounded-full border border-white/20 text-xs font-bold tracking-widest uppercase shadow-xl">
+                      Click to Enlarge
+                   </span>
+                </div>
+              </div>
             </div>
           </motion.div>
+
+
+          {/* 2. Top Right Small Card: Inventory & Features */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+            className="lg:col-span-4 bg-[var(--bg-secondary)]/80 backdrop-blur-md rounded-[2rem] p-8 border border-[var(--border-color)] shadow-xl flex flex-col justify-center relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[var(--bg-secondary)] to-purple-500/10 pointer-events-none" />
+            <div className="relative z-10">
+              <h3 className="font-black text-[var(--text-primary)] text-xl mb-6 flex items-center gap-2">
+                <ShieldCheck className="w-6 h-6 text-purple-400" />
+                Account Contents
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-[var(--bg-primary)]/50 backdrop-blur-sm rounded-2xl p-4 border border-[var(--border-color)] flex flex-col items-center justify-center text-center">
+                  <span className="text-3xl font-black text-[var(--text-primary)] mb-1">{product.heroes || 0}</span>
+                  <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Heroes</span>
+                </div>
+                <div className="bg-[var(--bg-primary)]/50 backdrop-blur-sm rounded-2xl p-4 border border-[var(--border-color)] flex flex-col items-center justify-center text-center">
+                  <span className="text-3xl font-black text-[var(--text-primary)] mb-1">{product.skins || 0}</span>
+                  <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Skins</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3 text-sm font-bold text-[var(--text-primary)]">
+                  <CheckCircle2 className="w-5 h-5 text-[#10b981]" />
+                  Full Email Access
+                </div>
+                <div className="flex items-center gap-3 text-sm font-bold text-[var(--text-primary)]">
+                  <CheckCircle2 className="w-5 h-5 text-[#10b981]" />
+                  100% Clean Bindings
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* 3. Mid Right Grid (2 small cards replaced with trust signals) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+            className="lg:col-span-2 bg-[var(--bg-secondary)]/80 backdrop-blur-md rounded-[2rem] p-6 border border-[var(--border-color)] shadow-xl flex flex-col items-center justify-center text-center group hover:border-[#bef264]/50 transition-colors"
+          >
+            <div className="w-12 h-12 bg-[#bef264]/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Zap className="w-6 h-6 text-[#bef264]" />
+            </div>
+            <h4 className="font-bold text-[var(--text-primary)] text-sm mb-1">Instant Delivery</h4>
+            <p className="text-[10px] text-[var(--text-secondary)]">Automated transfer via secure ticket.</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="lg:col-span-2 bg-[var(--bg-secondary)]/80 backdrop-blur-md rounded-[2rem] p-6 border border-[var(--border-color)] shadow-xl flex flex-col items-center justify-center text-center group hover:border-blue-500/50 transition-colors"
+          >
+            <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <ShieldCheck className="w-6 h-6 text-blue-400" />
+            </div>
+            <h4 className="font-bold text-[var(--text-primary)] text-sm mb-1">Lifetime Warranty</h4>
+            <p className="text-[10px] text-[var(--text-secondary)]">100% safe & protected accounts.</p>
+          </motion.div>
+
 
           {/* New Image Gallery Row (if multiple images exist) */}
           {(product.images && product.images.length > 0) && (
@@ -383,111 +607,72 @@ export function ProductDetail() {
             </motion.div>
           )}
 
-          {/* 2. Top Right Small Card: Features/Rarities */}
+          {/* BOTTOM ROW 2: Featured Accounts & Reviews */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="lg:col-span-4 bg-[var(--bg-secondary)] rounded-[2rem] p-8 border border-[var(--border-color)] shadow-sm flex flex-col justify-center"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
+            className="lg:col-span-7 bg-[var(--bg-secondary)]/80 backdrop-blur-md rounded-[2rem] p-8 border border-[var(--border-color)] shadow-xl relative overflow-hidden group"
           >
-            <h3 className="font-bold text-[var(--text-primary)] mb-4">Included Rarities</h3>
-            <div className="flex flex-wrap gap-3">
-              {['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'].map((color, i) => (
-                <div key={i} className="w-10 h-10 rounded-full border-4 border-[var(--bg-primary)] shadow-sm" style={{ backgroundColor: color }} />
-              ))}
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-[var(--text-secondary)] opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none" />
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-[var(--text-primary)] text-xl">You Might Also Like</h3>
+              <Link to="/products" className="text-[var(--accent)] text-sm font-bold hover:underline">View All</Link>
             </div>
-          </motion.div>
-
-          {/* 3. Mid Right Grid (2 small cards) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="lg:col-span-2 bg-[var(--bg-secondary)] rounded-[2rem] p-6 border border-[var(--border-color)] shadow-sm relative overflow-hidden group"
-          >
-            <h3 className="font-bold text-[var(--text-primary)] text-sm mb-1 z-10 relative">Level {product.level}</h3>
-            <p className="text-xs text-[var(--text-secondary)] z-10 relative">Rank: {product.collectionRank}</p>
-            <button className="absolute bottom-4 left-4 w-8 h-8 bg-[var(--bg-primary)] rounded-full flex items-center justify-center text-[var(--text-primary)] shadow-sm border border-[var(--border-color)] group-hover:bg-[var(--text-primary)] group-hover:text-[var(--bg-primary)] transition-colors z-10">
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-            <div className="absolute right-[-20%] bottom-[-20%] w-32 h-32 opacity-20">
-              <img src="/images/hero-banner.png" alt="Rank" className="w-full h-full object-cover rounded-full" />
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="lg:col-span-2 bg-[var(--bg-secondary)] rounded-[2rem] p-6 border border-[var(--border-color)] shadow-sm relative overflow-hidden group"
-          >
-            <button className="absolute top-4 right-4 w-8 h-8 bg-[var(--bg-primary)] rounded-full flex items-center justify-center text-[var(--text-primary)] shadow-sm border border-[var(--border-color)] z-10 group-hover:scale-110 transition-transform">
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-            <img src="/images/skins-collection.png" alt="Stats" className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity" />
-            <div className="absolute bottom-6 left-6 z-10">
-              <h3 className="font-bold text-[var(--text-primary)] mb-1">Win Rate {product.stats?.winRate || "0%"}</h3>
-              <p className="text-xs text-[var(--text-secondary)]">{product.stats?.totalMatches || 0} Matches</p>
-            </div>
-          </motion.div>
-
-          {/* BOTTOM ROW */}
-
-          {/* 4. Bottom Left: More Accounts */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="lg:col-span-4 bg-[var(--bg-secondary)] rounded-[2rem] p-6 border border-[var(--border-color)] shadow-sm"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="font-bold text-[var(--text-primary)] text-sm">Top Features</h3>
-                <p className="text-[var(--text-secondary)] text-xs mt-1">Highlighted perks</p>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {product.features?.map((f: string, i: number) => (
-                <div key={i} className="aspect-square bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-color)] flex flex-col items-center justify-center p-2 text-center shadow-sm">
-                  <CheckCircle2 className="w-5 h-5 text-[var(--accent)] mb-2" />
-                  <span className="text-[10px] font-bold text-[var(--text-primary)] leading-tight">{f}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {finalRecommendations.map((p) => (
+                <div key={p.id} className="bg-[var(--bg-primary)] rounded-[1.5rem] p-4 border border-[var(--border-color)] group hover:border-[var(--accent)] transition-colors cursor-pointer" onClick={() => window.location.href = `/products/${p.dedicatedId || p.id}`}>
+                  <div className="aspect-[4/3] rounded-xl overflow-hidden mb-4 relative">
+                    <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    {p.badge && (
+                      <div className="absolute top-2 right-2 bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full shadow-md z-10">
+                        {p.badge}
+                      </div>
+                    )}
+                  </div>
+                  <h4 className="font-black text-sm text-[var(--text-primary)] mb-1 truncate">{p.title}</h4>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[var(--text-secondary)] text-xs font-bold">Level {p.level}</span>
+                    <span className="text-[var(--accent)] font-black text-sm">{formatPrice(p.price)}</span>
+                  </div>
                 </div>
               ))}
             </div>
           </motion.div>
 
-          {/* 5. Bottom Mid: Trusted Seller */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-            className="lg:col-span-4 bg-[var(--bg-secondary)] rounded-[2rem] p-6 border border-[var(--border-color)] shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
+            className="lg:col-span-5 bg-[var(--bg-secondary)]/80 backdrop-blur-md rounded-[2rem] p-8 border border-[var(--border-color)] shadow-xl flex flex-col relative overflow-hidden group"
           >
-            <div className="flex justify-center mb-3">
-              {[1, 2, 3].map((n) => (
-                <img key={n} src={`https://i.pravatar.cc/100?img=${n + 10}`} alt="Avatar" className="w-12 h-12 rounded-full border-2 border-[var(--bg-secondary)] -ml-3 first:ml-0 shadow-sm" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-[var(--text-secondary)] opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none" />
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-[var(--text-primary)] text-xl flex items-center gap-2">
+                <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                Real-Time Reviews
+              </h3>
+              <Link to="/reviews" className="text-[var(--accent)] text-sm font-bold hover:underline">All</Link>
+            </div>
+            <div className="flex-1 flex flex-col justify-center gap-4">
+              {reviews.slice(0, 3).map((review, idx) => (
+                <div key={review.id || idx} className="bg-[var(--bg-primary)] rounded-2xl p-4 border border-[var(--border-color)] hover:border-white/20 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent)] to-purple-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                        {review.name.charAt(0)}
+                      </div>
+                      <div>
+                        <span className="font-bold text-[var(--text-primary)] text-xs block leading-tight">{review.name}</span>
+                        <span className="text-[10px] text-[var(--text-secondary)]">{review.date}</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-3 h-3 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "fill-[var(--bg-secondary)] text-[var(--border-color)]"}`} />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-[var(--text-secondary)] text-xs italic line-clamp-2 font-medium">"{review.comment}"</p>
+                </div>
               ))}
             </div>
-            <div className="bg-[#3b82f6] text-white w-24 h-24 rounded-full flex flex-col items-center justify-center shadow-lg mb-3">
-              <span className="text-xl font-black">5k+</span>
-              <span className="text-[10px] uppercase tracking-wider font-semibold opacity-90">Sold</span>
-            </div>
-            <div className="flex items-center gap-2 bg-[var(--bg-primary)] border border-[var(--border-color)] px-4 py-1.5 rounded-full shadow-sm">
-              <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-              <span className="text-xs font-bold text-[var(--text-primary)]">4.9 Reviews</span>
-            </div>
-          </motion.div>
-
-          {/* 6. Bottom Right: Highlights */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-            className="lg:col-span-4 bg-[var(--bg-secondary)] rounded-[2rem] p-8 border border-[var(--border-color)] shadow-sm flex justify-between items-center group cursor-pointer"
-          >
-            <div>
-              <div className="inline-flex items-center gap-1 bg-red-100 dark:bg-red-900/30 text-red-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">
-                🔥 Hot Seller
-              </div>
-              <h3 className="font-bold text-[var(--text-primary)] text-lg mb-1 leading-tight max-w-[150px]">
-                Ready for Competitive
-              </h3>
-              <p className="text-[var(--text-secondary)] text-xs">Full Access Provided</p>
-            </div>
-            <button className="w-10 h-10 bg-[var(--bg-primary)] rounded-full flex items-center justify-center text-[var(--text-primary)] shadow-sm border border-[var(--border-color)] group-hover:scale-110 transition-transform">
-              <ArrowUpRight className="w-5 h-5" />
-            </button>
           </motion.div>
 
         </div>

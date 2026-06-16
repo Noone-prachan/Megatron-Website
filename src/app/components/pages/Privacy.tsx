@@ -17,7 +17,7 @@ export function Privacy() {
     },
     {
       title: "4. Information Sharing and Disclosure",
-      content: "Megatron does not sell, lease, or distribute your personal information. We may share essential data with trusted third-party service providers (like payment processors: eSewa, Khalti, IME Pay) solely to complete transactions, or as required under applicable laws."
+      content: "Megatron does not sell, lease, or distribute your personal information. We may share essential data with trusted third-party service providers solely to complete transactions, or as required under applicable laws."
     },
     {
       title: "5. Security of Your Data",
@@ -33,12 +33,21 @@ export function Privacy() {
     }
   ];
 
-  return (
-    <div className="min-h-screen pt-32 pb-24 relative overflow-hidden">
-      {/* Subtle background glow */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-[var(--accent)]/5 blur-[120px] pointer-events-none rounded-full"></div>
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const y = element.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
 
-      <div className="max-w-4xl mx-auto px-6 relative z-10">
+  return (
+    <div className="min-h-screen pt-32 pb-24 relative overflow-clip bg-[var(--bg-primary)]">
+      {/* Background gradients */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[50rem] bg-gradient-to-b from-[var(--accent)]/10 via-[var(--accent)]/5 to-transparent pointer-events-none blur-3xl opacity-50 z-0" />
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-[var(--accent)]/20 rounded-full blur-[100px] pointer-events-none z-0" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
 
         {/* Header */}
         <div className="text-center mb-16">
@@ -54,7 +63,7 @@ export function Privacy() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-5xl font-black text-white mb-6 uppercase tracking-tight"
+            className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 mb-6 uppercase tracking-tight drop-shadow-sm"
             style={{ fontFamily: "'Venite Adoremus', sans-serif" }}
           >
             Privacy Policy
@@ -69,23 +78,53 @@ export function Privacy() {
           </motion.p>
         </div>
 
-        {/* Content Box */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[2.5rem] p-8 sm:p-12 shadow-xl backdrop-blur-md space-y-8 text-left"
-        >
-          {sections.map((section) => (
-            <div key={section.title} className="border-b border-[var(--border-color)] pb-6 last:border-0 last:pb-0">
-              <h2 className="text-xl font-bold text-[var(--text-primary)] mb-3">{section.title}</h2>
-              <p className="text-[var(--text-secondary)] text-sm leading-relaxed font-medium">
-                {section.content}
-              </p>
-            </div>
-          ))}
-        </motion.div>
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          {/* Sidebar TOC */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="lg:w-1/3 shrink-0 lg:sticky lg:top-32 w-full bg-[var(--bg-secondary)]/50 backdrop-blur-xl border border-[var(--border-color)] rounded-3xl p-6"
+          >
+            <h3 className="text-sm font-black text-[var(--text-secondary)] uppercase tracking-wider mb-6 pl-2">Table of Contents</h3>
+            <nav className="flex flex-col gap-2">
+              {sections.map((section, index) => {
+                const sectionId = `section-${index}`;
+                return (
+                  <button
+                    key={index}
+                    onClick={() => scrollToSection(sectionId)}
+                    className="text-left px-4 py-3 rounded-xl text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all border border-transparent hover:border-[var(--accent)]/20"
+                  >
+                    {section.title}
+                  </button>
+                );
+              })}
+            </nav>
+          </motion.div>
 
+          {/* Content Area */}
+          <div className="lg:w-2/3 flex flex-col gap-6">
+            {sections.map((section, index) => {
+              const sectionId = `section-${index}`;
+              return (
+                <motion.div
+                  key={index}
+                  id={sectionId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
+                  className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-8 shadow-sm hover:shadow-xl hover:border-[var(--accent)]/30 transition-all duration-500 group"
+                >
+                  <h2 className="text-2xl font-black text-[var(--text-primary)] mb-4 group-hover:text-[var(--accent)] transition-colors">{section.title}</h2>
+                  <p className="text-[var(--text-secondary)] text-base leading-relaxed font-medium">
+                    {section.content}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

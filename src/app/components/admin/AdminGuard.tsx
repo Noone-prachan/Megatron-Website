@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { api } from "../../../lib/api";
+import { useAdmin } from "../../context/AdminContext";
 
 export function AdminGuard() {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
 
+  const { isAdmin, isLoading: isWhitelistLoading } = useAdmin();
+
   useEffect(() => {
-    const ADMIN_IDS = ['913826949820997654', '570146481663770634', '850383604404322304'];
-    
-    // Securely check backend with the user's token
     api.getCurrentUser().then(user => {
-      if (user && ADMIN_IDS.includes(user.id)) {
+      if (user && isAdmin) {
         setAuthorized(true);
       } else {
         setAuthorized(false);
@@ -23,7 +23,7 @@ export function AdminGuard() {
     });
   }, []);
 
-  if (loading) {
+  if (loading || isWhitelistLoading) {
     return (
       <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>

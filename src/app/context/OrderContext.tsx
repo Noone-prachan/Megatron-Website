@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product } from './ProductContext';
 
 export interface Order {
@@ -18,6 +18,21 @@ const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export function OrderProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('megatron_orders');
+    if (saved) {
+      setOrders(JSON.parse(saved));
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('megatron_orders', JSON.stringify(orders));
+    }
+  }, [orders, isLoaded]);
 
   const addOrder = (product: Product, userId: string) => {
     const newOrder: Order = {

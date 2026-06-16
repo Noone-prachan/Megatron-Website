@@ -9,6 +9,9 @@ import { useEffect, useState } from "react";
 
 import { motion, AnimatePresence } from "motion/react";
 import { useCurrency } from "../../context/CurrencyContext";
+import { MiniGame } from "../ui/MiniGame";
+import { useAdmin } from "../../context/AdminContext";
+import { useLockBodyScroll } from "../../../hooks/useLockBodyScroll";
 
 const DiscordIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -25,6 +28,7 @@ const TikTokIcon = () => (
 export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, isDarkMode?: boolean }) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMiniGameOpen, setIsMiniGameOpen] = useState(false);
   const { currency, setCurrency } = useCurrency();
 
   const navItems = [
@@ -35,13 +39,13 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
     { path: "/orders", label: "Orders" },
   ];
 
-  const ADMIN_IDS = ['913826949820997654', '570146481663770634', '850383604404322304'];
+  const { isAdmin } = useAdmin();
   const [discordId, setDiscordId] = useState<string | null>(localStorage.getItem("discord_id"));
   const [discordUsername, setDiscordUsername] = useState<string | null>(localStorage.getItem("discord_username"));
   const [discordGlobalName, setDiscordGlobalName] = useState<string | null>(localStorage.getItem("discord_global_name"));
   const [discordAvatar, setDiscordAvatar] = useState<string | null>(localStorage.getItem("discord_avatar"));
-  const isAdmin = discordId ? ADMIN_IDS.includes(discordId) : false;
 
+  useLockBodyScroll(mobileMenuOpen);
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -99,31 +103,41 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
     : `https://api.dicebear.com/7.x/avataaars/svg?seed=${discordId}`;
 
   return (
+    <>
     <header className="fixed top-12 left-0 right-0 z-50 flex justify-center items-start pointer-events-none">
 
       {/* 1. Top Left: Logo */}
       <div className="absolute left-6 top-0 pointer-events-auto flex items-center shrink-0 mt-1">
-        <Link to="/" className="flex items-center gap-3 group" onClick={() => setMobileMenuOpen(false)}>
+        <button onClick={() => setIsMiniGameOpen(true)} className="flex items-center gap-3 group" title="Click for a surprise!">
           <img src="/images/megatronlogo.png" alt="Logo" className="h-14 w-auto object-contain drop-shadow-xl group-hover:scale-105 transition-transform" />
-        </Link>
+        </button>
       </div>
 
       {/* 2. Top Middle: The Nav Pill */}
       <div className="hidden md:flex pointer-events-auto shrink-0 flex-col items-center">
         <div className="nav-pill rounded-full px-2 py-2 flex items-center justify-center transition-colors duration-300 shadow-lg">
           <nav className="flex items-center gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.path}
-                className={`text-sm font-bold transition-all duration-200 px-5 py-2 rounded-full ${location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path))
-                  ? "bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-md"
-                  : "text-[var(--nav-text)] hover:text-[var(--nav-text-hover)] hover:bg-[var(--bg-secondary)]"
-                  }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+              return (
+                <Link
+                  key={item.label}
+                  to={item.path}
+                  onClick={(e) => {
+                    if (isActive) {
+                      e.preventDefault();
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  className={`text-sm font-bold transition-all duration-200 px-5 py-2 rounded-full ${isActive
+                    ? "bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-md"
+                    : "text-[var(--nav-text)] hover:text-[var(--nav-text-hover)] hover:bg-[var(--bg-secondary)]"
+                    }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       </div>
@@ -235,12 +249,20 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
                   if (item.label === 'Team') NavIcon = Users;
                   if (item.label === 'Orders') NavIcon = BarChart;
 
+                  const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+
                   return (
                     <Link
                       key={item.label}
                       to={item.path}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="font-bold text-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-3 px-4 rounded-xl hover:bg-[var(--bg-primary)] transition-colors flex justify-between items-center group"
+                      onClick={(e) => {
+                        if (isActive) {
+                          e.preventDefault();
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`font-bold text-lg ${isActive ? 'text-[var(--text-primary)] bg-[var(--bg-primary)] border border-[var(--border-color)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)]'} py-3 px-4 rounded-xl transition-colors flex justify-between items-center group`}
                     >
                       <div className="flex items-center gap-3">
                         <NavIcon className="w-5 h-5 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors" />
@@ -292,5 +314,7 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
         )}
       </AnimatePresence>
     </header>
+    <MiniGame isOpen={isMiniGameOpen} onClose={() => setIsMiniGameOpen(false)} />
+    </>
   );
 }

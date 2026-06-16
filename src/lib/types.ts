@@ -46,12 +46,7 @@ export interface TeamMember {
   discord: string;
 }
 
-export interface PaymentMethod {
-  id: string;
-  name: string;
-  logo: string;
-  enabled: boolean;
-}
+
 
 export interface Ticket {
   id: string;

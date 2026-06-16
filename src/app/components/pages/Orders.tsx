@@ -13,14 +13,14 @@ export function Orders() {
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-[var(--border-color)] pb-6">
         <div>
-          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 tracking-tight">My Orders</h2>
+          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[var(--text-primary)] to-gray-400 tracking-tight">My Orders</h2>
           <p className="text-[var(--text-secondary)] mt-2 font-medium">View the status of your purchased accounts.</p>
         </div>
         
         <div className="flex gap-4">
           <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl px-6 py-3 flex flex-col items-center shadow-lg">
             <span className="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider mb-1">Total Purchases</span>
-            <span className="text-2xl font-black text-white">{userOrders.length}</span>
+            <span className="text-2xl font-black text-[var(--text-primary)]">{userOrders.length}</span>
           </div>
         </div>
       </div>
@@ -43,7 +43,7 @@ export function Orders() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               key={order.id}
-              className="bg-black/40 backdrop-blur-md border border-[var(--border-color)] hover:border-white/20 rounded-[2rem] p-6 sm:p-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 transition-all shadow-[0_4px_30px_rgba(0,0,0,0.3)] group relative overflow-hidden"
+              className="bg-white dark:bg-black/40 border border-[var(--border-color)] hover:border-[var(--text-primary)]/20 rounded-[2rem] p-6 sm:p-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 transition-all shadow-md hover:shadow-lg dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] group relative overflow-hidden"
             >
               {/* Subtle accent glow based on status */}
               <div className={`absolute top-0 left-0 w-2 h-full ${
@@ -54,10 +54,10 @@ export function Orders() {
 
               <div className="flex-1 pl-4 w-full">
                 <div className="flex flex-wrap items-center gap-4 mb-4">
-                  <div className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 border shadow-lg ${
-                    order.status === 'Unverified' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
-                    order.status === 'Sold' ? 'bg-[#bef264]/10 text-[#bef264] border-[#bef264]/30' :
-                    'bg-red-500/10 text-red-400 border-red-500/30'
+                  <div className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm dark:shadow-lg ${
+                    order.status === 'Unverified' ? 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30' :
+                    order.status === 'Sold' ? 'bg-green-100 dark:bg-[#bef264]/10 text-green-700 dark:text-[#bef264] border-green-200 dark:border-[#bef264]/30' :
+                    'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30'
                   }`}>
                     {order.status === 'Unverified' && <Clock className="w-3.5 h-3.5" />}
                     {order.status === 'Sold' && <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -72,11 +72,11 @@ export function Orders() {
                 <div className="grid sm:grid-cols-2 gap-6 w-full">
                   <div>
                     <span className="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider mb-1 block">Purchased Product</span>
-                    <h3 className="text-xl font-black text-white group-hover:text-[var(--accent)] transition-colors line-clamp-1">{order.product.title}</h3>
+                    <h3 className="text-xl font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors line-clamp-1">{order.product.title}</h3>
                   </div>
                   <div>
                     <span className="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider mb-1 block">Account Level</span>
-                    <p className="text-gray-300 font-medium font-mono bg-black/30 px-3 py-1.5 rounded-xl inline-block border border-white/5">Lv. {order.product.level || 'N/A'}</p>
+                    <p className="text-[var(--text-primary)] dark:text-gray-300 font-medium font-mono bg-[var(--bg-primary)]/60 dark:bg-black/30 px-3 py-1.5 rounded-xl inline-block border border-[var(--border-color)] dark:border-white/5">Lv. {order.product.level || 'N/A'}</p>
                   </div>
                 </div>
               </div>
@@ -84,17 +84,17 @@ export function Orders() {
               {/* Status Note */}
               <div className="w-full xl:w-auto xl:ml-6 shrink-0 border-t xl:border-t-0 xl:border-l border-[var(--border-color)] pt-6 xl:pt-0 xl:pl-6 pl-4 flex flex-col justify-center">
                 {order.status === 'Unverified' && (
-                  <p className="text-sm text-[var(--text-secondary)] max-w-[200px]">
+                  <p className="text-sm text-[var(--text-secondary)] max-w-[200px] font-medium">
                     Your order is currently being verified by our staff in your Discord ticket.
                   </p>
                 )}
                 {order.status === 'Sold' && (
-                  <p className="text-sm text-green-400 max-w-[200px]">
+                  <p className="text-sm text-green-600 dark:text-green-400 max-w-[200px] font-medium">
                     This account has been successfully delivered to you. Enjoy!
                   </p>
                 )}
                 {order.status === 'Cancelled' && (
-                  <p className="text-sm text-red-400 max-w-[200px]">
+                  <p className="text-sm text-red-500 dark:text-red-400 max-w-[200px] font-medium">
                     This order was cancelled by the administration.
                   </p>
                 )}

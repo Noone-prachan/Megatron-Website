@@ -4,13 +4,22 @@ import { useHistory } from "../../context/HistoryContext";
 import { useCurrency } from "../../context/CurrencyContext";
 import { useProducts } from "../../context/ProductContext";
 import { useReviews } from "../../context/ReviewContext";
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
+import { api } from "../../../lib/api";
 
 export function AnalyticsPage() {
   const { transactions } = useHistory();
   const { formatPrice } = useCurrency();
   const { products } = useProducts();
   const { reviews } = useReviews();
+
+  const [visitsData, setVisitsData] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    api.getVisits().then(data => {
+      setVisitsData(data);
+    }).catch(console.error);
+  }, []);
 
   // Process transactions into chart data
   const data = useMemo(() => {
@@ -19,19 +28,34 @@ export function AnalyticsPage() {
       // Just extract Day/Month for simplicity (e.g. "May 28")
       const date = new Date(tx.date);
       const name = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const dateKey = date.toISOString().split('T')[0]; // For looking up visits
       
-      if (!acc[name]) acc[name] = { name, revenue: 0, visits: Math.floor(Math.random() * 5000) + 1000 };
+      if (!acc[name]) acc[name] = { name, dateKey, revenue: 0, visits: 0 };
       acc[name].revenue += tx.price;
       return acc;
     }, {} as Record<string, any>);
+    
+    // Add missing days that might have visits but no transactions
+    Object.keys(visitsData).forEach(dateKey => {
+      const date = new Date(dateKey);
+      const name = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      if (!grouped[name]) {
+        grouped[name] = { name, dateKey, revenue: 0, visits: 0 };
+      }
+    });
+
+    // Populate actual visits
+    Object.values(grouped).forEach(item => {
+      item.visits = visitsData[item.dateKey] || 0;
+    });
 
     // Convert back to array and sort by date chronologically
     return Object.values(grouped).sort((a, b) => {
-       const dateA = new Date(a.name + " " + new Date().getFullYear());
-       const dateB = new Date(b.name + " " + new Date().getFullYear());
+       const dateA = new Date(a.dateKey);
+       const dateB = new Date(b.dateKey);
        return dateA.getTime() - dateB.getTime();
     });
-  }, [transactions]);
+  }, [transactions, visitsData]);
 
   const totalRevenue = transactions.reduce((sum, tx) => sum + tx.price, 0);
   const avgOrder = transactions.length > 0 ? totalRevenue / transactions.length : 0;

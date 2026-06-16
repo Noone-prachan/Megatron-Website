@@ -105,13 +105,6 @@
   - POST /api/tickets/create (Create Discord ticket)
   - POST /api/tickets/close (Close ticket)
 
-- ✅ Payments
-  - POST /api/payments/esewa/verify
-  - POST /api/payments/khalti/verify
-  - POST /api/payments/imepay/verify
-  - POST /api/payments/webhook
-  - GET /api/payments/methods
-
 #### Features
 - ✅ Discord OAuth integration
 - ✅ Discord bot for tickets
@@ -147,14 +140,6 @@
 - [ ] Saved/favorite accounts
 - [ ] User dashboard
 - [ ] Email notifications
-
-#### Payment Integration
-- [ ] Real eSewa integration
-- [ ] Real Khalti integration
-- [ ] Real IME Pay integration
-- [ ] Payment webhooks
-- [ ] Transaction history
-- [ ] Receipt generation
 
 #### Admin Panel
 - [ ] Admin dashboard

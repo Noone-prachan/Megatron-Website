@@ -1,46 +1,47 @@
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { ProductCard } from "../ProductCard";
 import { useProducts } from "../../context/ProductContext";
 import { useReviews } from "../../context/ReviewContext";
-import { Zap, Medal, Gem, Crown, Search, X, ChevronDown, Filter, Star, Loader2, MessageSquare, Quote, CheckCircle2 } from "lucide-react";
+import { Zap, Medal, Gem, Crown, Search, X, ChevronDown, Filter, Star, Loader2, MessageSquare, Quote, CheckCircle2, SlidersHorizontal } from "lucide-react";
 import { api } from "../../../lib/api";
 
 const collectionRanks = [
-  { 
-    id: "all", 
-    label: "All", 
-    icon: <svg className="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 2L2 13h9l-1 9 11-12h-9l1-8z"/></svg>
+  {
+    id: "all",
+    label: "All",
+    icon: <svg className="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 2L2 13h9l-1 9 11-12h-9l1-8z" /></svg>
   },
-  { 
-    id: "expert collector", 
-    label: "Expert Collector", 
-    icon: <svg className="w-4 h-4 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+  {
+    id: "expert collector",
+    label: "Expert Collector",
+    icon: <svg className="w-4 h-4 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
   },
-  { 
-    id: "renowned collector", 
-    label: "Renowned Collector", 
-    icon: <svg className="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  {
+    id: "renowned collector",
+    label: "Renowned Collector",
+    icon: <svg className="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
   },
-  { 
-    id: "exalted collector", 
-    label: "Exalted Collector", 
-    icon: <svg className="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3 6 7 1-5 5 1.5 7-6.5-3.5L5.5 21 7 14l-5-5 7-1z"/><circle cx="12" cy="11.5" r="2.5" fill="currentColor"/></svg>
+  {
+    id: "exalted collector",
+    label: "Exalted Collector",
+    icon: <svg className="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3 6 7 1-5 5 1.5 7-6.5-3.5L5.5 21 7 14l-5-5 7-1z" /><circle cx="12" cy="11.5" r="2.5" fill="currentColor" /></svg>
   },
-  { 
-    id: "mega collector", 
-    label: "Mega Collector", 
-    icon: <svg className="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2L2 8l10 14L22 8l-4-6H6zM12 19L5 9h14l-7 10z"/></svg>
+  {
+    id: "mega collector",
+    label: "Mega Collector",
+    icon: <svg className="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2L2 8l10 14L22 8l-4-6H6zM12 19L5 9h14l-7 10z" /></svg>
   },
-  { 
-    id: "world collector", 
-    label: "World Collector", 
-    icon: <svg className="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor"><path d="M2 4l3 11h14l3-11-5 4-5-6-5 6-5-4zm2 14h16v2H4z"/></svg>
+  {
+    id: "world collector",
+    label: "World Collector",
+    icon: <svg className="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor"><path d="M2 4l3 11h14l3-11-5 4-5-6-5 6-5-4zm2 14h16v2H4z" /></svg>
   },
-  { 
-    id: "galaxy collector", 
-    label: "Galaxy Collector", 
-    icon: <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 5 6-1-4 4 2 6-6-3-6 3 2-6-4-4 6 1z"/><path d="M5 21a10 10 0 0 0 14 0" stroke="currentColor" strokeWidth="2" fill="none"/></svg>
+  {
+    id: "galaxy collector",
+    label: "Galaxy Collector",
+    icon: <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 5 6-1-4 4 2 6-6-3-6 3 2-6-4-4 6 1z" /><path d="M5 21a10 10 0 0 0 14 0" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
   },
 ];
 
@@ -49,6 +50,8 @@ const DISCORD_SVG = (
     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
   </svg>
 );
+
+import { SEO } from "../SEO";
 
 export function Products() {
   const { products } = useProducts();
@@ -65,10 +68,17 @@ export function Products() {
   const [sellStatus, setSellStatus] = useState<"idle" | "success" | "error">("idle");
   const [sellMessage, setSellMessage] = useState("");
 
+  // Advanced Filters State
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [minHeroes, setMinHeroes] = useState(0);
+  const [minSkins, setMinSkins] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
   const handleSellClick = async () => {
     const userId = localStorage.getItem("discord_id");
     const username = localStorage.getItem("discord_username") || "User";
-    
+
     if (!userId) {
       setSellStatus("error");
       setSellMessage("Please login with Discord first to sell an account.");
@@ -78,14 +88,17 @@ export function Products() {
     setIsSelling(true);
     setSellStatus("idle");
     try {
-      const res = await api.createTicket(
-        { id: 'sell', title: 'Account Sell Request', price: 0, description: '', image: '', level: 0, heroes: 0, skins: 0, collectionRank: '' },
+      const res = await api.createTicket({
+        product: { id: 'sell', title: 'Account Sell Request', price: 0, description: '', image: '', level: 0, heroes: 0, skins: 0, collectionRank: '' },
         userId,
         username
-      );
+      });
       if (res.success) {
         setSellStatus("success");
-        setSellMessage("Ticket created! Please check your Discord.");
+        setSellMessage("Ticket created! Redirecting to Discord...");
+        if (res.ticketUrl) {
+          window.open(res.ticketUrl, "_blank");
+        }
       } else {
         setSellStatus("error");
         setSellMessage(res.error || "Failed to create ticket.");
@@ -100,6 +113,13 @@ export function Products() {
 
   const filteredProducts = products
     .filter(p => selectedRank === "all" || (p.collectionRank && p.collectionRank.toLowerCase() === selectedRank))
+    .filter(p => selectedCategory === "all" || (p.category && p.category.toLowerCase() === selectedCategory))
+    .filter(p => {
+      const pPrice = Number(p.price) || 0;
+      return pPrice >= priceRange[0] && (priceRange[1] === 1000 ? true : pPrice <= priceRange[1]);
+    })
+    .filter(p => (p.heroes || 0) >= minHeroes)
+    .filter(p => (p.skins || 0) >= minSkins)
     .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === "price-low") return a.price - b.price;
@@ -137,6 +157,7 @@ export function Products() {
 
   return (
     <div className="min-h-screen pt-28 pb-24 relative overflow-hidden">
+      <SEO title="Products | Megatron Marketplace" description="Browse our premium selection of verified MLBB accounts." url="https://megatron-marketplace.com/products" />
       {/* Ambient background glows */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-violet-600/5 rounded-full blur-[120px] pointer-events-none" />
@@ -158,8 +179,8 @@ export function Products() {
                 Live Marketplace
               </span>
               <h1 className="flex flex-col font-black tracking-tight leading-[0.9] mb-4 uppercase">
-                <span className="text-4xl min-[400px]:text-5xl sm:text-6xl lg:text-7xl text-[var(--text-primary)]">THE</span>
-                <span className="text-5xl min-[400px]:text-6xl sm:text-7xl lg:text-[5.5rem] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300 break-words -ml-1">MARKETPLACE</span>
+                <span className="text-2xl min-[375px]:text-3xl min-[400px]:text-4xl sm:text-6xl lg:text-7xl text-[var(--text-primary)]">THE</span>
+                <span className="text-3xl min-[375px]:text-4xl min-[400px]:text-5xl sm:text-7xl lg:text-[5.5rem] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300 break-all sm:break-words -ml-1">MARKETPLACE</span>
               </h1>
               <p className="text-[var(--text-secondary)] text-base sm:text-lg max-w-xl font-medium leading-relaxed mb-6 lg:mb-0">
                 Verified MLBB accounts with instant delivery, lifetime warranty &amp; full email access.
@@ -199,7 +220,7 @@ export function Products() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-8 space-y-4"
+          className="mb-8 space-y-4 relative z-50"
         >
           {/* Desktop Rank Chips */}
           <div className="hidden sm:flex flex-wrap gap-2 pb-1">
@@ -213,13 +234,13 @@ export function Products() {
                   key={rank.id}
                   onClick={() => { setSelectedRank(rank.id); setIsRankOpen(false); }}
                   className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 border ${active
-                    ? "bg-white text-black border-white shadow-lg shadow-white/10"
-                    : "bg-[var(--bg-secondary)]/60 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-white hover:border-white/20 backdrop-blur-sm"
+                    ? "bg-[var(--text-primary)] text-[var(--bg-primary)] border-[var(--text-primary)] shadow-lg shadow-[var(--text-primary)]/10"
+                    : "bg-[var(--bg-secondary)]/60 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]/20 backdrop-blur-sm"
                     }`}
                 >
                   <span>{rank.icon}</span>
                   <span>{rank.label}</span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${active ? "bg-black/10 text-black" : "bg-[var(--bg-primary)] text-[var(--text-secondary)]"}`}>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${active ? "bg-[var(--bg-primary)] text-[var(--text-primary)] opacity-80" : "bg-[var(--bg-primary)] text-[var(--text-secondary)]"}`}>
                     {count}
                   </span>
                 </button>
@@ -228,13 +249,13 @@ export function Products() {
           </div>
 
           {/* Search + Sort + Mobile Rank */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full bg-[var(--bg-secondary)]/30 backdrop-blur-md p-2 rounded-3xl border border-white/5 shadow-inner">
+          <div className="flex flex-col sm:flex-row gap-4 w-full bg-[var(--bg-secondary)]/30 backdrop-blur-md p-2 rounded-3xl border border-[var(--border-color)] shadow-inner">
 
             {/* Mobile Rank Dropdown */}
             <div className="relative w-full sm:hidden" ref={rankRef}>
               <button
                 onClick={() => setIsRankOpen(!isRankOpen)}
-                className="w-full flex items-center justify-between px-6 h-14 rounded-2xl bg-black/40 border border-white/10 text-sm font-bold text-white transition-all focus:ring-2 focus:ring-blue-500/50 hover:border-blue-500/30"
+                className="w-full flex items-center justify-between px-6 h-14 rounded-2xl bg-[var(--bg-primary)]/60 border border-[var(--border-color)] text-sm font-bold text-[var(--text-primary)] transition-all focus:ring-2 focus:ring-blue-500/50 hover:border-[var(--text-primary)]/30"
               >
                 <span className="flex items-center gap-3">
                   <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
@@ -242,7 +263,7 @@ export function Products() {
                   </div>
                   {collectionRanks.find(r => r.id === selectedRank)?.label || "Rank"}
                 </span>
-                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isRankOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-4 h-4 text-[var(--text-secondary)] transition-transform duration-300 ${isRankOpen ? "rotate-180" : ""}`} />
               </button>
 
               <AnimatePresence>
@@ -252,22 +273,22 @@ export function Products() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.97 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
+                    className="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
                   >
                     {collectionRanks.map((rank) => (
                       <button
-                         key={rank.id}
-                         onClick={() => { setSelectedRank(rank.id); setIsRankOpen(false); }}
-                         className={`w-full text-left px-5 py-3.5 text-sm font-bold transition-all flex items-center justify-between group ${selectedRank === rank.id ? "bg-blue-500/10 text-blue-400" : "text-gray-300 hover:bg-white/5 hover:text-white"}`}
-                       >
-                         <div className="flex items-center gap-3">
-                           <div className={`p-1.5 rounded-lg transition-colors ${selectedRank === rank.id ? "bg-blue-500/20" : "bg-white/5 group-hover:bg-white/10"}`}>
-                             {rank.icon}
-                           </div>
-                           {rank.label}
-                         </div>
-                         {selectedRank === rank.id && <CheckCircle2 className="w-4 h-4 text-blue-400" />}
-                       </button>
+                        key={rank.id}
+                        onClick={() => { setSelectedRank(rank.id); setIsRankOpen(false); }}
+                        className={`w-full text-left px-5 py-3.5 text-sm font-bold transition-all flex items-center justify-between group ${selectedRank === rank.id ? "bg-blue-500/10 text-blue-500" : "text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/50 hover:text-[var(--text-primary)]"}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`p-1.5 rounded-lg transition-colors ${selectedRank === rank.id ? "bg-blue-500/20" : "bg-[var(--bg-primary)] group-hover:bg-[var(--border-color)]"}`}>
+                            {rank.icon}
+                          </div>
+                          {rank.label}
+                        </div>
+                        {selectedRank === rank.id && <CheckCircle2 className="w-4 h-4 text-blue-400" />}
+                      </button>
                     ))}
                   </motion.div>
                 )}
@@ -275,35 +296,47 @@ export function Products() {
             </div>
 
             {/* Search Bar */}
-            <div className="w-full sm:flex-1 relative flex items-center bg-black/40 border border-white/10 rounded-2xl h-14 px-4 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500/50 transition-all hover:border-white/20">
-              <Search className="shrink-0 w-5 h-5 text-gray-400 mr-3" />
+            <div className="w-full sm:flex-1 relative flex items-center bg-[var(--bg-primary)]/60 border border-[var(--border-color)] rounded-2xl h-14 px-4 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-[var(--text-primary)]/50 transition-all hover:border-[var(--text-secondary)]/30">
+              <Search className="shrink-0 w-5 h-5 text-[var(--text-secondary)] mr-3" />
               <input
                 type="text"
-                placeholder="Search accounts, ranks, skins..."
+                placeholder="Search accounts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 min-w-0 bg-transparent border-none outline-none w-full text-sm font-medium text-white placeholder:text-gray-500"
+                className="flex-1 min-w-0 bg-transparent border-none outline-none w-full text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="ml-2 p-1.5 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                <button onClick={() => setSearchQuery("")} className="ml-2 p-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-color)] transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               )}
             </div>
 
-            {/* Sort Dropdown */}
-            <div className="relative w-full sm:w-56" ref={sortRef}>
+            <div className="flex gap-4 w-full sm:w-auto shrink-0">
+              {/* Advanced Filters Button */}
               <button
-                onClick={() => setIsSortOpen(!isSortOpen)}
-                className="w-full flex items-center justify-between px-6 h-14 rounded-2xl bg-black/40 border border-white/10 text-sm font-bold text-white transition-all focus:ring-2 focus:ring-blue-500/50 hover:border-blue-500/30"
+                onClick={() => setIsFiltersOpen(true)}
+                className="flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-5 h-14 rounded-2xl bg-[var(--bg-primary)]/60 border border-[var(--border-color)] text-sm font-bold text-[var(--text-primary)] transition-all focus:ring-2 focus:ring-blue-500/50 hover:border-[var(--text-primary)]/30"
               >
+                <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
+                  <SlidersHorizontal className="w-4 h-4" />
+                </div>
+                Filters
+              </button>
+
+              {/* Sort Dropdown */}
+              <div className="relative flex-1 sm:w-56" ref={sortRef}>
+                <button
+                  onClick={() => setIsSortOpen(!isSortOpen)}
+                  className="w-full flex items-center justify-center sm:justify-between px-6 h-14 rounded-2xl bg-[var(--bg-primary)]/60 border border-[var(--border-color)] text-sm font-bold text-[var(--text-primary)] transition-all focus:ring-2 focus:ring-blue-500/50 hover:border-[var(--text-primary)]/30"
+                >
                 <span className="flex items-center gap-3">
                   <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M7 12h10M11 18h2" /></svg>
                   </div>
                   {sortLabels[sortBy]}
                 </span>
-                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isSortOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-4 h-4 text-[var(--text-secondary)] transition-transform duration-300 ${isSortOpen ? "rotate-180" : ""}`} />
               </button>
 
               <AnimatePresence>
@@ -313,13 +346,13 @@ export function Products() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.97 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-[calc(100%+0.5rem)] right-0 w-full bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
+                    className="absolute top-[calc(100%+0.5rem)] right-0 w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
                   >
                     {Object.entries(sortLabels).map(([id, label]) => (
                       <button
                         key={id}
                         onClick={() => { setSortBy(id); setIsSortOpen(false); }}
-                        className={`w-full text-left px-5 py-3.5 text-sm font-bold transition-all flex items-center justify-between group ${sortBy === id ? "bg-blue-500/10 text-blue-400" : "text-gray-300 hover:bg-white/5 hover:text-white"}`}
+                        className={`w-full text-left px-5 py-3.5 text-sm font-bold transition-all flex items-center justify-between group ${sortBy === id ? "bg-blue-500/10 text-blue-500" : "text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/50 hover:text-[var(--text-primary)]"}`}
                       >
                         {label}
                         {sortBy === id && <CheckCircle2 className="w-4 h-4 text-blue-400" />}
@@ -329,13 +362,14 @@ export function Products() {
                 )}
               </AnimatePresence>
             </div>
+            </div>
           </div>
         </motion.div>
 
         {/* Results count */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-[var(--text-secondary)] font-medium">
-            Showing <span className="text-white font-bold">{filteredProducts.length}</span> account{filteredProducts.length !== 1 ? "s" : ""}
+            Showing <span className="text-[var(--text-primary)] font-bold">{filteredProducts.length}</span> account{filteredProducts.length !== 1 ? "s" : ""}
             {selectedRank !== "all" && <> in <span className="text-blue-400 font-bold capitalize">{selectedRank}</span></>}
           </p>
         </div>
@@ -446,6 +480,128 @@ export function Products() {
             </div>
           </div>
         </motion.div>
+
+        {/* ── Sell Your Account CTA Section ── */}
+        {/* ... (Omitted CTA section for brevity, assuming it remains mostly unchanged in layout structure) */}
+
+        {/* Advanced Filters Slide-out Panel */}
+        {createPortal(
+          <AnimatePresence>
+            {isFiltersOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsFiltersOpen(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+              />
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="fixed top-0 right-0 bottom-0 w-full max-w-[400px] bg-[var(--bg-secondary)] border-l border-[var(--border-color)] shadow-2xl z-[101] flex flex-col"
+              >
+                <div className="flex items-center justify-between p-6 border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                  <h3 className="text-lg font-black tracking-wide flex items-center gap-2">
+                    <SlidersHorizontal className="w-5 h-5 text-blue-400" />
+                    Advanced Filters
+                  </h3>
+                  <button onClick={() => setIsFiltersOpen(false)} className="p-2 hover:bg-[var(--bg-secondary)] rounded-full transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+
+                  {/* Category Filter */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">Category</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {["all", "starter", "mid-tier", "premium", "collector"].map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => setSelectedCategory(cat)}
+                          className={`px-4 py-2.5 rounded-xl text-sm font-bold capitalize transition-colors border ${selectedCategory === cat ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] border-[var(--text-primary)]' : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] border-[var(--border-color)] hover:border-[var(--text-secondary)]/50'}`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price Range Filter */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] flex justify-between">
+                      <span>Max Price</span>
+                      <span className="text-blue-400">${priceRange[1]}{priceRange[1] === 1000 ? '+' : ''}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="0" max="1000" step="10"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
+                      className="w-full h-2 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-blue-500"
+                    />
+                  </div>
+
+                  {/* Minimum Heroes Filter */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] flex justify-between">
+                      <span>Min Heroes</span>
+                      <span className="text-[var(--text-primary)]">{minHeroes}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="0" max="130" step="5"
+                      value={minHeroes}
+                      onChange={(e) => setMinHeroes(parseInt(e.target.value))}
+                      className="w-full h-2 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-[var(--text-primary)]"
+                    />
+                  </div>
+
+                  {/* Minimum Skins Filter */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] flex justify-between">
+                      <span>Min Skins</span>
+                      <span className="text-[var(--text-primary)]">{minSkins}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="0" max="500" step="10"
+                      value={minSkins}
+                      onChange={(e) => setMinSkins(parseInt(e.target.value))}
+                      className="w-full h-2 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-[var(--text-primary)]"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-[var(--border-color)] bg-[var(--bg-primary)] flex gap-4">
+                  <button
+                    onClick={() => {
+                      setPriceRange([0, 1000]);
+                      setMinHeroes(0);
+                      setMinSkins(0);
+                      setSelectedCategory("all");
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    onClick={() => setIsFiltersOpen(false)}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-400 hover:to-cyan-400 shadow-lg transition-colors"
+                  >
+                    Apply Filters
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
+        )}
 
       </div>
     </div>

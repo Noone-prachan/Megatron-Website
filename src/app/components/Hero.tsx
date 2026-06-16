@@ -5,7 +5,7 @@ export default function Hero() {
         <h1 className="text-4xl font-bold mb-4">MLBB Account Marketplace</h1>
         <p className="text-lg mb-8">
           Securely buy and sell MLBB accounts with Discord login, detailed
-          listings, and local payment options for Nepal users.
+          listings, and secure escrow services.
         </p>
         <a
           href="#"

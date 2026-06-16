@@ -2,19 +2,42 @@ import express from 'express';
 import { ChannelType, PermissionFlagsBits } from 'discord.js';
 import axios from 'axios';
 import { discordClient as client, botReady } from '../discordClient';
+import { z } from 'zod';
 
 const router = express.Router();
+
+const createTicketSchema = z.object({
+  product: z.object({
+    id: z.string(),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    price: z.number().optional(),
+    level: z.number().optional(),
+    collectionRank: z.string().optional(),
+    skins: z.number().optional(),
+    heroes: z.number().optional(),
+    image: z.string().optional(),
+  }),
+  userId: z.string().min(1),
+  username: z.string().optional()
+});
 
 /**
  * POST /api/tickets/create
  * Creates a Discord ticket for a purchase
  */
 router.post('/create', async (req, res) => {
-  const { product, userId, username } = req.body;
-
-  if (!product || !userId) {
+  let validatedData;
+  try {
+    validatedData = createTicketSchema.parse(req.body);
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid input', details: (error as any).errors });
+    }
     return res.status(400).json({ error: 'Missing required fields' });
   }
+
+  const { product, userId, username } = validatedData;
 
   if (!botReady) {
     return res.status(503).json({ error: 'Discord bot is not ready yet' });
@@ -36,6 +59,7 @@ router.post('/create', async (req, res) => {
       name: ticketName,
       type: ChannelType.GuildText,
       parent: parentCategory, // Category ID
+      topic: `Creator: <@${userId}>`,
       permissionOverwrites: [
         {
           id: guild.id,
@@ -119,7 +143,7 @@ router.post('/create', async (req, res) => {
           title: isSellRequest ? 'New Sell Request' : 'New Purchase Request',
           fields: [
             { name: 'User', value: `<@${userId}> (${username || 'Unknown'})`, inline: true },
-            { name: 'Request Type', value: isSellRequest ? 'Account Selling' : (productTitle || productId), inline: true },
+            { name: 'Request Type', value: isSellRequest ? 'Account Selling' : (product.title || product.id), inline: true },
             { name: 'Ticket Channel', value: ticketChannel.toString(), inline: true },
           ],
           color: isSellRequest ? 0xf5a623 : 0x00ff00,
@@ -194,16 +218,26 @@ router.get('/guild-stats', async (req, res) => {
 });
 
 
+const closeTicketSchema = z.object({
+  ticketId: z.string().min(1)
+});
+
 /**
  * POST /api/tickets/close
  * Closes a Discord ticket
  */
 router.post('/close', async (req, res) => {
-  const { ticketId } = req.body;
-
-  if (!ticketId) {
-    return res.status(400).json({ error: 'Missing ticket ID' });
+  let validatedData;
+  try {
+    validatedData = closeTicketSchema.parse(req.body);
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid input', details: (error as any).errors });
+    }
+    return res.status(400).json({ error: 'Invalid request' });
   }
+
+  const { ticketId } = validatedData;
 
   try {
     const guild = await client.guilds.fetch(process.env.DISCORD_GUILD_ID!);
@@ -221,15 +255,38 @@ router.post('/close', async (req, res) => {
   }
 });
 
+const announceSchema = z.object({
+  product: z.object({
+    title: z.string(),
+    description: z.string(),
+    price: z.number(),
+    level: z.number(),
+    collectionRank: z.string(),
+    skins: z.number(),
+    heroes: z.number(),
+    image: z.string().optional()
+  })
+});
+
 /**
  * POST /api/tickets/announce
  * Sends an announcement for a new product listing
  */
 router.post('/announce', async (req, res) => {
-  const { product } = req.body;
+  let validatedData;
+  try {
+    validatedData = announceSchema.parse(req.body);
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid input', details: (error as any).errors });
+    }
+    return res.status(400).json({ error: 'Invalid request' });
+  }
+
+  const { product } = validatedData;
   
-  if (!product || !botReady) {
-    return res.status(503).json({ error: 'Discord bot is not ready or missing product data' });
+  if (!botReady) {
+    return res.status(503).json({ error: 'Discord bot is not ready' });
   }
 
   try {

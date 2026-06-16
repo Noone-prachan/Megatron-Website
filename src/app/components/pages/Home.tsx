@@ -137,16 +137,19 @@ export function Home() {
 
     try {
       setIsCreatingTicket(true);
-      const res = await api.post("/tickets/create", {
-        productId: "sell",
-        productTitle: "Sell Account Request",
+      const res = await api.createTicket({
+        product: { id: "sell", title: "Sell Account Request" },
         userId,
         username: username || "Unknown",
       });
 
-      toast.success("A selling ticket has been successfully created in our Discord server!");
-      if (res && (res as any).ticketUrl) {
-        window.open((res as any).ticketUrl, "_blank");
+      if (res.success) {
+        toast.success("A selling ticket has been successfully created in our Discord server!");
+        if (res.ticketUrl) {
+          window.open(res.ticketUrl, "_blank");
+        }
+      } else {
+        toast.error((res as any).error || "Failed to create a ticket. Please try again later.");
       }
     } catch (error: any) {
       console.error(error);
@@ -277,8 +280,9 @@ export function Home() {
       {/* ═══ WHY MEGATRON ═══ */}
       <section id="why-megatron" className="py-24 border-b border-[var(--border-color)] bg-[var(--bg-primary)] relative">
 
-        {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[var(--accent)]/5 to-transparent opacity-50 pointer-events-none"></div>
+        {/* Vibrant Gradient Backgrounds */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-fuchsia-600/10 blur-[150px] pointer-events-none rounded-full" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-600/10 blur-[150px] pointer-events-none rounded-full" />
 
         {/* Transparent Sticky Header */}
         <div className="sticky top-[72px] z-30 pt-12 pb-16 pointer-events-none">
@@ -389,9 +393,9 @@ export function Home() {
 
       {/* ═══ SELL ACCOUNT SECTION ═══ */}
       <section className="py-24 border-b border-[var(--border-color)] relative overflow-hidden bg-[var(--bg-primary)]">
-        {/* Subtle glowing elements */}
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-72 h-72 bg-[var(--accent)]/5 blur-[120px] pointer-events-none rounded-full" />
-        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-72 h-72 bg-blue-500/5 blur-[120px] pointer-events-none rounded-full" />
+        {/* Vibrant glowing elements */}
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-pink-600/15 blur-[150px] pointer-events-none rounded-full" />
+        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/15 blur-[150px] pointer-events-none rounded-full" />
 
         <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -696,9 +700,9 @@ export function Home() {
 
       {/* FAQ Section */}
       <section className="py-24 relative overflow-hidden bg-[var(--bg-primary)] border-t border-[var(--border-color)]">
-        {/* Subtle Background Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--accent)]/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-red-500/5 rounded-full blur-[100px] pointer-events-none" />
+        {/* Vibrant Background Glows */}
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-pink-600/10 rounded-full blur-[160px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[160px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <motion.div

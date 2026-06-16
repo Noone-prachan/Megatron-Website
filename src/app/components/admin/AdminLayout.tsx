@@ -1,7 +1,8 @@
 import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, ShoppingCart, Clock, Megaphone, BarChart, Sun, Moon, ArrowLeft, Menu } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Clock, Megaphone, BarChart, Sun, Moon, ArrowLeft, Menu, Shield } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { GlobalLoader } from "../ui/GlobalLoader";
 
 export function AdminLayout() {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -36,6 +37,7 @@ export function AdminLayout() {
     { to: "/admin/orders", label: "Orders", icon: BarChart },
     { to: "/admin/history", label: "History", icon: Clock },
     { to: "/admin/announcement", label: "Announcement", icon: Megaphone },
+    { to: "/admin/security", label: "Security", icon: Shield },
   ];
 
   return (
@@ -121,7 +123,9 @@ export function AdminLayout() {
           <div className="w-10" /> {/* Spacer to balance the button */}
         </div>
         <div className="p-6">
-          <Outlet />
+          <Suspense fallback={<GlobalLoader />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
     </div>

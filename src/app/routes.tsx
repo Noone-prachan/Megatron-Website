@@ -1,24 +1,29 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Root } from "./components/Root";
-import { Home } from "./components/pages/Home";
-import { Products } from "./components/pages/Products";
-import { ProductDetail } from "./components/pages/ProductDetail";
-import { Reviews } from "./components/pages/Reviews";
-import { Team } from "./components/pages/Team";
-import { Orders } from "./components/pages/Orders";
-import { AuthCallback } from "./components/pages/AuthCallback";
 import { NotFound } from "./components/pages/NotFound";
-import { FAQ } from "./components/pages/FAQ";
-import { Privacy } from "./components/pages/Privacy";
-import { Terms } from "./components/pages/Terms";
-import { Refund } from "./components/pages/Refund";
 import { AdminGuard } from "./components/admin/AdminGuard";
-import { AdminLayout } from "./components/admin/AdminLayout";
-import { AnalyticsPage } from "./components/admin/AnalyticsPage";
-import { ProductsManager } from "./components/admin/ProductsManager";
-import { OrdersManager } from "./components/admin/OrdersManager";
-import { HistoryPage } from "./components/admin/HistoryPage";
-import { AnnouncementManager } from "./components/admin/AnnouncementManager";
+import React from "react";
+
+const Home = React.lazy(() => import("./components/pages/Home").then(m => ({ default: m.Home })));
+const Products = React.lazy(() => import("./components/pages/Products").then(m => ({ default: m.Products })));
+const ProductDetail = React.lazy(() => import("./components/pages/ProductDetail").then(m => ({ default: m.ProductDetail })));
+const Reviews = React.lazy(() => import("./components/pages/Reviews").then(m => ({ default: m.Reviews })));
+const Team = React.lazy(() => import("./components/pages/Team").then(m => ({ default: m.Team })));
+const Orders = React.lazy(() => import("./components/pages/Orders").then(m => ({ default: m.Orders })));
+const Wishlist = React.lazy(() => import("./components/pages/Wishlist").then(m => ({ default: m.Wishlist })));
+const AuthCallback = React.lazy(() => import("./components/pages/AuthCallback").then(m => ({ default: m.AuthCallback })));
+const FAQ = React.lazy(() => import("./components/pages/FAQ").then(m => ({ default: m.FAQ })));
+const Privacy = React.lazy(() => import("./components/pages/Privacy").then(m => ({ default: m.Privacy })));
+const Terms = React.lazy(() => import("./components/pages/Terms").then(m => ({ default: m.Terms })));
+const Refund = React.lazy(() => import("./components/pages/Refund").then(m => ({ default: m.Refund })));
+
+const AdminLayout = React.lazy(() => import("./components/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
+const AnalyticsPage = React.lazy(() => import("./components/admin/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
+const ProductsManager = React.lazy(() => import("./components/admin/ProductsManager").then(m => ({ default: m.ProductsManager })));
+const OrdersManager = React.lazy(() => import("./components/admin/OrdersManager").then(m => ({ default: m.OrdersManager })));
+const HistoryPage = React.lazy(() => import("./components/admin/HistoryPage").then(m => ({ default: m.HistoryPage })));
+const AnnouncementManager = React.lazy(() => import("./components/admin/AnnouncementManager").then(m => ({ default: m.AnnouncementManager })));
+const SecurityPage = React.lazy(() => import("./components/admin/SecurityPage").then(m => ({ default: m.SecurityPage })));
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +37,7 @@ export const router = createBrowserRouter([
       { path: "reviews", element: <Reviews /> },
       { path: "team", element: <Team /> },
       { path: "orders", element: <Orders /> },
+      { path: "wishlist", element: <Wishlist /> },
       { path: "faq", element: <FAQ /> },
       { path: "privacy", element: <Privacy /> },
       { path: "terms", element: <Terms /> },
@@ -53,6 +59,7 @@ export const router = createBrowserRouter([
           { path: "orders", element: <OrdersManager /> },
           { path: "history", element: <HistoryPage /> },
           { path: "announcement", element: <AnnouncementManager /> },
+          { path: "security", element: <SecurityPage /> },
         ],
       },
     ],

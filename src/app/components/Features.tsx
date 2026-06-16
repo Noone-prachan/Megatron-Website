@@ -21,10 +21,10 @@ export default function Features() {
             </p>
           </div>
           <div className="bg-gray-100 p-8 rounded-lg">
-            <h3 className="text-xl font-bold mb-4">Local Payments</h3>
+            <h3 className="text-xl font-bold mb-4">Manual Payment Processing</h3>
             <p>
-              We support local payment options for users in Nepal, making it
-              easy to buy and sell accounts.
+              We handle all payments directly through Discord, making it
+              secure and straightforward.
             </p>
           </div>
         </div>
