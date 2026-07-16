@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useProducts, Product } from "../../context/ProductContext";
 import { useCurrency } from "../../context/CurrencyContext";
-import { Plus, Edit2, Trash2, ArrowLeft, Tag } from "lucide-react";
+import { Plus, Edit2, Trash2, ArrowLeft, Tag, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "../../../lib/api";
 
@@ -11,6 +11,7 @@ export function ProductsManager() {
   const [view, setView] = useState<"list" | "add" | "edit">("list");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<Partial<Product>>({
     title: "", level: 1, collectionRank: "Expert Collector", skins: 0, heroes: 0, price: 0,
@@ -44,7 +45,11 @@ export function ProductsManager() {
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newProduct = {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    try {
+      const newProduct = {
       ...formData,
       id: Math.random().toString(36).substr(2, 9),
       stats: { totalMatches: 0, winRate: "0%", mvpCount: 0 }
@@ -52,37 +57,82 @@ export function ProductsManager() {
 
     addProduct(newProduct);
 
-    // Call backend to send Discord announcement
-    try {
-      // ApiClient currently exposes typed methods; use fetch for this custom endpoint.
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3001/api"}/tickets/announce`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(localStorage.getItem("auth_token")
-            ? { Authorization: `Bearer ${localStorage.getItem("auth_token")}` }
-            : {}),
-        },
-        body: JSON.stringify({ product: newProduct }),
-      });
+    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+    const authHeader = localStorage.getItem("auth_token")
+      ? { Authorization: `Bearer ${localStorage.getItem("auth_token")}` }
+      : {};
 
+    // Run Discord requests in parallel to speed up UI
+    const forumPromise = fetch(`${apiBase}/tickets/forum-post`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeader },
+      body: JSON.stringify({
+        product: {
+          title: newProduct.title,
+          dedicatedId: newProduct.dedicatedId,
+          price: newProduct.discountPrice ?? newProduct.price,
+          image: newProduct.image,
+        }
+      }),
+    }).then(async res => {
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Unknown error');
+      }
+      const data = await res.json();
+      updateProduct(newProduct.id, { discordThreadId: data.threadId });
+      toast.success(`📋 Forum post created in #account-listing!`);
+    }).catch(error => {
+      console.error("Failed to create forum post:", error);
+      toast.error(`Listed on site, but forum post failed.`);
+    });
+
+    const announcePromise = fetch(`${apiBase}/tickets/announce`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeader },
+      body: JSON.stringify({
+        product: {
+          title: newProduct.title,
+          description: newProduct.description,
+          price: newProduct.discountPrice ?? newProduct.price,
+          level: newProduct.level,
+          collectionRank: newProduct.collectionRank,
+          skins: newProduct.skins,
+          heroes: newProduct.heroes,
+          image: newProduct.image,
+        }
+      }),
+    }).then(async res => {
       if (!res.ok) throw new Error(`Announcement request failed (${res.status})`);
-
-      toast.success(`Announcement for ${newProduct.title} sent to Discord!`);
-    } catch (error) {
+      toast.success(`📢 Announcement for ${newProduct.title} sent to Discord!`);
+    }).catch(error => {
       console.error("Failed to announce:", error);
       toast.error(`Listing created, but failed to send Discord announcement.`);
-    }
+    });
 
-    setView("list");
+    await Promise.allSettled([forumPromise, announcePromise]);
+    } catch (error) {
+      console.error("General error during submission:", error);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsSubmitting(false);
+      setView("list");
+    }
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingId) {
-      updateProduct(editingId, formData);
-      toast.success("Product updated successfully!");
-      setView("list");
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      if (editingId) {
+        updateProduct(editingId, formData);
+        toast.success("Product updated successfully!");
+        setView("list");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -98,6 +148,72 @@ export function ProductsManager() {
     setFormData(product);
     setEditingId(product.id);
     setView("edit");
+  };
+
+  const handleMarkSold = async (product: Product) => {
+    if (!product.discordThreadId) {
+      deleteProduct(product.id);
+      toast.success(`${product.title} removed from listings.`);
+      return;
+    }
+
+    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+    const authHeader = localStorage.getItem("auth_token")
+      ? { Authorization: `Bearer ${localStorage.getItem("auth_token")}` }
+      : {};
+
+    try {
+      const res = await fetch(`${apiBase}/tickets/forum-sold`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeader },
+        body: JSON.stringify({ threadId: product.discordThreadId }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        toast.error(`Failed to update Discord post: ${err.error || 'Unknown error'}`);
+      } else {
+        toast.success(`✅ Discord post marked as SOLD and closed!`);
+      }
+    } catch (error) {
+      console.error("Failed to mark forum post as sold:", error);
+      toast.error(`Could not update Discord. Removed from site only.`);
+    }
+
+    deleteProduct(product.id);
+  };
+
+  const handleMarkUnavailable = async (product: Product) => {
+    if (!product.discordThreadId) {
+      deleteProduct(product.id);
+      toast.success(`${product.title} removed from listings.`);
+      return;
+    }
+
+    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+    const authHeader = localStorage.getItem("auth_token")
+      ? { Authorization: `Bearer ${localStorage.getItem("auth_token")}` }
+      : {};
+
+    try {
+      const res = await fetch(`${apiBase}/tickets/forum-unavailable`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeader },
+        body: JSON.stringify({ threadId: product.discordThreadId }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        toast.error(`Failed to update Discord post: ${err.error || 'Unknown error'}`);
+      } else {
+        toast.success(`⛔ Discord post marked as NOT AVAILABLE and closed!`);
+      }
+    } catch (error) {
+      console.error("Failed to mark forum post as unavailable:", error);
+      toast.error(`Could not update Discord. Removed from site only.`);
+    }
+
+    deleteProduct(product.id);
   };
 
   if (view === "add" || view === "edit") {
@@ -252,8 +368,22 @@ export function ProductsManager() {
             </div>
 
             <div className="flex justify-end">
-              <button type="submit" className="bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white px-8 py-3 rounded-xl font-bold transition-colors">
-                {view === "add" ? "Create Listing & Announce" : "Save Changes"}
+              <button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white px-8 py-3 rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  view === "add" ? "Create Listing & Announce" : "Save Changes"
+                )}
               </button>
             </div>
           </form>
@@ -340,10 +470,24 @@ export function ProductsManager() {
                     </span>
                   </td>
                   <td className="p-4 flex justify-end gap-2">
-                    <button onClick={() => startEdit(product)} className="p-2 text-[var(--text-secondary)] hover:text-blue-400 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg transition-colors">
+                    <button onClick={() => startEdit(product)} className="p-2 text-[var(--text-secondary)] hover:text-blue-400 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg transition-colors" title="Edit">
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button onClick={() => setDeleteConfirmId(product.id)} className="p-2 text-[var(--text-secondary)] hover:text-red-500 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg transition-colors">
+                    <button
+                      onClick={() => handleMarkSold(product)}
+                      className="p-2 text-[var(--text-secondary)] hover:text-green-400 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg transition-colors"
+                      title="Mark as Sold"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleMarkUnavailable(product)}
+                      className="p-2 text-[var(--text-secondary)] hover:text-orange-400 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg transition-colors"
+                      title="Mark as Not Available"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => setDeleteConfirmId(product.id)} className="p-2 text-[var(--text-secondary)] hover:text-red-500 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg transition-colors" title="Delete">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </td>

@@ -351,12 +351,12 @@ export function MiniGame({ isOpen, onClose }: MiniGameProps) {
               
               {/* Game Area (Left) */}
               <div 
-                className="flex-1 relative bg-[url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat overflow-hidden cursor-pointer select-none" 
+                className="flex-1 relative bg-[url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat overflow-hidden cursor-pointer select-none" 
                 ref={containerRef}
                 onClick={jump}
               >
-                {/* Overlay to dim background */}
-                <div className="absolute inset-0 bg-black/60"></div>
+                {/* Overlay to darken background */}
+                <div className="absolute inset-0 bg-black/70"></div>
                 
                 {/* Score HUD during play */}
                 {isPlaying && (

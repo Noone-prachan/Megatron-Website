@@ -23,6 +23,7 @@ export interface Product {
   };
   dedicatedId?: string; // 3-letter admin ID
   tags?: string[]; // Admin tags
+  discordThreadId?: string; // Discord forum thread ID for account-listing post
 }
 
 interface ProductContextType {
@@ -99,20 +100,45 @@ export function ProductProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Strip base64 image data before persisting to avoid localStorage QuotaExceededError.
+  // Images are kept in React state; only the URL/small references are persisted.
+  const stripBase64 = (product: Product): Product => ({
+    ...product,
+    image: product.image?.startsWith('data:') ? '' : (product.image || ''),
+    images: product.images?.map(img => img.startsWith('data:') ? '' : img) || [],
+  });
+
   useEffect(() => {
-    const saved = localStorage.getItem("megatron_products");
-    if (saved) {
-      setProducts(JSON.parse(saved));
-    } else {
+    try {
+      const saved = localStorage.getItem("megatron_products");
+      if (saved) {
+        setProducts(JSON.parse(saved));
+      } else {
+        setProducts(defaultProducts);
+        localStorage.setItem("megatron_products", JSON.stringify(defaultProducts.map(stripBase64)));
+      }
+    } catch (err) {
+      console.error("Failed to load products from storage, resetting:", err);
       setProducts(defaultProducts);
-      localStorage.setItem("megatron_products", JSON.stringify(defaultProducts));
+      localStorage.removeItem("megatron_products");
     }
     setIsLoaded(true);
   }, []);
 
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem("megatron_products", JSON.stringify(products));
+      try {
+        localStorage.setItem("megatron_products", JSON.stringify(products.map(stripBase64)));
+      } catch (err) {
+        console.error("localStorage quota exceeded — images will not be persisted:", err);
+        // Try saving without images at all as fallback
+        try {
+          const minified = products.map(p => ({ ...stripBase64(p), images: [] }));
+          localStorage.setItem("megatron_products", JSON.stringify(minified));
+        } catch (e2) {
+          console.error("Could not save even minified products:", e2);
+        }
+      }
     }
   }, [products, isLoaded]);
 

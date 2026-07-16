@@ -1,6 +1,6 @@
 import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, ShoppingCart, Clock, Megaphone, BarChart, Sun, Moon, ArrowLeft, Menu, Shield } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import { LayoutDashboard, ShoppingCart, Clock, Megaphone, BarChart, Sun, Moon, ArrowLeft, Menu, Shield, Search } from "lucide-react";
 import { Suspense, useState, useEffect } from "react";
 import { GlobalLoader } from "../ui/GlobalLoader";
 
@@ -38,6 +38,7 @@ export function AdminLayout() {
     { to: "/admin/history", label: "History", icon: Clock },
     { to: "/admin/announcement", label: "Announcement", icon: Megaphone },
     { to: "/admin/security", label: "Security", icon: Shield },
+    { to: "/admin/seo", label: "SEO", icon: Search },
   ];
 
   return (

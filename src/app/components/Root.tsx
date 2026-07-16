@@ -114,6 +114,8 @@ function AnnouncementTicker() {
 import { Suspense } from "react";
 import { GlobalLoader } from "./ui/GlobalLoader";
 import { LiveChatWidget } from "./ui/LiveChatWidget";
+import { Helmet } from "react-helmet-async";
+import { useSeo } from "../context/SeoContext";
 
 function GlobalBackground() {
   const { isDarkMode } = useTheme();
@@ -160,9 +162,24 @@ function GlobalBackground() {
 
 export function Root() {
   const { isDarkMode, toggleTheme } = useTheme();
+  const location = useLocation();
+  const { getSeoForPath } = useSeo();
+  
+  const seo = getSeoForPath(location.pathname) || {
+    title: "Megatron | Premium Gaming Accounts",
+    description: "Buy and sell premium MLBB, Valorant, and other gaming accounts safely and securely.",
+    keywords: "MLBB, gaming accounts, buy sell accounts, premium accounts"
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
+        {seo.keywords && <meta name="keywords" content={seo.keywords} />}
+        <meta property="og:title" content={seo.title} />
+        <meta property="og:description" content={seo.description} />
+      </Helmet>
       <GlobalBackground />
       <ScrollToTop />
       <AnnouncementTicker />

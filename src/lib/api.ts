@@ -180,6 +180,17 @@ class ApiClient {
       body: JSON.stringify({ score }),
     });
   }
+
+  // Discord user profiles
+  async getDiscordUser(userId: string): Promise<{
+    id: string;
+    username: string;
+    avatarUrl: string;
+    bannerUrl: string | null;
+    bannerColor: string | null;
+  }> {
+    return this.request(`/users/${userId}`);
+  }
 }
 
 export const api = new ApiClient();

@@ -76,6 +76,24 @@ export function LiveChatWidget() {
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'home'|'messages'|'guides'>('home');
+  const [staffAvatars, setStaffAvatars] = useState<Record<string, string>>({});
+
+  // Fetch live staff avatars from our Discord proxy
+  const STAFF_IDS = ['570146481663770634', '913826949820997654', '850383604404322304'];
+  useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+    STAFF_IDS.forEach(async (id) => {
+      try {
+        const res = await fetch(`${apiBase}/users/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setStaffAvatars(prev => ({ ...prev, [id]: data.avatarUrl }));
+        }
+      } catch {
+        // keep fallback
+      }
+    });
+  }, []);
   useEffect(() => {
     const handleMobileMenu = (e: any) => setIsMobileMenuOpen(e.detail);
     window.addEventListener('mobileMenuToggled', handleMobileMenu);
@@ -340,9 +358,15 @@ export function LiveChatWidget() {
                     className="mt-4"
                   >
                     <div className="flex -space-x-2 mb-3">
-                      <img src="https://cdn.discordapp.com/avatars/570146481663770634/d6bd981f5a7fbd7b48357d0e2f46f420.png?size=128" alt="Staff" className="w-8 h-8 rounded-full border-2 border-[#1a1b26] object-cover" />
-                      <img src="https://cdn.discordapp.com/avatars/913826949820997654/322a9c9efec773beefe07d658784075d.png?size=128" alt="Staff" className="w-8 h-8 rounded-full border-2 border-[#1a1b26] object-cover" />
-                      <img src="https://cdn.discordapp.com/avatars/850383604404322304/80d23f978344d4ba2681f822d2402d06.png?size=128" alt="Staff" className="w-8 h-8 rounded-full border-2 border-[#1a1b26] object-cover" />
+                      {STAFF_IDS.map((id) => (
+                        <img
+                          key={id}
+                          src={staffAvatars[id] || `https://api.dicebear.com/7.x/avataaars/svg?seed=${id}`}
+                          alt="Staff"
+                          className="w-8 h-8 rounded-full border-2 border-[#1a1b26] object-cover"
+                          onError={(e) => { (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${id}`; }}
+                        />
+                      ))}
                     </div>
                     <h2 className="text-2xl font-black leading-tight">Hi there 👋<br/>How can we help?</h2>
                   </motion.div>
@@ -401,18 +425,18 @@ export function LiveChatWidget() {
                   {/* Quick Links Grid */}
                   <div className="flex flex-wrap gap-2 mt-4">
                     {[
-                      { label: 'Assistance', icon: <HelpCircle className="w-3 h-3 text-rose-400" /> },
-                      { label: 'Reviews', icon: <Star className="w-3 h-3 text-yellow-400" /> },
-                      { label: 'Guarantee', icon: <ShieldCheck className="w-3 h-3 text-blue-400" /> },
-                      { label: 'Bug Report', icon: <Bug className="w-3 h-3 text-red-400" /> },
-                      { label: 'Boosting Services', icon: <Rocket className="w-3 h-3 text-purple-400" /> },
-                      { label: 'Powerseller Application', icon: <ShoppingCart className="w-3 h-3 text-gray-400" /> }
+                      { label: 'Assistance', icon: <HelpCircle className="w-3 h-3 text-rose-400" />, q: 'help', a: 'How can we assist you today? Please describe your issue or question in detail.' },
+                      { label: 'Reviews', icon: <Star className="w-3 h-3 text-yellow-400" />, q: 'reviews', a: 'You can read our verified customer reviews directly on the Reviews page of our website!' },
+                      { label: 'Guarantee', icon: <ShieldCheck className="w-3 h-3 text-blue-400" />, q: 'guarantee', a: 'We do not replace accounts. The guarantee is valid for 1 month from the date of purchase.' },
+                      { label: 'Bug Report', icon: <Bug className="w-3 h-3 text-red-400" />, q: 'bug', a: 'Thanks for helping us improve! Please describe the bug you encountered and a staff member will investigate.' },
+                      { label: 'Boosting Services', icon: <Rocket className="w-3 h-3 text-purple-400" />, q: 'boost', a: 'We provide professional boosting services to help you reach your desired rank! Let us know your current and target rank.' },
+                      { label: 'Powerseller Application', icon: <ShoppingCart className="w-3 h-3 text-gray-400" />, q: 'powerseller application', a: 'Interested in selling in bulk? Submit your Powerseller Application by providing your discord ID and inventory details.' }
                     ].map((item) => (
                       <button 
                         key={item.label}
                         onClick={() => {
-                          setInput(item.label);
                           setActiveTab('messages');
+                          handleFaqClick(item.label, item.a);
                         }}
                         className="bg-white/5 hover:bg-white/10 border border-white/5 px-3 py-1.5 rounded-full text-xs font-semibold text-white/80 hover:text-white transition-colors flex items-center gap-1.5"
                       >

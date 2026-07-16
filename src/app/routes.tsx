@@ -24,6 +24,7 @@ const OrdersManager = React.lazy(() => import("./components/admin/OrdersManager"
 const HistoryPage = React.lazy(() => import("./components/admin/HistoryPage").then(m => ({ default: m.HistoryPage })));
 const AnnouncementManager = React.lazy(() => import("./components/admin/AnnouncementManager").then(m => ({ default: m.AnnouncementManager })));
 const SecurityPage = React.lazy(() => import("./components/admin/SecurityPage").then(m => ({ default: m.SecurityPage })));
+const SeoPage = React.lazy(() => import("./components/admin/SeoPage").then(m => ({ default: m.SeoPage })));
 
 export const router = createBrowserRouter([
   {
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
           { path: "history", element: <HistoryPage /> },
           { path: "announcement", element: <AnnouncementManager /> },
           { path: "security", element: <SecurityPage /> },
+          { path: "seo", element: <SeoPage /> },
         ],
       },
     ],

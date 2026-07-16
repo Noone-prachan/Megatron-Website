@@ -1,5 +1,197 @@
 [
   {
+    "id": "1526880913416392719",
+    "name": "Adarsh;",
+    "avatar": "https://cdn.discordapp.com/avatars/1048165616290365460/bb9f578b0edd3e59f1a209169224fae3.webp?size=128",
+    "rating": 5,
+    "comment": "It was a wonderful experience to deal, reliable and fascinating",
+    "date": "2026-07-15T09:19:37.834Z"
+  },
+  {
+    "id": "1526869894157828137",
+    "name": "Infruu",
+    "avatar": "https://cdn.discordapp.com/embed/avatars/0.png",
+    "rating": 5,
+    "comment": "loved it",
+    "date": "2026-07-15T08:35:50.638Z"
+  },
+  {
+    "id": "1526291742150889473",
+    "name": "Aadi_tya",
+    "avatar": "https://cdn.discordapp.com/avatars/1123943247761395742/657a5b43b52a6df9623eae5688787884.webp?size=128",
+    "rating": 5,
+    "comment": "superb",
+    "date": "2026-07-13T18:18:28.458Z"
+  },
+  {
+    "id": "1526256750746144929",
+    "name": "Dawasherpa12",
+    "avatar": "https://cdn.discordapp.com/avatars/1299629145445240832/5445ffd7ffb201a98393cbdf684ea4b1.webp?size=128",
+    "rating": 5,
+    "comment": "Trusted and better deals",
+    "date": "2026-07-13T15:59:25.857Z"
+  },
+  {
+    "id": "1526226450569494532",
+    "name": "GAMERX",
+    "avatar": "https://cdn.discordapp.com/avatars/851875166303551530/f3bcee05d9ad70849075b031096d393a.webp?size=128",
+    "rating": 5,
+    "comment": "fantastic",
+    "date": "2026-07-13T13:59:01.732Z"
+  },
+  {
+    "id": "1526036990615752865",
+    "name": "Adonís.",
+    "avatar": "https://cdn.discordapp.com/avatars/1498302329949257840/6900052e0b5822e7a9acecf8482881d6.webp?size=128",
+    "rating": 5,
+    "comment": "great",
+    "date": "2026-07-13T01:26:10.959Z"
+  },
+  {
+    "id": "1525888685155815637",
+    "name": "Glea",
+    "avatar": "https://cdn.discordapp.com/avatars/1104320626463875103/c79bcd8b899d54e9ff206b1598588e04.webp?size=128",
+    "rating": 5,
+    "comment": "best service",
+    "date": "2026-07-12T15:36:52.182Z"
+  },
+  {
+    "id": "1525542703134277833",
+    "name": "SanZ_Evans",
+    "avatar": "https://cdn.discordapp.com/avatars/723840229500518402/6f5473ea30feeaa66b894399c2d8fb88.webp?size=128",
+    "rating": 5,
+    "comment": "thankx",
+    "date": "2026-07-11T16:42:03.640Z"
+  },
+  {
+    "id": "1525479293809852417",
+    "name": "not",
+    "avatar": "https://cdn.discordapp.com/avatars/710791354241908757/c94bd7bfe558e03a4f8b0d347146d144.webp?size=128",
+    "rating": 5,
+    "comment": "most trusted middleman 🙌",
+    "date": "2026-07-11T12:30:05.679Z"
+  },
+  {
+    "id": "1525477713459155027",
+    "name": "Pradeep-19",
+    "avatar": "https://cdn.discordapp.com/embed/avatars/5.png",
+    "rating": 5,
+    "comment": "loved the service",
+    "date": "2026-07-11T12:23:48.894Z"
+  },
+  {
+    "id": "1524454020402647141",
+    "name": "Main hoe",
+    "avatar": "https://cdn.discordapp.com/avatars/712542749387128931/84fa9f3609114da9e5e5395d2353c002.webp?size=128",
+    "rating": 5,
+    "comment": "trusted and fast service with a fast response as well. Got my payment on time too.",
+    "date": "2026-07-08T16:36:01.450Z"
+  },
+  {
+    "id": "1524417828537634962",
+    "name": "Wraith",
+    "avatar": "https://cdn.discordapp.com/avatars/863037804640337930/f752d6ba4d6d151deb2a266992e2344f.webp?size=128",
+    "rating": 4,
+    "comment": "100% Trusted and safe deals service is fast too!!",
+    "date": "2026-07-08T14:12:12.637Z"
+  },
+  {
+    "id": "1519033471706861569",
+    "name": "SATURN",
+    "avatar": "https://cdn.discordapp.com/avatars/818720477501325312/621acaa0f5879470152a19bff84ff39b.webp?size=128",
+    "rating": 5,
+    "comment": "Legit",
+    "date": "2026-06-23T17:36:41.932Z"
+  },
+  {
+    "id": "1518994906008256686",
+    "name": "Akiro",
+    "avatar": "https://cdn.discordapp.com/avatars/896711755055632417/4eed496ca6f92b5ea14a0971abf83474.webp?size=128",
+    "rating": 5,
+    "comment": "Fast and reliable service loved it",
+    "date": "2026-06-23T15:03:27.153Z"
+  },
+  {
+    "id": "1518973164690870446",
+    "name": "GAMERX",
+    "avatar": "https://cdn.discordapp.com/avatars/851875166303551530/f3bcee05d9ad70849075b031096d393a.webp?size=128",
+    "rating": 5,
+    "comment": "Trusted and secure 💕",
+    "date": "2026-06-23T13:37:03.619Z"
+  },
+  {
+    "id": "1518971650757103697",
+    "name": "Someone",
+    "avatar": "https://cdn.discordapp.com/avatars/1071264297428197407/eb17df0a1673b61064d0cc4bae271245.webp?size=128",
+    "rating": 5,
+    "comment": "Quick deals",
+    "date": "2026-06-23T13:31:02.669Z"
+  },
+  {
+    "id": "1518633071203582033",
+    "name": "Bikesh",
+    "avatar": "https://cdn.discordapp.com/embed/avatars/5.png",
+    "rating": 5,
+    "comment": "❤️",
+    "date": "2026-06-22T15:05:39.013Z"
+  },
+  {
+    "id": "1518549845231534241",
+    "name": "Anesthesia",
+    "avatar": "https://cdn.discordapp.com/avatars/1384942867109122141/4f990d3403eff75f366a59fc94cae8ab.webp?size=128",
+    "rating": 5,
+    "comment": "really loved the service and making sure everything is clear before dealing!!",
+    "date": "2026-06-22T09:34:56.395Z"
+  },
+  {
+    "id": "1518540927709478984",
+    "name": "Woniao p୭˚.",
+    "avatar": "https://cdn.discordapp.com/avatars/1061682582615494767/7b62a13cadc06740620c4c4213f1286c.webp?size=128",
+    "rating": 5,
+    "comment": "ahhh trusted seller thank you wiwiwi",
+    "date": "2026-06-22T08:59:30.292Z"
+  },
+  {
+    "id": "1518310103277633628",
+    "name": "Barun magar",
+    "avatar": "https://cdn.discordapp.com/avatars/1515261760448364619/c82b3fa769ed6e6ffdea579381ed5f5c.webp?size=128",
+    "rating": 5,
+    "comment": "noice",
+    "date": "2026-06-21T17:42:17.459Z"
+  },
+  {
+    "id": "1518260782054375537",
+    "name": "Raizo",
+    "avatar": "https://cdn.discordapp.com/avatars/757458869420163112/b71ecd90b0d7fbb7e98f5bcb705402de.webp?size=128",
+    "rating": 5,
+    "comment": "Trusted seller And Service, Smooth Process And Everything Went Perfectly. ❤️",
+    "date": "2026-06-21T14:26:18.363Z"
+  },
+  {
+    "id": "1517855875539275848",
+    "name": "deleted_user450597",
+    "avatar": "https://cdn.discordapp.com/embed/avatars/4.png",
+    "rating": 5,
+    "comment": "Verily, a most safe and reliable dealer. Though the exchange was somewhat delayed, the cause lay with the account's owner and not the merchant. I am well pleased with the account and would recommend this seller without hesitation.",
+    "date": "2026-06-20T11:37:21.127Z"
+  },
+  {
+    "id": "1516775660822200381",
+    "name": "Kenn.",
+    "avatar": "https://cdn.discordapp.com/avatars/1509582457190748180/06cadb280dc0ef0888716428b1d65d77.webp?size=128",
+    "rating": 5,
+    "comment": "ekdam trusted smooth work",
+    "date": "2026-06-17T12:04:57.869Z"
+  },
+  {
+    "id": "1516752703852777623",
+    "name": "Ryuzenn",
+    "avatar": "https://cdn.discordapp.com/avatars/1306233963815370835/93c2c49cc1b317de5d076c61c2201dcd.webp?size=128",
+    "rating": 5,
+    "comment": "Great Service by",
+    "date": "2026-06-17T10:33:44.501Z"
+  },
+  {
     "id": "1516479019149692939",
     "name": "Noone ✮",
     "avatar": "https://cdn.discordapp.com/avatars/850383604404322304/80d23f978344d4ba2681f822d2402d06.webp?size=128",

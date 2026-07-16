@@ -1,4 +1,6 @@
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+import { api } from "../../../lib/api";
 
 const teamMembers = [
   {
@@ -134,7 +136,36 @@ const teamMembers = [
   },
 ];
 
+interface DiscordProfile {
+  avatarUrl: string;
+  bannerUrl: string | null;
+  bannerColor: string | null;
+}
+
 export function Team() {
+  const [profiles, setProfiles] = useState<Record<string, DiscordProfile>>({});
+
+  useEffect(() => {
+    // Fetch live Discord profiles for all team members in parallel
+    const fetchProfiles = async () => {
+      const results = await Promise.allSettled(
+        teamMembers.map(m => api.getDiscordUser(m.id))
+      );
+      const map: Record<string, DiscordProfile> = {};
+      results.forEach((result, i) => {
+        if (result.status === 'fulfilled') {
+          map[teamMembers[i].id] = {
+            avatarUrl: result.value.avatarUrl,
+            bannerUrl: result.value.bannerUrl,
+            bannerColor: result.value.bannerColor,
+          };
+        }
+      });
+      setProfiles(map);
+    };
+    fetchProfiles();
+  }, []);
+
   return (
     <div className="min-h-screen pt-36 pb-24 relative overflow-hidden bg-[var(--bg-primary)]">
       {/* Dynamic Ambient Background Glows */}
@@ -206,8 +237,10 @@ export function Team() {
                   <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                     style={{ 
-                      backgroundColor: member.bannerColor,
-                      backgroundImage: member.banner ? `url(${member.banner})` : 'none'
+                      backgroundColor: profiles[member.id]?.bannerColor ?? member.bannerColor,
+                      backgroundImage: (profiles[member.id]?.bannerUrl ?? member.banner)
+                        ? `url(${profiles[member.id]?.bannerUrl ?? member.banner})`
+                        : 'none'
                     }}
                   />
                   {/* Glass gradient overlay at bottom of banner to blend into card */}
@@ -222,9 +255,13 @@ export function Team() {
                       <div className={`absolute -inset-1 bg-gradient-to-r ${member.themeColor} rounded-full opacity-50 blur-md group-hover/avatar:opacity-100 transition-opacity duration-300`}></div>
                       <div className="w-[112px] h-[112px] rounded-full border-[4px] border-[var(--bg-secondary)] dark:border-[#0d0e12] bg-[var(--bg-secondary)] dark:bg-[#0d0e12] relative z-10 overflow-hidden">
                         <img
-                          src={member.avatar}
+                          src={profiles[member.id]?.avatarUrl ?? member.avatar}
                           alt={member.displayName}
+                          crossOrigin="anonymous"
                           className="w-full h-full rounded-full object-cover transform transition-transform duration-500 group-hover/avatar:scale-110"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.id}`;
+                          }}
                         />
                       </div>
                       {/* Premium Online Indicator */}

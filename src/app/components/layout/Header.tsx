@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 // If you ever see errors like "Cannot destructure property 'basename' of useContext(...) as it is null",
 // it usually means Link/useLocation is being rendered outside a router context.
 
-import { Menu, X, Sun, Moon, Home, ShoppingBag, Star, Users, User, BarChart } from "lucide-react";
+import { Menu, X, Sun, Moon, Home, ShoppingBag, Star, Users, User, BarChart, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { motion, AnimatePresence } from "motion/react";
@@ -273,11 +273,32 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
                   )
                 })}
 
+                {/* Wishlist — standalone section */}
+                <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
+                  <Link
+                    to="/wishlist"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`font-bold text-lg flex justify-between items-center group py-3 px-4 rounded-xl transition-all ${
+                      location.pathname === '/wishlist'
+                        ? 'bg-pink-500/15 border border-pink-500/30 text-pink-400'
+                        : 'text-[var(--text-secondary)] hover:text-pink-400 hover:bg-pink-500/10'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Heart className={`w-5 h-5 transition-colors ${
+                        location.pathname === '/wishlist' ? 'text-pink-400 fill-pink-400' : 'text-pink-500 group-hover:text-pink-400'
+                      }`} />
+                      Wishlist
+                    </div>
+                    <svg className="opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-pink-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m9 18 6-6-6-6" /></svg>
+                  </Link>
+                </div>
+
                 {isAdmin && (
                   <Link
                     to="/admin"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="font-bold text-lg text-red-500 hover:text-red-400 py-3 px-4 rounded-xl hover:bg-red-500/10 transition-colors flex justify-between items-center group mt-4 pt-4 border-t border-[var(--border-color)]"
+                    className="font-bold text-lg text-red-500 hover:text-red-400 py-3 px-4 rounded-xl hover:bg-red-500/10 transition-colors flex justify-between items-center group mt-2"
                   >
                     <div className="flex items-center gap-3">
                       <Star className="w-5 h-5 text-red-500" />

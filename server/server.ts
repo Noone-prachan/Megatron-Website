@@ -12,6 +12,8 @@ import chatRoutes from './routes/chat';
 import analyticsRoutes from './routes/analytics';
 import adminRoutes from './routes/admin';
 import gameRoutes from './routes/game';
+import userRoutes from './routes/users';
+import seoRoutes from './routes/seo';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,7 +29,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(helmet());
+app.use(helmet({
+  permissionsPolicy: {
+    features: {
+      // Only include recognized, non-deprecated features
+      fullscreen: ["'self'"],
+      payment: [],
+    },
+  },
+}));
 app.use(xss());
 
 const limiter = rateLimit({
@@ -54,6 +64,8 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/game', gameRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/seo', seoRoutes);
 
 // Add test routes for development mode
 if (process.env.NODE_ENV !== 'production') {

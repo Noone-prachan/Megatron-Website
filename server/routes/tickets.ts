@@ -1,5 +1,5 @@
 import express from 'express';
-import { ChannelType, PermissionFlagsBits } from 'discord.js';
+import { ChannelType, PermissionFlagsBits, ForumChannel } from 'discord.js';
 import axios from 'axios';
 import { discordClient as client, botReady } from '../discordClient';
 import { z } from 'zod';
@@ -346,6 +346,186 @@ router.post('/announce', async (req, res) => {
   } catch (error: any) {
     console.error('Error sending announcement:', error);
     res.status(500).json({ error: 'Failed to send announcement', message: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Forum Post endpoints for account-listing channel
+// ─────────────────────────────────────────────────────────────────
+
+const forumPostSchema = z.object({
+  product: z.object({
+    title: z.string(),
+    dedicatedId: z.string().optional(),
+    price: z.number(),
+    image: z.string().optional(),
+  })
+});
+
+/**
+ * POST /api/tickets/forum-post
+ * Creates a new Forum thread in the account-listing channel when an account is listed.
+ * Returns the threadId so it can be saved on the product for later sold/close actions.
+ */
+router.post('/forum-post', async (req, res) => {
+  let validatedData;
+  try {
+    validatedData = forumPostSchema.parse(req.body);
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid input', details: error.errors });
+    }
+    return res.status(400).json({ error: 'Invalid request' });
+  }
+
+  const { product } = validatedData;
+
+  if (!botReady) {
+    return res.status(503).json({ error: 'Discord bot is not ready' });
+  }
+
+  const forumChannelId = process.env.ACCOUNT_LISTING_FORUM_ID;
+  if (!forumChannelId) {
+    return res.status(400).json({ error: 'ACCOUNT_LISTING_FORUM_ID is not configured in server/.env' });
+  }
+
+  try {
+    const guild = await client.guilds.fetch(process.env.DISCORD_GUILD_ID!);
+    const forumChannel = await guild.channels.fetch(forumChannelId);
+
+    if (!forumChannel || forumChannel.type !== ChannelType.GuildForum) {
+      return res.status(400).json({ error: 'The configured channel is not a Forum channel' });
+    }
+
+    const forum = forumChannel as ForumChannel;
+
+    // Post body format matching the existing Discord posts:
+    // Line 1: {dedicatedId}
+    // Line 2: Available for 💰 {price}/-
+    // Line 3: Create a ticket to purchase.
+    const dedicatedId = product.dedicatedId || '';
+    const postBody = [
+      dedicatedId,
+      `Available for <:cash:1508502997024378951> ${product.price}/-`,
+      `Create a ticket to purchase.`,
+    ].filter(Boolean).join('\n');
+
+    const messagePayload: any = { content: postBody };
+
+    if (product.image) {
+      if (product.image.startsWith('data:image')) {
+        const matches = product.image.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+        if (matches) {
+          const extension = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+          const buffer = Buffer.from(matches[2], 'base64');
+          messagePayload.files = [{ attachment: buffer, name: `account.${extension}` }];
+        }
+      } else if (product.image.startsWith('http')) {
+        // Append URL as a second line so Discord auto-embeds the image
+        messagePayload.content += `\n${product.image}`;
+      }
+    }
+
+    // Create the forum thread — title is the product title (e.g. "Renowned Collector-III")
+    const thread = await forum.threads.create({
+      name: product.title,
+      message: messagePayload,
+    });
+
+    res.json({
+      success: true,
+      threadId: thread.id,
+      threadUrl: `https://discord.com/channels/${guild.id}/${thread.id}`,
+    });
+  } catch (error: any) {
+    console.error('Error creating forum post:', error);
+    res.status(500).json({ error: 'Failed to create forum post', message: error.message });
+  }
+});
+
+const forumSoldSchema = z.object({
+  threadId: z.string().min(1),
+});
+
+/**
+ * POST /api/tickets/forum-sold
+ * Renames a forum thread to "SOLD" and archives (closes) it.
+ */
+router.post('/forum-sold', async (req, res) => {
+  let validatedData;
+  try {
+    validatedData = forumSoldSchema.parse(req.body);
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid input', details: error.errors });
+    }
+    return res.status(400).json({ error: 'Invalid request' });
+  }
+
+  const { threadId } = validatedData;
+
+  if (!botReady) {
+    return res.status(503).json({ error: 'Discord bot is not ready' });
+  }
+
+  try {
+    const thread = await client.channels.fetch(threadId);
+    if (!thread || !('setName' in thread)) {
+      return res.status(404).json({ error: 'Forum thread not found' });
+    }
+
+    // Rename to SOLD then lock and archive (close) the post
+    await (thread as any).edit({
+      name: 'SOLD',
+      locked: true,
+      archived: true
+    }, 'Account sold via website');
+
+    res.json({ success: true, message: 'Forum post marked as SOLD and closed.' });
+  } catch (error: any) {
+    console.error('Error marking forum post as sold:', error);
+    res.status(500).json({ error: 'Failed to update forum post', message: error.message });
+  }
+});
+
+/**
+ * POST /api/tickets/forum-unavailable
+ * Renames a forum thread to "NOT AVAILABLE" and archives (closes) it.
+ */
+router.post('/forum-unavailable', async (req, res) => {
+  const schema = z.object({ threadId: z.string().min(1) });
+  let validatedData;
+  try {
+    validatedData = schema.parse(req.body);
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid input', details: error.errors });
+    }
+    return res.status(400).json({ error: 'Invalid request' });
+  }
+
+  const { threadId } = validatedData;
+
+  if (!botReady) {
+    return res.status(503).json({ error: 'Discord bot is not ready' });
+  }
+
+  try {
+    const thread = await client.channels.fetch(threadId);
+    if (!thread || !('setName' in thread)) {
+      return res.status(404).json({ error: 'Forum thread not found' });
+    }
+
+    await (thread as any).edit({
+      name: 'NOT AVAILABLE',
+      locked: true,
+      archived: true
+    }, 'Account marked not available via website');
+
+    res.json({ success: true, message: 'Forum post marked as NOT AVAILABLE and closed.' });
+  } catch (error: any) {
+    console.error('Error marking forum post as not available:', error);
+    res.status(500).json({ error: 'Failed to update forum post', message: error.message });
   }
 });
 

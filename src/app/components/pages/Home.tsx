@@ -686,8 +686,8 @@ export function Home() {
             >
               <iframe
                 src="https://discord.com/widget?id=1486062330466013409&theme=dark"
-                allowTransparency={true}
-                frameBorder="0"
+                allowtransparency="true"
+                style={{ border: 'none' }}
                 sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
                 className="absolute inset-0 w-full h-full rounded-[2.5rem]"
               >

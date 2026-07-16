@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 import { HelmetProvider } from "react-helmet-async";
 import { WishlistProvider } from "./context/WishlistContext";
 import { AdminProvider } from "./context/AdminContext";
+import { SeoProvider } from "./context/SeoContext";
 
 export default function App() {
   useEffect(() => {
@@ -31,8 +32,10 @@ export default function App() {
                 <OrderProvider>
                   <WishlistProvider>
                     <AdminProvider>
-                      <Toaster theme="dark" position="bottom-right" richColors />
-                      <RouterProvider router={router} />
+                      <SeoProvider>
+                        <Toaster theme="dark" position="bottom-left" richColors />
+                        <RouterProvider router={router} />
+                      </SeoProvider>
                     </AdminProvider>
                   </WishlistProvider>
                 </OrderProvider>
