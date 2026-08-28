@@ -1,16 +1,11 @@
 import express from 'express';
+import { discordClient } from '../discordClient';
 
 const router = express.Router();
 
-// Simple in-memory cache: { userId -> { data, fetchedAt } }
+const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache: Record<string, { data: any; fetchedAt: number }> = {};
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-/**
- * GET /api/users/:id
- * Fetches a Discord user's profile (avatar + banner hash) via the bot token.
- * Returns CDN URLs so the frontend can display them directly.
- */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -18,37 +13,24 @@ router.get('/:id', async (req, res) => {
     return res.status(400).json({ error: 'Invalid Discord user ID' });
   }
 
-  // Serve from cache if fresh
   const cached = cache[id];
   if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
     return res.json(cached.data);
   }
 
-  const botToken = process.env.DISCORD_BOT_TOKEN;
-  if (!botToken) {
-    return res.status(500).json({ error: 'Bot token not configured' });
+  if (!discordClient.isReady()) {
+    return res.status(503).json({ error: 'Discord bot is not connected yet' });
   }
 
   try {
-    const response = await fetch(`https://discord.com/api/v10/users/${id}`, {
-      headers: {
-        Authorization: `Bot ${botToken}`,
-      },
-    });
+    const user = await discordClient.users.fetch(id);
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: 'Failed to fetch Discord user' });
-    }
-
-    const user = await response.json() as any;
-
-    // Build CDN URLs
     const avatarHash = user.avatar;
-    const bannerHash = user.banner;
+    const bannerHash = (user as any).banner;
 
     const avatarUrl = avatarHash
       ? `https://cdn.discordapp.com/avatars/${id}/${avatarHash}.${avatarHash.startsWith('a_') ? 'gif' : 'png'}?size=256`
-      : `https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator || 0) % 5}.png`;
+      : `https://cdn.discordapp.com/embed/avatars/${Number((user as any).discriminator || 0) % 5}.png`;
 
     const bannerUrl = bannerHash
       ? `https://cdn.discordapp.com/banners/${id}/${bannerHash}.${bannerHash.startsWith('a_') ? 'gif' : 'png'}?size=512`
@@ -56,17 +38,17 @@ router.get('/:id', async (req, res) => {
 
     const result = {
       id,
-      username: user.global_name || user.username,
+      username: user.globalName || user.username,
       avatarUrl,
       bannerUrl,
-      bannerColor: user.banner_color || null,
+      bannerColor: (user as any).banner_color || null,
     };
 
     cache[id] = { data: result, fetchedAt: Date.now() };
-    return res.json(result);
+    res.json(result);
   } catch (err) {
     console.error(`Failed to fetch Discord user ${id}:`, err);
-    return res.status(500).json({ error: 'Internal server error' });
+    res.status(404).json({ error: 'User not found or bot cannot access this user' });
   }
 });
 

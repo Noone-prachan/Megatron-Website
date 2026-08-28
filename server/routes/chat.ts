@@ -1,22 +1,10 @@
 import express from 'express';
-import { ChannelType, PermissionFlagsBits, TextChannel, Message, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { ChannelType, PermissionFlagsBits, TextChannel, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { discordClient as client, botReady } from '../discordClient';
+import { chatClients, broadcastToTicket } from '../chatBroadcast';
 import { z } from 'zod';
 
 const router = express.Router();
-
-// Store active SSE connections mapped by ticketId
-export const chatClients = new Map<string, express.Response[]>();
-
-// Broadcast a message to all connected SSE clients for a specific ticket
-export const broadcastToTicket = (ticketId: string, data: any) => {
-  const clients = chatClients.get(ticketId);
-  if (clients && clients.length > 0) {
-    clients.forEach(res => {
-      res.write(`data: ${JSON.stringify(data)}\n\n`);
-    });
-  }
-};
 
 const initChatSchema = z.object({
   username: z.string().min(1),

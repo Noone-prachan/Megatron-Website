@@ -33,35 +33,6 @@ const teamMembers = [
     link: "https://discord.com/users/570146481663770634"
   },
   {
-    id: "913826949820997654",
-    username: "astral.0740",
-    displayName: "I-naa?",
-    role: "OWNER",
-    bioTag: "Purchase Handler",
-    secondaryBioTag: "Stock Management",
-    secondaryIcon: (
-      <svg className="w-5 h-5 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-      </svg>
-    ),
-    icon: (
-      <svg className="w-5 h-5 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
-      </svg>
-    ),
-    avatar: "https://cdn.discordapp.com/avatars/913826949820997654/322a9c9efec773beefe07d658784075d.png?size=256",
-    banner: "https://cdn.discordapp.com/banners/913826949820997654/a_69d525642c6b76df462f8409b116541c.gif?size=512",
-    bannerColor: "#383d46",
-    themeColor: "from-red-500 to-orange-500",
-    glowColor: "shadow-red-500/20",
-    textColor: "text-red-400",
-    borderColor: "border-red-500/30",
-    link: "https://discord.com/users/913826949820997654"
-  },
-  {
     id: "850383604404322304",
     username: "stingplayer",
     displayName: "Noone ✮",

@@ -1,36 +1,24 @@
-import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { api } from "../../../lib/api";
-import { useAdmin } from "../../context/AdminContext";
+
+const ADMIN_IDS = ['570146481663770634', '850383604404322304'];
+
+function getDiscordId(): string | null {
+  const stored = localStorage.getItem('discord_id');
+  if (stored) return stored;
+  try {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return null;
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return payload?.id ? String(payload.id) : null;
+  } catch {
+    return null;
+  }
+}
 
 export function AdminGuard() {
-  const [loading, setLoading] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
+  const discordId = getDiscordId();
+  const isAdmin = discordId ? ADMIN_IDS.includes(discordId) : false;
 
-  const { isAdmin, isLoading: isWhitelistLoading } = useAdmin();
-
-  useEffect(() => {
-    api.getCurrentUser().then(user => {
-      if (user && isAdmin) {
-        setAuthorized(true);
-      } else {
-        setAuthorized(false);
-      }
-      setLoading(false);
-    }).catch(() => {
-      setAuthorized(false);
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading || isWhitelistLoading) {
-    return (
-      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  // If authorized, render the nested admin routes. Otherwise, redirect to home.
-  return authorized ? <Outlet /> : <Navigate to="/" replace />;
+  if (!isAdmin) return <Navigate to="/" replace />;
+  return <Outlet />;
 }

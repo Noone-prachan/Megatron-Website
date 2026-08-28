@@ -61,6 +61,7 @@ export default defineConfig({
 
   // Development server configuration
   server: {
+    host: true, // listen on 0.0.0.0 so LAN clients can connect
     port: 5173,
     allowedHosts: true,
     proxy: {
@@ -70,4 +71,9 @@ export default defineConfig({
       },
     },
   },
+  
+  // Build configuration
+  build: {
+    sourcemap: false, // Ensure source maps are not generated to hide original code
+  }
 })

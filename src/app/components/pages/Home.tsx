@@ -130,7 +130,7 @@ export function Home() {
     if (!userId) {
       toast.info("Please sign in with Discord to create a ticket.");
       setTimeout(() => {
-        window.location.href = `${import.meta.env.VITE_API_URL}/auth/discord`;
+        window.location.href = `${import.meta.env.VITE_API_URL || '/api'}/auth/discord`;
       }, 1500);
       return;
     }

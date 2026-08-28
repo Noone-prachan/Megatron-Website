@@ -29,15 +29,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(helmet({
-  permissionsPolicy: {
-    features: {
-      // Only include recognized, non-deprecated features
-      fullscreen: ["'self'"],
-      payment: [],
-    },
-  },
-}));
+app.use(helmet());
 app.use(xss());
 
 const limiter = rateLimit({
@@ -45,12 +37,36 @@ const limiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   message: 'Too many requests, please try again later.'
 });
-app.use('/api', limiter);
+
+// Apply rate limiter to /api, but skip auth routes (they handle their own limiting if needed)
+app.use('/api', (req, res, next) => {
+  // Skip rate limiting for auth endpoints
+  if (req.path.startsWith('/auth')) {
+    return next();
+  }
+  limiter(req, res, next);
+});
 
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? 'https://your-production-url.com'
-    : 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow any origin in development (LAN clients, tunnels, etc.)
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    const allowed = [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'https://witty-bears-dress.loca.lt',
+      'https://social-dogs-swim.loca.lt',
+      'https://old-socks-tie.loca.lt',
+      'https://common-bees-travel.loca.lt',
+    ];
+    if (!origin || allowed.includes(origin) || origin.endsWith('.loca.lt')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
@@ -89,7 +105,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+app.listen(Number(PORT), '0.0.0.0', () => {
+  console.log(`🚀 Server is running on http://0.0.0.0:${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
 });

@@ -38,8 +38,11 @@ export function ProductCard({ product }: { product: Product }) {
     }
   };
 
+  const linkBase = (!product.type || product.type === "account") ? "/accounts" : "/products";
+  const linkPath = `${linkBase}/${product.dedicatedId ? product.dedicatedId.toLowerCase() : product.id}`;
+
   return (
-    <Link to={`/products/${product.dedicatedId ? product.dedicatedId.toLowerCase() : product.id}`} className="block group h-full">
+    <Link to={linkPath} className="block group h-full">
       <motion.div
         whileHover={{ y: -6 }}
         className="bg-[var(--bg-secondary)] rounded-[2rem] overflow-hidden shadow-sm border border-[var(--border-color)] h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:border-[var(--text-secondary)]/30"
@@ -74,29 +77,53 @@ export function ProductCard({ product }: { product: Product }) {
           <h3 className="font-bold text-[var(--text-primary)] text-base leading-snug mb-4 flex-1 line-clamp-2">{product.title}</h3>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-2 text-center mb-4 border-t border-b border-[var(--border-color)] py-3">
-            <div>
-              <p className="text-sm font-bold text-[var(--text-primary)]">{product.level}</p>
-              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Level</p>
+          {(!product.type || product.type === "account") ? (
+            <div className="grid grid-cols-3 gap-2 text-center mb-4 border-t border-b border-[var(--border-color)] py-3">
+              <div>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{product.level}</p>
+                <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Level</p>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{product.skins}</p>
+                <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Skins</p>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{product.heroes}</p>
+                <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Heroes</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-bold text-[var(--text-primary)]">{product.skins}</p>
-              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Skins</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 text-center mb-4 border-t border-b border-[var(--border-color)] py-3">
+              <div>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{product.currencyPackages?.length || 0}</p>
+                <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Packages</p>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[var(--text-primary)]">Global</p>
+                <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Region</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-bold text-[var(--text-primary)]">{product.heroes}</p>
-              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Heroes</p>
-            </div>
-          </div>
+          )}
 
           {/* Price */}
           <div className="flex items-baseline justify-end gap-2 mt-auto">
-            {product.discountPrice != null && (
-              <span className="text-base font-medium text-[var(--text-secondary)] line-through">{formatPrice(product.price)}</span>
+            {(!product.type || product.type === "account") ? (
+              <>
+                {product.discountPrice != null && (
+                  <span className="text-base font-medium text-[var(--text-secondary)] line-through">{formatPrice(product.price)}</span>
+                )}
+                <span className="text-2xl font-black text-[var(--text-primary)]">
+                  {formatPrice(product.discountPrice ?? product.price)}
+                </span>
+              </>
+            ) : (
+              <div className="flex flex-col items-end">
+                <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Starting from</span>
+                <span className="text-2xl font-black text-[var(--text-primary)]">
+                  {formatPrice(product.price)}
+                </span>
+              </div>
             )}
-            <span className="text-2xl font-black text-[var(--text-primary)]">
-              {formatPrice(product.discountPrice ?? product.price)}
-            </span>
           </div>
         </div>
       </motion.div>

@@ -111,7 +111,7 @@ export function MiniGame({ isOpen, onClose }: MiniGameProps) {
       ball: { 
         x: isMobile ? width * 0.25 : width * 0.3, 
         y: height / 2, 
-        dy: 0, 
+        dy: -2.5, // Small hop at start instead of falling immediately
         radius: isMobile ? 18 : 24, 
         rotation: 0 
       },
@@ -307,7 +307,7 @@ export function MiniGame({ isOpen, onClose }: MiniGameProps) {
   };
 
   const handleDiscordLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/discord`;
+    window.location.href = `${import.meta.env.VITE_API_URL || '/api'}/auth/discord`;
   };
 
   return (

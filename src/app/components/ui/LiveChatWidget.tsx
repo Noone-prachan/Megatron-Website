@@ -81,7 +81,7 @@ export function LiveChatWidget() {
   // Fetch live staff avatars from our Discord proxy
   const STAFF_IDS = ['570146481663770634', '913826949820997654', '850383604404322304'];
   useEffect(() => {
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+    const apiBase = import.meta.env.VITE_API_URL || '/api';
     STAFF_IDS.forEach(async (id) => {
       try {
         const res = await fetch(`${apiBase}/users/${id}`);
@@ -116,7 +116,7 @@ export function LiveChatWidget() {
   useEffect(() => {
     if (!ticketId) return;
     
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+    const apiUrl = import.meta.env.VITE_API_URL || '/api';
     const eventSource = new EventSource(`${apiUrl}/chat/stream?ticketId=${ticketId}`);
     
     eventSource.onmessage = (e) => {

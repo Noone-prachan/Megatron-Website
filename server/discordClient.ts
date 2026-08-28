@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, TextChannel } from 'discord.js';
-import { broadcastToTicket } from './routes/chat';
+import { broadcastToTicket } from './chatBroadcast';
 import { ReviewService } from './services/reviewService';
 import { parseReviewMessage } from './utils/reviewParser';
 import { adminWhitelistService } from './services/adminWhitelistService';
@@ -112,7 +112,7 @@ discordClient.on('channelDelete', (channel) => {
 discordClient.on('messageCreate', async (message) => {
   // Admin IP Ban commands
   if (message.content.startsWith('!banip') || message.content.startsWith('!unbanip')) {
-    if (!adminWhitelistService.isAdmin(message.author.id)) {
+    if (!await adminWhitelistService.isAdmin(message.author.id)) {
       message.reply('⛔ You do not have permission to use this command.');
       return;
     }
@@ -132,12 +132,12 @@ discordClient.on('messageCreate', async (message) => {
     const { auditService } = auditServiceModule;
 
     if (message.content.startsWith('!banip')) {
-      const success = banService.banIp(ip);
-      if (success) auditService.logAction(message.author.id, 'IP_BAN', `Banned IP: ${ip}`);
+      const success = await banService.banIp(ip);
+      if (success) await auditService.logAction(message.author.id, 'IP_BAN', `Banned IP: ${ip}`);
       message.reply(success ? `✅ IP \`${ip}\` has been banned from the website.` : `⚠️ IP \`${ip}\` is already banned.`);
     } else if (message.content.startsWith('!unbanip')) {
-      const success = banService.unbanIp(ip);
-      if (success) auditService.logAction(message.author.id, 'IP_UNBAN', `Unbanned IP: ${ip}`);
+      const success = await banService.unbanIp(ip);
+      if (success) await auditService.logAction(message.author.id, 'IP_UNBAN', `Unbanned IP: ${ip}`);
       message.reply(success ? `✅ IP \`${ip}\` has been unbanned.` : `⚠️ IP \`${ip}\` is not in the ban list.`);
     }
     return;
@@ -147,7 +147,7 @@ discordClient.on('messageCreate', async (message) => {
   if (message.channelId === process.env.VOUCH_CHANNEL_ID) {
     const parsed = parseReviewMessage(message);
     if (parsed) {
-      const added = ReviewService.addOrUpdateReview(parsed);
+      const added = await ReviewService.addOrUpdateReview(parsed);
       if (added) console.log(`✅ Added new review to persistent store from ${parsed.name}`);
     }
     // We don't return here because a bot message could theoretically also be a ticket broadcast (unlikely, but safe)

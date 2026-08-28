@@ -1,6 +1,6 @@
 import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
-import { LayoutDashboard, ShoppingCart, Clock, Megaphone, BarChart, Sun, Moon, ArrowLeft, Menu, Shield, Search } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Clock, Megaphone, BarChart, Sun, Moon, ArrowLeft, Menu, Shield, Search, MonitorPlay, LogOut, Users } from "lucide-react";
 import { Suspense, useState, useEffect } from "react";
 import { GlobalLoader } from "../ui/GlobalLoader";
 
@@ -35,8 +35,10 @@ export function AdminLayout() {
     { to: "/admin", label: "Analytics", icon: LayoutDashboard },
     { to: "/admin/products", label: "Products", icon: ShoppingCart },
     { to: "/admin/orders", label: "Orders", icon: BarChart },
-    { to: "/admin/history", label: "History", icon: Clock },
+    { to: "/admin/sellers", label: "Sellers", icon: Users },
     { to: "/admin/announcement", label: "Announcement", icon: Megaphone },
+    { to: "/admin/popups", label: "Popups", icon: MonitorPlay },
+    { to: "/admin/history", label: "History", icon: Clock },
     { to: "/admin/security", label: "Security", icon: Shield },
     { to: "/admin/seo", label: "SEO", icon: Search },
   ];
@@ -88,26 +90,31 @@ export function AdminLayout() {
             <span>Back to Site</span>
           </Link>
         </div>
-        <div className="flex flex-col gap-4 mt-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src={avatarUrl} alt="avatar" className="w-10 h-10 rounded-full" />
-              <p className="font-bold text-sm">{discordGlobalName || discordUsername}</p>
-            </div>
+        <div className="mt-4 p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center gap-3">
+          <div className="relative shrink-0">
+            <img src={avatarUrl} alt="avatar" className="w-10 h-10 rounded-full ring-2 ring-[var(--accent)]/40" />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-[var(--bg-primary)]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm text-[var(--text-primary)] truncate">{discordGlobalName || discordUsername}</p>
+            <p className="text-xs text-[var(--text-secondary)] truncate">Administrator</p>
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               title="Toggle Theme"
             >
               {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
+            <button
+              onClick={handleLogout}
+              className="p-1.5 rounded-lg hover:bg-red-500/10 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full text-sm bg-red-500/10 text-red-500 px-2 py-2 rounded-lg hover:bg-red-500/20 transition-colors font-semibold"
-          >
-            Logout
-          </button>
         </div>
       </aside>
       <main className="lg:pl-64">

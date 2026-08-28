@@ -1,47 +1,29 @@
-import fs from 'fs';
-import path from 'path';
 import { TextChannel } from 'discord.js';
-import { ParsedReview, parseReviewMessage } from '../utils/reviewParser';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const REVIEWS_FILE = path.join(DATA_DIR, 'reviews.json');
-
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
+import { ParsedReview, parseReviewMessage } from '../utils/reviewParser.js';
+import { prisma } from '../utils/db.js';
 
 export class ReviewService {
   /**
-   * Retrieves stored reviews from the JSON file.
+   * Retrieves stored reviews from the database.
    */
-  static getStoredReviews(): ParsedReview[] {
-    if (!fs.existsSync(REVIEWS_FILE)) {
-      return [];
-    }
+  static async getStoredReviews(): Promise<ParsedReview[]> {
     try {
-      const data = fs.readFileSync(REVIEWS_FILE, 'utf-8');
-      return JSON.parse(data);
+      const reviews = await prisma.review.findMany({
+        orderBy: { date: 'desc' },
+        take: 100, // optionally limit to recent 100
+      });
+      // Map back to ParsedReview structure
+      return reviews.map((r: any) => ({
+        id: r.id,
+        name: r.author,
+        avatar: r.avatar,
+        rating: r.rating,
+        comment: r.text,
+        date: r.date.toISOString(),
+      }));
     } catch (err) {
-      console.error('Error reading reviews.json:', err);
+      console.error('Error fetching reviews from DB:', err);
       return [];
-    }
-  }
-
-  /**
-   * Saves the entire array of reviews back to the JSON file.
-   */
-  static saveReviews(reviews: ParsedReview[]): void {
-    try {
-      // Sort reviews by date descending before saving
-      reviews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      
-      // Optionally keep only the latest 100 to prevent file bloat
-      const cappedReviews = reviews.slice(0, 100);
-      
-      fs.writeFileSync(REVIEWS_FILE, JSON.stringify(cappedReviews, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Error writing to reviews.json:', err);
     }
   }
 
@@ -49,17 +31,32 @@ export class ReviewService {
    * Adds a single review if it doesn't already exist.
    * Returns true if added, false if it was a duplicate.
    */
-  static addOrUpdateReview(review: ParsedReview): boolean {
-    const reviews = this.getStoredReviews();
-    
-    // Check for duplicates
-    if (reviews.some(r => r.id === review.id)) {
-      return false; // Already exists
-    }
+  static async addOrUpdateReview(review: ParsedReview): Promise<boolean> {
+    try {
+      const exists = await prisma.review.findUnique({
+        where: { id: review.id }
+      });
+      
+      if (exists) {
+        return false;
+      }
 
-    reviews.push(review);
-    this.saveReviews(reviews);
-    return true;
+      await prisma.review.create({
+        data: {
+          id: review.id,
+          author: review.name,
+          avatar: review.avatar,
+          rating: review.rating,
+          text: review.comment,
+          isScraped: false,
+          date: new Date(review.date),
+        }
+      });
+      return true;
+    } catch (err) {
+      console.error('Error adding review to DB:', err);
+      return false;
+    }
   }
 
   /**
@@ -68,26 +65,18 @@ export class ReviewService {
   static async syncReviewsFromDiscord(channel: TextChannel): Promise<void> {
     try {
       const messages = await channel.messages.fetch({ limit: 50 });
-      let currentReviews = this.getStoredReviews();
       let addedCount = 0;
 
-      // Map existing IDs for quick lookup
-      const existingIds = new Set(currentReviews.map(r => r.id));
-
       for (const msg of messages.values()) {
-        if (!existingIds.has(msg.id)) {
-          const parsed = parseReviewMessage(msg);
-          if (parsed) {
-            currentReviews.push(parsed);
-            existingIds.add(parsed.id);
-            addedCount++;
-          }
+        const parsed = parseReviewMessage(msg);
+        if (parsed) {
+          const added = await this.addOrUpdateReview(parsed);
+          if (added) addedCount++;
         }
       }
 
       if (addedCount > 0) {
-        this.saveReviews(currentReviews);
-        console.log(`✅ Synced ${addedCount} new reviews from Discord.`);
+        console.log(`✅ Synced ${addedCount} new reviews from Discord to Database.`);
       }
     } catch (error) {
       console.error('Failed to sync reviews from Discord:', error);

@@ -1,0 +1,156 @@
+[
+  {
+    "id": "0eu08ds4g",
+    "adminId": "850383604404322304",
+    "action": "ADMIN_REMOVE",
+    "details": "Removed Discord ID from admin whitelist: 1447186972887093409",
+    "timestamp": "2026-08-21T14:00:10.090Z"
+  },
+  {
+    "id": "lqde7j54y",
+    "adminId": "850383604404322304",
+    "action": "ADMIN_ADD",
+    "details": "Added Discord ID to admin whitelist: 1447186972887093409",
+    "timestamp": "2026-08-21T14:00:04.286Z"
+  },
+  {
+    "id": "kv6fvpcz0",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_DELETE",
+    "details": "Deleted seller account: undefined",
+    "timestamp": "2026-08-21T06:22:51.027Z"
+  },
+  {
+    "id": "ufvh6y1m1",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_UPDATE",
+    "details": "Updated seller account: undefined",
+    "timestamp": "2026-08-21T06:22:48.071Z"
+  },
+  {
+    "id": "0avb4ejhe",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_UPDATE",
+    "details": "Updated seller account: undefined",
+    "timestamp": "2026-08-21T06:22:47.460Z"
+  },
+  {
+    "id": "9v7odu0qz",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_UPDATE",
+    "details": "Updated seller account: undefined",
+    "timestamp": "2026-08-21T06:22:46.778Z"
+  },
+  {
+    "id": "fni3l1v2z",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_UPDATE",
+    "details": "Updated seller account: undefined",
+    "timestamp": "2026-08-21T06:22:46.158Z"
+  },
+  {
+    "id": "vsqxyefdm",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_UPDATE",
+    "details": "Updated seller account: undefined",
+    "timestamp": "2026-08-21T06:10:19.913Z"
+  },
+  {
+    "id": "yov9q12vr",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_UPDATE",
+    "details": "Updated seller account: undefined",
+    "timestamp": "2026-08-21T05:48:04.057Z"
+  },
+  {
+    "id": "67apdpzou",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_UPDATE",
+    "details": "Updated seller account: undefined",
+    "timestamp": "2026-08-21T05:48:01.255Z"
+  },
+  {
+    "id": "0qbal9k2w",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_CREATE",
+    "details": "Created seller account: test (Starter)",
+    "timestamp": "2026-08-21T05:46:43.137Z"
+  },
+  {
+    "id": "p27m8nqcd",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_DELETE",
+    "details": "Deleted seller account: test",
+    "timestamp": "2026-08-21T05:46:08.492Z"
+  },
+  {
+    "id": "iyi1ngvp5",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_DELETE",
+    "details": "Deleted seller account: tets",
+    "timestamp": "2026-08-21T05:46:05.393Z"
+  },
+  {
+    "id": "gmdqz73ys",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_DELETE",
+    "details": "Deleted seller account: test",
+    "timestamp": "2026-08-21T05:46:02.843Z"
+  },
+  {
+    "id": "x0gb6jzat",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_DELETE",
+    "details": "Deleted seller account: Prachan Subedi",
+    "timestamp": "2026-08-21T05:45:59.676Z"
+  },
+  {
+    "id": "yoaclgnnx",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_CREATE",
+    "details": "Created seller account: test (Starter)",
+    "timestamp": "2026-08-21T05:38:23.128Z"
+  },
+  {
+    "id": "raqtg3zta",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_CREATE",
+    "details": "Created seller account: tets (Starter)",
+    "timestamp": "2026-08-21T05:33:05.069Z"
+  },
+  {
+    "id": "5zssirvvr",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_CREATE",
+    "details": "Created seller account: test (Starter)",
+    "timestamp": "2026-08-21T05:32:22.130Z"
+  },
+  {
+    "id": "6m5nrbk54",
+    "adminId": "850383604404322304",
+    "action": "SELLER_ACCOUNT_CREATE",
+    "details": "Created seller account: Prachan Subedi (Starter)",
+    "timestamp": "2026-08-21T05:21:56.900Z"
+  },
+  {
+    "id": "iis36b9av",
+    "adminId": "850383604404322304",
+    "action": "ADMIN_ADD",
+    "details": "Added Discord ID to admin whitelist: 844877006634221598",
+    "timestamp": "2026-08-17T07:32:48.798Z"
+  },
+  {
+    "id": "jsuxca040",
+    "adminId": "707830963081838595",
+    "action": "ADMIN_REMOVE",
+    "details": "Removed Discord ID from admin whitelist: 707830963081838595",
+    "timestamp": "2026-07-16T15:20:00.436Z"
+  },
+  {
+    "id": "bw5pwet5m",
+    "adminId": "850383604404322304",
+    "action": "ADMIN_ADD",
+    "details": "Added Discord ID to admin whitelist: 707830963081838595",
+    "timestamp": "2026-07-16T15:18:03.465Z"
+  }
+]

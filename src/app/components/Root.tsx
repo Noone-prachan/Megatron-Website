@@ -1,23 +1,23 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./layout/Header";
 import { Footer } from "./layout/Footer";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useAnnouncement } from "../context/AnnouncementContext";
 import { useTheme } from "../context/ThemeContext";
+import { useSeo } from "../context/SeoContext";
 import { ScrollToTopButton } from "./ui/ScrollToTopButton";
+import { GlobalLoader } from "./ui/GlobalLoader";
+import { LiveChatWidget } from "./ui/LiveChatWidget";
+import { PopupModal } from "./ui/PopupModal";
 import { Megaphone, Star, Sparkles, Zap, Gift } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
 }
 
-// The Announcement Ticker with Timer
 function AnnouncementTicker() {
   const { isActive, text, color, countdownTarget, linkUrl, showTimer, layoutMode, isGradient, textColor, iconType, bannerSize, marqueeSpeed, timerTheme } = useAnnouncement();
   const [now, setNow] = useState(new Date());
@@ -31,14 +31,12 @@ function AnnouncementTicker() {
 
   const targetDate = new Date(countdownTarget);
   const diff = Math.max(0, targetDate.getTime() - now.getTime());
-
   const d = Math.floor(diff / (1000 * 60 * 60 * 24));
   const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const m = Math.floor((diff / 1000 / 60) % 60);
   const s = Math.floor((diff / 1000) % 60);
-
-  const formatTime = (v: number) => v.toString().padStart(2, '0');
-  const timerString = `${formatTime(d)}:${formatTime(h)}:${formatTime(m)}:${formatTime(s)}`;
+  const fmt = (v: number) => v.toString().padStart(2, '0');
+  const timerString = `${fmt(d)}:${fmt(h)}:${fmt(m)}:${fmt(s)}`;
 
   const announcementBlock = (
     <div className={`flex items-center ${layoutMode === 'centered' ? 'w-full justify-center' : ''}`}>
@@ -79,28 +77,18 @@ function AnnouncementTicker() {
         backdropFilter: 'blur(10px)'
       } : { backgroundColor: color }}
     >
-      <div 
-        className={`${layoutMode === 'marquee' ? 'animate-marquee whitespace-nowrap flex items-center hover:animation-play-state-paused' : 'flex items-center w-full'}`}
+      <div
+        className={`${layoutMode === 'marquee' ? 'animate-marquee whitespace-nowrap flex items-center' : 'flex items-center w-full'}`}
         style={layoutMode === 'marquee' ? { animationDuration: marqueeSpeed === 'Fast' ? '15s' : marqueeSpeed === 'Slow' ? '40s' : '25s' } : undefined}
       >
-        {/* Render multiple blocks for marquee effect, or just one for centered */}
         {announcementBlock}
-        {layoutMode === 'marquee' && (
-          <>
-            {announcementBlock}
-            {announcementBlock}
-            {announcementBlock}
-          </>
-        )}
+        {layoutMode === 'marquee' && (<>{announcementBlock}{announcementBlock}{announcementBlock}</>)}
       </div>
     </div>
   );
 
   if (linkUrl) {
-    const formattedLink = (!linkUrl.startsWith('http') && !linkUrl.startsWith('/')) 
-      ? `https://${linkUrl}` 
-      : linkUrl;
-      
+    const formattedLink = (!linkUrl.startsWith('http') && !linkUrl.startsWith('/')) ? `https://${linkUrl}` : linkUrl;
     return (
       <a href={formattedLink} target={formattedLink.startsWith('http') ? "_blank" : "_self"} rel="noreferrer" className="block hover:brightness-110 transition-all cursor-pointer relative z-50">
         {bannerContent}
@@ -111,51 +99,27 @@ function AnnouncementTicker() {
   return bannerContent;
 }
 
-import { Suspense } from "react";
-import { GlobalLoader } from "./ui/GlobalLoader";
-import { LiveChatWidget } from "./ui/LiveChatWidget";
-import { Helmet } from "react-helmet-async";
-import { useSeo } from "../context/SeoContext";
-
 function GlobalBackground() {
   const { isDarkMode } = useTheme();
   const location = useLocation();
   const path = location.pathname;
 
-  // Determine colors based on current route
-  let color1 = 'bg-[var(--accent)]'; // Default red/accent
-  let color2 = 'bg-purple-600'; // Default purple
+  let color1 = 'bg-[var(--accent)]';
+  let color2 = 'bg-purple-600';
 
-  if (path.startsWith('/products')) {
-    color1 = 'bg-blue-500';
-    color2 = 'bg-cyan-500';
-  } else if (path.startsWith('/reviews')) {
-    color1 = 'bg-yellow-500';
-    color2 = 'bg-amber-600';
-  } else if (path.startsWith('/team')) {
-    color1 = 'bg-emerald-500';
-    color2 = 'bg-teal-500';
-  } else if (path.startsWith('/orders')) {
-    color1 = 'bg-indigo-500';
-    color2 = 'bg-violet-600';
-  } else if (path.startsWith('/faq')) {
-    color1 = 'bg-rose-500';
-    color2 = 'bg-pink-600';
-  }
+  if (path.startsWith('/products')) { color1 = 'bg-blue-500'; color2 = 'bg-cyan-500'; }
+  else if (path.startsWith('/reviews')) { color1 = 'bg-yellow-500'; color2 = 'bg-amber-600'; }
+  else if (path.startsWith('/team')) { color1 = 'bg-emerald-500'; color2 = 'bg-teal-500'; }
+  else if (path.startsWith('/orders')) { color1 = 'bg-indigo-500'; color2 = 'bg-violet-600'; }
+  else if (path.startsWith('/faq')) { color1 = 'bg-rose-500'; color2 = 'bg-pink-600'; }
 
-  if (isDarkMode) {
-    return (
-      <div className="fixed inset-0 z-40 pointer-events-none mix-blend-screen overflow-hidden transition-colors duration-1000">
-        <div className={`absolute top-0 right-0 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] ${color1}/10 blur-[150px] rounded-full translate-x-1/3 -translate-y-1/3 animate-pulse-bg transition-colors duration-1000`} />
-        <div className={`absolute bottom-0 left-0 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] ${color2}/10 blur-[150px] rounded-full -translate-x-1/3 translate-y-1/3 animate-pulse-bg transition-colors duration-1000`} style={{ animationDelay: '2s' }} />
-      </div>
-    );
-  }
+  const blend = isDarkMode ? 'mix-blend-screen' : 'mix-blend-multiply';
+  const opacity = isDarkMode ? '/10' : '/5';
 
   return (
-    <div className="fixed inset-0 z-40 pointer-events-none mix-blend-multiply overflow-hidden transition-colors duration-1000">
-      <div className={`absolute top-0 right-0 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] ${color1}/5 blur-[150px] rounded-full translate-x-1/3 -translate-y-1/3 animate-pulse-bg transition-colors duration-1000`} />
-      <div className={`absolute bottom-0 left-0 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] ${color2}/5 blur-[150px] rounded-full -translate-x-1/3 translate-y-1/3 animate-pulse-bg transition-colors duration-1000`} style={{ animationDelay: '2s' }} />
+    <div className={`fixed inset-0 z-40 pointer-events-none ${blend} overflow-hidden transition-colors duration-1000`}>
+      <div className={`absolute top-0 right-0 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] ${color1}${opacity} blur-[150px] rounded-full translate-x-1/3 -translate-y-1/3 animate-pulse-bg transition-colors duration-1000`} />
+      <div className={`absolute bottom-0 left-0 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] ${color2}${opacity} blur-[150px] rounded-full -translate-x-1/3 translate-y-1/3 animate-pulse-bg transition-colors duration-1000`} style={{ animationDelay: '2s' }} />
     </div>
   );
 }
@@ -164,7 +128,7 @@ export function Root() {
   const { isDarkMode, toggleTheme } = useTheme();
   const location = useLocation();
   const { getSeoForPath } = useSeo();
-  
+
   const seo = getSeoForPath(location.pathname) || {
     title: "Megatron | Premium Gaming Accounts",
     description: "Buy and sell premium MLBB, Valorant, and other gaming accounts safely and securely.",
@@ -192,6 +156,7 @@ export function Root() {
       <Footer />
       <ScrollToTopButton />
       <LiveChatWidget />
+      <PopupModal />
     </div>
   );
 }

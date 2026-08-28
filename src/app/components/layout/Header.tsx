@@ -4,13 +4,14 @@ import { Link, useLocation } from "react-router-dom";
 // If you ever see errors like "Cannot destructure property 'basename' of useContext(...) as it is null",
 // it usually means Link/useLocation is being rendered outside a router context.
 
-import { Menu, X, Sun, Moon, Home, ShoppingBag, Star, Users, User, BarChart, Heart } from "lucide-react";
+import { Menu, X, Sun, Moon, Home, ShoppingBag, Star, Users, User, BarChart, Heart, Gamepad2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { motion, AnimatePresence } from "motion/react";
 import { useCurrency } from "../../context/CurrencyContext";
 import { MiniGame } from "../ui/MiniGame";
 import { useAdmin } from "../../context/AdminContext";
+import { api } from "../../../lib/api";
 import { useLockBodyScroll } from "../../../hooks/useLockBodyScroll";
 
 const DiscordIcon = () => (
@@ -33,6 +34,7 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
 
   const navItems = [
     { path: "/", label: "Home" },
+    { path: "/accounts", label: "Accounts" },
     { path: "/products", label: "Products" },
     { path: "/reviews", label: "Reviews" },
     { path: "/team", label: "Team" },
@@ -82,15 +84,11 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
 
 
   const handleDiscordLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/discord`;
+    window.location.href = `${import.meta.env.VITE_API_URL || '/api'}/auth/discord`;
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("discord_id");
-    localStorage.removeItem("discord_username");
-    localStorage.removeItem("discord_global_name");
-    localStorage.removeItem("discord_avatar");
+  const handleLogout = async () => {
+    await api.logout();
     setDiscordId(null);
     setDiscordUsername(null);
     setDiscordGlobalName(null);
@@ -207,7 +205,7 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
               className="fixed top-0 right-0 bottom-0 w-[340px] bg-[var(--bg-secondary)] border-l border-[var(--border-color)] z-[60] p-6 flex flex-col pointer-events-auto shadow-2xl"
             >
               <div className="flex justify-between items-center mb-8">
@@ -217,33 +215,39 @@ export function Header({ toggleTheme, isDarkMode }: { toggleTheme?: () => void, 
                 </button>
               </div>
 
-              {/* Sidebar Login Area */}
-              <div
-                className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer hover:border-[#5865F2] transition-colors mb-8"
-                onClick={discordId ? handleLogout : handleDiscordLogin}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-full flex items-center justify-center text-[var(--text-secondary)] overflow-hidden">
-                    {discordId ? <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" /> : <User className="w-6 h-6" />}
+              {/* Sidebar Profile Card */}
+              <div className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 flex items-center gap-3 mb-8">
+                <div className="relative shrink-0">
+                  <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-[var(--accent)]/40 border border-[var(--border-color)]">
+                    {discordId ? <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-[var(--bg-secondary)]"><User className="w-5 h-5 text-[var(--text-secondary)]" /></div>}
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-[var(--text-primary)]">
-                      {discordGlobalName ? discordGlobalName : (discordUsername ? `@${discordUsername}` : "Not logged in")}
-                    </h3>
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      {discordId ? "Click to logout" : "Click to login with Discord"}
-                    </p>
-                  </div>
+                  {discordId && <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-[var(--bg-primary)]" />}
                 </div>
-                {isAdmin && (
-                  <span className="text-[10px] font-black uppercase tracking-widest bg-red-500/10 text-red-500 px-2 py-1 rounded">Admin</span>
-                )}
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm text-[var(--text-primary)] truncate">
+                    {discordGlobalName || discordUsername || "Not logged in"}
+                  </p>
+                  <p className={`text-xs font-semibold truncate ${isAdmin ? 'text-red-400' : 'text-[var(--text-secondary)]'}`}>
+                    {discordId ? (isAdmin ? '⚡ Administrator' : 'Member') : 'Click below to sign in'}
+                  </p>
+                </div>
+                <button
+                  onClick={discordId ? handleLogout : handleDiscordLogin}
+                  className={`shrink-0 text-[11px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
+                    discordId
+                      ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                      : 'bg-[#5865F2]/10 text-[#5865F2] hover:bg-[#5865F2]/20'
+                  }`}
+                >
+                  {discordId ? 'Logout' : 'Login'}
+                </button>
               </div>
 
               <div className="flex-1 flex flex-col gap-1">
                 {navItems.map((item) => {
                   let NavIcon = Menu;
                   if (item.label === 'Home') NavIcon = Home;
+                  if (item.label === 'Accounts') NavIcon = Gamepad2;
                   if (item.label === 'Products') NavIcon = ShoppingBag;
                   if (item.label === 'Reviews') NavIcon = Star;
                   if (item.label === 'Team') NavIcon = Users;

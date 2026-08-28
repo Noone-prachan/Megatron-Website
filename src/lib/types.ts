@@ -65,3 +65,17 @@ export interface User {
   avatar: string;
   email: string;
 }
+
+export interface SellerAccount {
+  id: string;
+  name: string;
+  category: string;
+  discordId?: string;
+  discordUsername?: string;
+  discordAvatar?: string;
+  phone?: string;
+  notes?: string;
+  status: 'active' | 'inactive' | 'sold';
+  createdAt: string;
+  updatedAt: string;
+}

@@ -60,11 +60,26 @@ export function AnalyticsPage() {
   const totalRevenue = transactions.reduce((sum, tx) => sum + tx.price, 0);
   const avgOrder = transactions.length > 0 ? totalRevenue / transactions.length : 0;
 
+  const accountSales = transactions.filter(tx => {
+    const product = products.find(p => p.dedicatedId === tx.dedicatedId || p.title === tx.title);
+    return !product || product.type === 'account' || !product.type;
+  }).length;
+  const ucSales = transactions.filter(tx => {
+    const product = products.find(p => p.dedicatedId === tx.dedicatedId || p.title === tx.title);
+    return product?.type === 'pubg-uc';
+  }).length;
+  const diaSales = transactions.filter(tx => {
+    const product = products.find(p => p.dedicatedId === tx.dedicatedId || p.title === tx.title);
+    return product?.type === 'mlbb-diamonds';
+  }).length;
+
+  const activeAccounts = products.filter(p => !p.type || p.type === 'account').length;
+
   const metrics = [
-    { label: "Sold Accounts", value: transactions.length.toString(), change: "+12%", icon: CreditCard, color: "text-green-500" },
-    { label: "Total Revenue", value: formatPrice(totalRevenue), change: "+5%", icon: Activity, color: "text-blue-500" },
-    { label: "Active Listings", value: products.length.toString(), change: "Live", icon: Users, color: "text-purple-500" },
-    { label: "Avg Order Value", value: formatPrice(avgOrder), change: "+8%", icon: MousePointerClick, color: "text-orange-500" },
+    { label: "Total Revenue", value: formatPrice(totalRevenue), sub: `${transactions.length} orders`, icon: Activity, color: "text-blue-500" },
+    { label: "Accounts Sold", value: accountSales.toString(), sub: `${activeAccounts} active listings`, icon: CreditCard, color: "text-green-500" },
+    { label: "PUBG UC Orders", value: ucSales.toString(), sub: "UC topups", icon: MousePointerClick, color: "text-yellow-500" },
+    { label: "MLBB Diamond Orders", value: diaSales.toString(), sub: "Diamond topups", icon: Users, color: "text-purple-500" },
   ];
 
   return (
@@ -83,12 +98,10 @@ export function AnalyticsPage() {
                 <div className={`p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] ${metric.color}`}>
                   <Icon className="w-6 h-6" />
                 </div>
-                <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                  {metric.change}
-                </span>
               </div>
               <h3 className="text-[var(--text-secondary)] text-sm font-bold uppercase tracking-wider mb-1">{metric.label}</h3>
               <p className="text-3xl font-black text-[var(--text-primary)]">{metric.value}</p>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">{metric.sub}</p>
             </div>
           );
         })}

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { ProductCard } from "../ProductCard";
-import { useProducts } from "../../context/ProductContext";
+import { useProducts, ProductType } from "../../context/ProductContext";
 import { useReviews } from "../../context/ReviewContext";
 import { Zap, Medal, Gem, Crown, Search, X, ChevronDown, Filter, Star, Loader2, MessageSquare, Quote, CheckCircle2, SlidersHorizontal } from "lucide-react";
 import { api } from "../../../lib/api";
@@ -101,7 +101,7 @@ export function Products() {
         }
       } else {
         setSellStatus("error");
-        setSellMessage(res.error || "Failed to create ticket.");
+        setSellMessage((res as any).error || "Failed to create ticket.");
       }
     } catch (err) {
       setSellStatus("error");
@@ -112,21 +112,27 @@ export function Products() {
   };
 
   const filteredProducts = products
-    .filter(p => selectedRank === "all" || (p.collectionRank && p.collectionRank.toLowerCase() === selectedRank))
+    .filter(p => p.type !== 'account' && p.type !== undefined)
     .filter(p => selectedCategory === "all" || (p.category && p.category.toLowerCase() === selectedCategory))
     .filter(p => {
       const pPrice = Number(p.price) || 0;
       return pPrice >= priceRange[0] && (priceRange[1] === 1000 ? true : pPrice <= priceRange[1]);
     })
-    .filter(p => (p.heroes || 0) >= minHeroes)
-    .filter(p => (p.skins || 0) >= minSkins)
-    .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    .sort((a, b) => {
-      if (sortBy === "price-low") return a.price - b.price;
-      if (sortBy === "price-high") return b.price - a.price;
-      if (sortBy === "level") return b.level - a.level;
-      return 0;
-    });
+    .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    const isCurrencyA = a.type === "pubg-uc" || a.type === "mlbb-diamonds";
+    const isCurrencyB = b.type === "pubg-uc" || b.type === "mlbb-diamonds";
+    
+    if (isCurrencyA && !isCurrencyB) return -1;
+    if (!isCurrencyA && isCurrencyB) return 1;
+
+    if (sortBy === "price-low") return a.price - b.price;
+    if (sortBy === "price-high") return b.price - a.price;
+    if (sortBy === "level") return (b.level ?? 0) - (a.level ?? 0);
+    return 0; // featured
+  });
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -157,7 +163,7 @@ export function Products() {
 
   return (
     <div className="min-h-screen pt-28 pb-24 relative overflow-hidden">
-      <SEO title="Products | Megatron Marketplace" description="Browse our premium selection of verified MLBB accounts." url="https://megatron-marketplace.com/products" />
+      <SEO title="Products | Megatron Marketplace" description="Browse our premium selection of topups and subscriptions." url="https://megatron-marketplace.com/products" />
       {/* Ambient background glows */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-violet-600/5 rounded-full blur-[120px] pointer-events-none" />
@@ -180,10 +186,10 @@ export function Products() {
               </span>
               <h1 className="flex flex-col font-black tracking-tight leading-[0.9] mb-4 uppercase">
                 <span className="text-2xl min-[375px]:text-3xl min-[400px]:text-4xl sm:text-6xl lg:text-7xl text-[var(--text-primary)]">THE</span>
-                <span className="text-3xl min-[375px]:text-4xl min-[400px]:text-5xl sm:text-7xl lg:text-[5.5rem] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300 break-all sm:break-words -ml-1">MARKETPLACE</span>
+                <span className="text-3xl min-[375px]:text-4xl min-[400px]:text-5xl sm:text-7xl lg:text-[5.5rem] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-sky-300 break-all sm:break-words -ml-1">PRODUCTS</span>
               </h1>
               <p className="text-[var(--text-secondary)] text-base sm:text-lg max-w-xl font-medium leading-relaxed mb-6 lg:mb-0">
-                Verified MLBB accounts with instant delivery, lifetime warranty &amp; full email access.
+                Instant delivery topups and subscriptions for your favorite games and services.
               </p>
             </div>
 
@@ -224,76 +230,12 @@ export function Products() {
         >
           {/* Desktop Rank Chips */}
           <div className="hidden sm:flex flex-wrap gap-2 pb-1">
-            {collectionRanks.map((rank) => {
-              const count = rank.id === "all"
-                ? products.length
-                : products.filter(p => p.collectionRank && p.collectionRank.toLowerCase() === rank.id).length;
-              const active = selectedRank === rank.id;
-              return (
-                <button
-                  key={rank.id}
-                  onClick={() => { setSelectedRank(rank.id); setIsRankOpen(false); }}
-                  className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 border ${active
-                    ? "bg-[var(--text-primary)] text-[var(--bg-primary)] border-[var(--text-primary)] shadow-lg shadow-[var(--text-primary)]/10"
-                    : "bg-[var(--bg-secondary)]/60 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]/20 backdrop-blur-sm"
-                    }`}
-                >
-                  <span>{rank.icon}</span>
-                  <span>{rank.label}</span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${active ? "bg-[var(--bg-primary)] text-[var(--text-primary)] opacity-80" : "bg-[var(--bg-primary)] text-[var(--text-secondary)]"}`}>
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
           </div>
 
           {/* Search + Sort + Mobile Rank */}
           <div className="flex flex-col sm:flex-row gap-4 w-full bg-[var(--bg-secondary)]/30 backdrop-blur-md p-2 rounded-3xl border border-[var(--border-color)] shadow-inner">
 
-            {/* Mobile Rank Dropdown */}
-            <div className="relative w-full sm:hidden" ref={rankRef}>
-              <button
-                onClick={() => setIsRankOpen(!isRankOpen)}
-                className="w-full flex items-center justify-between px-6 h-14 rounded-2xl bg-[var(--bg-primary)]/60 border border-[var(--border-color)] text-sm font-bold text-[var(--text-primary)] transition-all focus:ring-2 focus:ring-blue-500/50 hover:border-[var(--text-primary)]/30"
-              >
-                <span className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
-                    <Filter className="w-4 h-4" />
-                  </div>
-                  {collectionRanks.find(r => r.id === selectedRank)?.label || "Rank"}
-                </span>
-                <ChevronDown className={`w-4 h-4 text-[var(--text-secondary)] transition-transform duration-300 ${isRankOpen ? "rotate-180" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {isRankOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
-                  >
-                    {collectionRanks.map((rank) => (
-                      <button
-                        key={rank.id}
-                        onClick={() => { setSelectedRank(rank.id); setIsRankOpen(false); }}
-                        className={`w-full text-left px-5 py-3.5 text-sm font-bold transition-all flex items-center justify-between group ${selectedRank === rank.id ? "bg-blue-500/10 text-blue-500" : "text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/50 hover:text-[var(--text-primary)]"}`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`p-1.5 rounded-lg transition-colors ${selectedRank === rank.id ? "bg-blue-500/20" : "bg-[var(--bg-primary)] group-hover:bg-[var(--border-color)]"}`}>
-                            {rank.icon}
-                          </div>
-                          {rank.label}
-                        </div>
-                        {selectedRank === rank.id && <CheckCircle2 className="w-4 h-4 text-blue-400" />}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            {/* Mobile Rank Dropdown Removed */}
 
             {/* Search Bar */}
             <div className="w-full sm:flex-1 relative flex items-center bg-[var(--bg-primary)]/60 border border-[var(--border-color)] rounded-2xl h-14 px-4 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-[var(--text-primary)]/50 transition-all hover:border-[var(--text-secondary)]/30">
@@ -369,14 +311,13 @@ export function Products() {
         {/* Results count */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-[var(--text-secondary)] font-medium">
-            Showing <span className="text-[var(--text-primary)] font-bold">{filteredProducts.length}</span> account{filteredProducts.length !== 1 ? "s" : ""}
-            {selectedRank !== "all" && <> in <span className="text-blue-400 font-bold capitalize">{selectedRank}</span></>}
+            Showing <span className="text-[var(--text-primary)] font-bold">{sortedProducts.length}</span> items
           </p>
         </div>
 
         {/* ── Product Grid ── */}
         <AnimatePresence mode="wait">
-          {filteredProducts.length > 0 ? (
+          {sortedProducts.length > 0 ? (
             <motion.div
               key="grid"
               initial={{ opacity: 0 }}
@@ -384,7 +325,7 @@ export function Products() {
               exit={{ opacity: 0 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
             >
-              {filteredProducts.map((product, i) => (
+              {sortedProducts.map((product, i) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -406,7 +347,7 @@ export function Products() {
               <div className="w-16 h-16 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center mx-auto mb-6">
                 <svg className="w-7 h-7 text-[var(--text-secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
               </div>
-              <h3 className="text-xl font-black text-[var(--text-primary)] mb-2">No accounts found</h3>
+              <h3 className="text-xl font-black text-[var(--text-primary)] mb-2">No items found</h3>
               <p className="text-[var(--text-secondary)] text-sm font-medium mb-8 max-w-xs mx-auto">
                 Try adjusting your search or filters to find what you're looking for.
               </p>
@@ -422,64 +363,6 @@ export function Products() {
 
 
 
-        {/* ── Sell Your Account CTA Section ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mt-20 relative overflow-hidden rounded-[3rem] bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl"
-        >
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/3" />
-
-          <div className="relative z-10 p-10 sm:p-14 md:p-20 flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-400 p-[2px] shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-              <div className="w-full h-full rounded-full bg-black/80 backdrop-blur-sm flex items-center justify-center text-blue-400">
-                <MessageSquare className="w-10 h-10" />
-              </div>
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">
-              Ready to Sell Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Account?</span>
-            </h2>
-
-            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
-              Skip the middleman. Create a ticket directly with our team to get a quick valuation and sell your account safely for the best market price.
-            </p>
-
-            <div className="flex flex-col items-center gap-4">
-              <button
-                onClick={handleSellClick}
-                disabled={isSelling}
-                className={`group bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white px-10 py-5 rounded-2xl font-black text-sm sm:text-base uppercase tracking-widest inline-flex items-center gap-4 shadow-[0_0_30px_rgba(59,130,246,0.4)] hover:shadow-[0_0_50px_rgba(59,130,246,0.6)] hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none`}
-              >
-                {isSelling ? (
-                  <>
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    Creating Ticket...
-                  </>
-                ) : (
-                  <>
-                    {DISCORD_SVG}
-                    Open Sell Ticket
-                  </>
-                )}
-              </button>
-
-              {sellStatus === "error" && (
-                <div className="text-red-400 bg-red-500/10 border border-red-500/20 px-6 py-3 rounded-xl text-sm font-bold animate-in fade-in slide-in-from-bottom-2">
-                  {sellMessage}
-                </div>
-              )}
-              {sellStatus === "success" && (
-                <div className="text-[#bef264] bg-[#bef264]/10 border border-[#bef264]/20 px-6 py-3 rounded-xl text-sm font-bold animate-in fade-in slide-in-from-bottom-2">
-                  {sellMessage}
-                </div>
-              )}
-            </div>
-          </div>
-        </motion.div>
 
         {/* ── Sell Your Account CTA Section ── */}
         {/* ... (Omitted CTA section for brevity, assuming it remains mostly unchanged in layout structure) */}
@@ -546,35 +429,7 @@ export function Products() {
                     />
                   </div>
 
-                  {/* Minimum Heroes Filter */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] flex justify-between">
-                      <span>Min Heroes</span>
-                      <span className="text-[var(--text-primary)]">{minHeroes}</span>
-                    </label>
-                    <input
-                      type="range"
-                      min="0" max="130" step="5"
-                      value={minHeroes}
-                      onChange={(e) => setMinHeroes(parseInt(e.target.value))}
-                      className="w-full h-2 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-[var(--text-primary)]"
-                    />
-                  </div>
 
-                  {/* Minimum Skins Filter */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] flex justify-between">
-                      <span>Min Skins</span>
-                      <span className="text-[var(--text-primary)]">{minSkins}</span>
-                    </label>
-                    <input
-                      type="range"
-                      min="0" max="500" step="10"
-                      value={minSkins}
-                      onChange={(e) => setMinSkins(parseInt(e.target.value))}
-                      className="w-full h-2 bg-[var(--border-color)] rounded-lg appearance-none cursor-pointer accent-[var(--text-primary)]"
-                    />
-                  </div>
                 </div>
 
                 <div className="p-6 border-t border-[var(--border-color)] bg-[var(--bg-primary)] flex gap-4">

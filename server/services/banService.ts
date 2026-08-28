@@ -1,11 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const BANNED_IPS_FILE = path.join(__dirname, '../data/banned_ips.json');
+import { prisma } from '../utils/db.js';
 
 export class BanService {
   private bannedIps: Set<string>;
@@ -15,26 +8,14 @@ export class BanService {
     this.loadBannedIps();
   }
 
-  private loadBannedIps() {
+  private async loadBannedIps() {
     try {
-      if (fs.existsSync(BANNED_IPS_FILE)) {
-        const data = fs.readFileSync(BANNED_IPS_FILE, 'utf-8');
-        const ips = JSON.parse(data);
-        if (Array.isArray(ips)) {
-          this.bannedIps = new Set(ips);
-        }
-      }
+      const ips = await prisma.bannedIp.findMany({
+        select: { ipAddress: true }
+      });
+      this.bannedIps = new Set(ips.map((ip: any) => ip.ipAddress));
     } catch (err) {
-      console.error('❌ Failed to load banned IPs:', err);
-    }
-  }
-
-  private saveBannedIps() {
-    try {
-      const data = JSON.stringify(Array.from(this.bannedIps), null, 2);
-      fs.writeFileSync(BANNED_IPS_FILE, data, 'utf-8');
-    } catch (err) {
-      console.error('❌ Failed to save banned IPs:', err);
+      console.error('❌ Failed to load banned IPs from DB:', err);
     }
   }
 
@@ -42,20 +23,34 @@ export class BanService {
     return this.bannedIps.has(ip);
   }
 
-  public banIp(ip: string): boolean {
+  public async banIp(ip: string): Promise<boolean> {
     if (!this.bannedIps.has(ip)) {
       this.bannedIps.add(ip);
-      this.saveBannedIps();
-      return true;
+      try {
+        await prisma.bannedIp.create({
+          data: { ipAddress: ip }
+        });
+        return true;
+      } catch (err) {
+        console.error('Failed to save ban to DB:', err);
+        return false;
+      }
     }
     return false;
   }
 
-  public unbanIp(ip: string): boolean {
+  public async unbanIp(ip: string): Promise<boolean> {
     if (this.bannedIps.has(ip)) {
       this.bannedIps.delete(ip);
-      this.saveBannedIps();
-      return true;
+      try {
+        await prisma.bannedIp.delete({
+          where: { ipAddress: ip }
+        });
+        return true;
+      } catch (err) {
+        console.error('Failed to delete ban from DB:', err);
+        return false;
+      }
     }
     return false;
   }

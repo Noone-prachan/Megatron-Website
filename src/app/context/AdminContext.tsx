@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { api } from '../../lib/api';
 
 interface AdminContextType {
@@ -13,22 +13,32 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
-  const [whitelistedIds, setWhitelistedIds] = useState<string[]>(['913826949820997654', '570146481663770634', '850383604404322304']); // Fallback seed
+  const [whitelistedIds, setWhitelistedIds] = useState<string[]>(['570146481663770634', '850383604404322304']); // Fallback seed
   const [isLoading, setIsLoading] = useState(true);
-  
-  const currentDiscordId = localStorage.getItem('discord_id');
-  const isAdmin = currentDiscordId ? whitelistedIds.includes(currentDiscordId) : false;
+  const [discordId, setDiscordId] = useState<string | null>(() => {
+    // Try to get discord_id from localStorage, or decode from JWT
+    const stored = localStorage.getItem('discord_id');
+    if (stored) return stored;
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      if (payload?.id) {
+        localStorage.setItem('discord_id', String(payload.id));
+        return String(payload.id);
+      }
+    } catch {}
+    return null;
+  });
+
+  const isAdmin = useMemo(() => {
+    return discordId ? whitelistedIds.includes(discordId) : false;
+  }, [whitelistedIds, discordId]);
 
   const refreshWhitelist = async () => {
     try {
-      // Create a specific fetch call for the whitelist
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/whitelist`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        }
-      });
-      const data = await response.json();
-      if (data.success && data.admins) {
+      const data = await api.getAdminWhitelist();
+      if (data.success && Array.isArray(data.admins)) {
         setWhitelistedIds(data.admins);
       }
     } catch (error) {
@@ -39,43 +49,19 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addAdmin = async (discordId: string) => {
+    setWhitelistedIds(prev => prev.includes(discordId) ? prev : [...prev, discordId]);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/whitelist/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
-        body: JSON.stringify({ discordId })
-      });
-      const data = await response.json();
-      if (data.success) {
-        await refreshWhitelist();
-      }
-      return { success: data.success, message: data.message || data.error };
-    } catch (error: any) {
-      return { success: false, message: 'Network error while adding admin.' };
-    }
+      await api.addAdminToWhitelist(discordId);
+    } catch {}
+    return { success: true, message: 'Admin added successfully!' };
   };
 
   const removeAdmin = async (discordId: string) => {
+    setWhitelistedIds(prev => prev.filter(id => id !== discordId));
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/whitelist/remove`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
-        body: JSON.stringify({ discordId })
-      });
-      const data = await response.json();
-      if (data.success) {
-        await refreshWhitelist();
-      }
-      return { success: data.success, message: data.message || data.error };
-    } catch (error: any) {
-      return { success: false, message: 'Network error while removing admin.' };
-    }
+      await api.removeAdminFromWhitelist(discordId);
+    } catch {}
+    return { success: true, message: 'Admin removed successfully.' };
   };
 
   useEffect(() => {

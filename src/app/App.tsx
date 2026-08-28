@@ -14,6 +14,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { WishlistProvider } from "./context/WishlistContext";
 import { AdminProvider } from "./context/AdminContext";
 import { SeoProvider } from "./context/SeoContext";
+import { PopupProvider } from "./context/PopupContext";
 
 export default function App() {
   useEffect(() => {
@@ -33,8 +34,10 @@ export default function App() {
                   <WishlistProvider>
                     <AdminProvider>
                       <SeoProvider>
-                        <Toaster theme="dark" position="bottom-left" richColors />
-                        <RouterProvider router={router} />
+                        <PopupProvider>
+                          <Toaster theme="dark" position="bottom-left" richColors />
+                          <RouterProvider router={router} />
+                        </PopupProvider>
                       </SeoProvider>
                     </AdminProvider>
                   </WishlistProvider>

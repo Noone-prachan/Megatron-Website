@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SellerAccount {
+  id              String   @id @default(cuid())
+  name            String
+  category        String
+  dedicatedId     String?
+  phone           String?
+  discordId       String?
+  discordUsername String?
+  discordAvatar   String?
+  notes           String?
+  status          String   @default("active")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  author      String
+  avatar      String
+  rating      Int
+  text        String
+  isScraped   Boolean  @default(false)
+  date        DateTime @default(now())
+  originalUrl String?
+  messageId   String?  @unique
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  details   String
+  adminUser String
+  timestamp DateTime @default(now())
+}
+
+model BannedIp {
+  id        String   @id @default(cuid())
+  ipAddress String   @unique
+  reason    String?
+  timestamp DateTime @default(now())
+}
+
+model AdminWhitelist {
+  discordId String   @id
+  addedBy   String
+  timestamp DateTime @default(now())
+}

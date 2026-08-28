@@ -8,9 +8,9 @@ const router = express.Router();
  * Fetches reviews instantly from the local persistent JSON store.
  * The store is kept up-to-date in the background by the Discord bot.
  */
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const reviews = ReviewService.getStoredReviews();
+    const reviews = await ReviewService.getStoredReviews();
 
     res.json({
       success: true,

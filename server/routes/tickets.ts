@@ -1,8 +1,9 @@
 import express from 'express';
-import { ChannelType, PermissionFlagsBits, ForumChannel } from 'discord.js';
+import { ChannelType, PermissionFlagsBits, ForumChannel, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import axios from 'axios';
 import { discordClient as client, botReady } from '../discordClient';
 import { z } from 'zod';
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ const createTicketSchema = z.object({
   product: z.object({
     id: z.string(),
     title: z.string().optional(),
+    type: z.string().optional(),
     description: z.string().optional(),
     price: z.number().optional(),
     level: z.number().optional(),
@@ -19,14 +21,22 @@ const createTicketSchema = z.object({
     image: z.string().optional(),
   }),
   userId: z.string().min(1),
-  username: z.string().optional()
+  username: z.string().optional(),
+  playerId: z.string().optional(),
+  serverId: z.string().optional()
+});
+
+const ticketLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 3, // Limit each IP to 3 tickets per windowMs
+  message: { error: 'Too many tickets created from this IP, please try again after 15 minutes.' }
 });
 
 /**
  * POST /api/tickets/create
  * Creates a Discord ticket for a purchase
  */
-router.post('/create', async (req, res) => {
+router.post('/create', ticketLimiter, async (req, res) => {
   let validatedData;
   try {
     validatedData = createTicketSchema.parse(req.body);
@@ -37,7 +47,7 @@ router.post('/create', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const { product, userId, username } = validatedData;
+  const { product, userId, username, playerId, serverId } = validatedData;
 
   if (!botReady) {
     return res.status(503).json({ error: 'Discord bot is not ready yet' });
@@ -46,13 +56,19 @@ router.post('/create', async (req, res) => {
   try {
     const guild = await client.guilds.fetch(process.env.DISCORD_GUILD_ID!);
     const isSellRequest = product.id === 'sell';
+    const isTopupRequest = !isSellRequest && (
+      (product.type && product.type !== 'account') ||
+      (!product.type && (product.title?.toLowerCase().includes('uc') || product.title?.toLowerCase().includes('diamond') || product.title?.toLowerCase().includes('pubg') || product.title?.toLowerCase().includes('mlbb')))
+    );
     const parentCategory = isSellRequest
       ? process.env.DISCORD_SELL_TICKET_CHANNEL_ID
-      : process.env.DISCORD_TICKET_CHANNEL_ID;
+      : isTopupRequest
+        ? '1509102472747290665'
+        : process.env.DISCORD_TICKET_CHANNEL_ID;
 
     const ticketIdStr = Date.now().toString().slice(-4);
     const cleanUsername = (username || userId).replace(/[^a-zA-Z0-9]/g, '').toLowerCase().substring(0, 16) || 'user';
-    const ticketName = `${cleanUsername}-${isSellRequest ? 'sell' : 'buy'}-${ticketIdStr}`;
+    const ticketName = `${cleanUsername}-${isSellRequest ? 'sell' : isTopupRequest ? 'topup' : 'buy'}-${ticketIdStr}`;
 
     // Create a private ticket channel
     const ticketChannel = await guild.channels.create({
@@ -81,7 +97,23 @@ router.post('/create', async (req, res) => {
     // Send initial message to the ticket
     const embedDescription = isSellRequest 
       ? `Welcome <@${userId}>!\n\nThank you for creating a support ticket. Our team will assist you shortly.\n\n**<a:hash:1510067600682520638> Category:** Account Sell\n**<a:diamond:1510067602641129615> Ticket ID:** ${ticketIdStr}\n\n**<a:coolannounce:1508500386783170651> Required Details:**\nTo speed up the process, please reply with:\n<a:arrow:1510067622840897616> Total Skins Count & rare skins\n<a:arrow:1510067622840897616> Hero Count & current Rank\n<a:arrow:1510067622840897616> Screenshots of the profile\n<a:arrow:1510067622840897616> Your expected price`
-      : `Welcome <@${userId}>!\n\nThank you for creating a support ticket. Our team will assist you shortly.\n\n**<a:hash:1510067600682520638> Category:** Account Buy\n**<a:diamond:1510067602641129615> Ticket ID:** ${ticketIdStr}\n**<a:cart:1508500534049374319> Product:** ${product.title || product.id}\n\nOur team will contact you shortly to process your payment and deliver the account details.`;
+      : isTopupRequest
+        ? `Welcome <@${userId}>!\n\nThank you for creating a top-up ticket. Our team will assist you shortly.\n\n**<a:hash:1510067600682520638> Category:** ${['netflix', 'crunchyroll', 'playstation', 'steam', 'apple'].includes(product.type || '') ? 'Subscription / Gift Card' : 'Currency Top-Up'}\n**<a:diamond:1510067602641129615> Ticket ID:** ${ticketIdStr}\n**<a:cart:1508500534049374319> Product:** ${product.title || product.id}\n**<a:coin:1510067577853050880> Price:** Rs. ${product.price}\n${playerId ? `**<a:arrow:1510067622840897616> Player ID:** ${playerId}\n` : ''}${serverId ? `**<a:arrow:1510067622840897616> Server ID:** ${serverId}\n` : ''}\n\n**<a:coolannounce:1508500386783170651> Required Details:**\nPlease reply with your:\n${['pubg-uc', 'mlbb-diamonds', 'valo-points', 'fortnite'].includes(product.type || '') ? '<a:arrow:1510067622840897616> Game ID / Player ID\n' : ''}<a:arrow:1510067622840897616> Screenshot of your payment/profile\n\nOur team will process your order shortly!`
+        : `Welcome <@${userId}>!\n\nThank you for creating a support ticket. Our team will assist you shortly.\n\n**<a:hash:1510067600682520638> Category:** Account Buy\n**<a:diamond:1510067602641129615> Ticket ID:** ${ticketIdStr}\n**<a:cart:1508500534049374319> Product:** ${product.title || product.id}\n\nOur team will contact you shortly to process your payment and deliver the account details.`;
+
+    const claimButton = new ButtonBuilder()
+      .setCustomId('claim_ticket')
+      .setLabel('Claim Ticket')
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji('🙋‍♂️');
+
+    const closeButton = new ButtonBuilder()
+      .setCustomId('solve_ticket')
+      .setLabel('Close Ticket')
+      .setStyle(ButtonStyle.Danger)
+      .setEmoji('🔒');
+
+    const actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(claimButton, closeButton);
 
     const messagePayload: any = {
       content: `<@${userId}> <@&1486401825669382215>`,
@@ -94,21 +126,31 @@ router.post('/create', async (req, res) => {
         color: 0x2B2D31, // Dark Discord color
         timestamp: new Date().toISOString(),
       }],
+      components: [actionRow],
     };
 
     // If it's a buy request and we have product data, attach a rich embed
     if (!isSellRequest && product.title) {
+      const isAccount = !isTopupRequest;
       const productEmbed: any = {
         title: `<a:diamond:1510067602641129615> ${product.title}`,
-        description: `**<a:cart:1508500534049374319> Buyer is interested in this account.**\n\n${product.description}`,
-        fields: [
-          { name: '<a:coin:1510067577853050880> Price', value: `**Rs. ${product.price}**`, inline: true },
-          { name: '<a:stars:1510067630579388427> Level', value: `**${product.level}**`, inline: true },
-          { name: '<a:crown:1510067613483667477> Rank', value: `**${product.collectionRank}**`, inline: true },
-          { name: '<a:sakura:1508500342856355930> Skins', value: `**${product.skins || 0}**`, inline: true },
-          { name: '<a:hash:1510067600682520638> Heroes', value: `**${product.heroes || 0}**`, inline: true },
-        ],
-        color: 0xbef264, // App Accent Color
+        description: isAccount
+          ? `**<a:cart:1508500534049374319> Buyer is interested in this account.**\n\n${product.description}`
+          : `**<a:cart:1508500534049374319> Buyer is interested in this top-up.**\n\n${product.description}`,
+        fields: isAccount
+          ? [
+              { name: '<a:coin:1510067577853050880> Price', value: `**Rs. ${product.price}**`, inline: true },
+              { name: '<a:stars:1510067630579388427> Level', value: `**${product.level}**`, inline: true },
+              { name: '<a:crown:1510067613483667477> Rank', value: `**${product.collectionRank}**`, inline: true },
+              { name: '<a:sakura:1508500342856355930> Skins', value: `**${product.skins || 0}**`, inline: true },
+              { name: '<a:hash:1510067600682520638> Heroes', value: `**${product.heroes || 0}**`, inline: true },
+            ]
+          : [
+              { name: '<a:coin:1510067577853050880> Price', value: `**Rs. ${product.price}**`, inline: true },
+              ...(playerId ? [{ name: '🎮 Player ID', value: `**${playerId}**`, inline: true }] : []),
+              ...(serverId ? [{ name: '🌐 Server ID', value: `**${serverId}**`, inline: true }] : []),
+            ],
+        color: 0xbef264,
       };
 
       if (product.image) {
@@ -373,7 +415,7 @@ router.post('/forum-post', async (req, res) => {
     validatedData = forumPostSchema.parse(req.body);
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
+      return res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     return res.status(400).json({ error: 'Invalid request' });
   }
@@ -456,9 +498,9 @@ router.post('/forum-sold', async (req, res) => {
   try {
     validatedData = forumSoldSchema.parse(req.body);
   } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
-    }
+     if (error instanceof z.ZodError) {
+       return res.status(400).json({ error: 'Invalid input', details: error.issues });
+     }
     return res.status(400).json({ error: 'Invalid request' });
   }
 
@@ -494,15 +536,15 @@ router.post('/forum-sold', async (req, res) => {
  */
 router.post('/forum-unavailable', async (req, res) => {
   const schema = z.object({ threadId: z.string().min(1) });
-  let validatedData;
-  try {
-    validatedData = schema.parse(req.body);
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
-    }
-    return res.status(400).json({ error: 'Invalid request' });
-  }
+   let validatedData;
+   try {
+     validatedData = schema.parse(req.body);
+   } catch (error: any) {
+     if (error instanceof z.ZodError) {
+       return res.status(400).json({ error: 'Invalid input', details: error.issues });
+     }
+     return res.status(400).json({ error: 'Invalid request' });
+   }
 
   const { threadId } = validatedData;
 

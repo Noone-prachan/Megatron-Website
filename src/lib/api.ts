@@ -95,9 +95,21 @@ class ApiClient {
   }
 
   async logout() {
-    await this.request('/auth/logout', { method: 'POST' });
-    this.token = null;
-    localStorage.removeItem('auth_token');
+    try {
+      // The server-side logout is fire-and-forget, but we try it.
+      await this.request('/auth/logout', { method: 'POST' });
+    } catch (error) {
+      // Ignore if it fails, the client-side logout is the most important part.
+      console.error('Server-side logout failed, proceeding with client-side logout.', error);
+    } finally {
+      // Clear all session-related data from storage
+      this.token = null;
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('discord_id');
+      localStorage.removeItem('discord_username');
+      localStorage.removeItem('discord_global_name');
+      localStorage.removeItem('discord_avatar');
+    }
   }
 
   setToken(token: string) {
@@ -110,6 +122,8 @@ class ApiClient {
     product: any;
     userId: string;
     username: string;
+    playerId?: string;
+    serverId?: string;
   }) {
     return this.request<{
       success: boolean;
@@ -181,17 +195,108 @@ class ApiClient {
     });
   }
 
-  // Discord user profiles
-  async getDiscordUser(userId: string): Promise<{
-    id: string;
-    username: string;
-    avatarUrl: string;
-    bannerUrl: string | null;
-    bannerColor: string | null;
-  }> {
-    return this.request(`/users/${userId}`);
+   // Discord user profiles
+   async getDiscordUser(userId: string): Promise<{
+     id: string;
+     username: string;
+     avatarUrl: string;
+     bannerUrl: string | null;
+     bannerColor: string | null;
+   }> {
+     return this.request(`/users/${userId}`);
+   }
+
+   // Admin endpoints
+   async getAuditLogs() {
+     return this.request<{ success: boolean; logs: any[] }>('/admin/audit');
+   }
+
+   async getBannedIps() {
+     return this.request<{ success: boolean; ips: string[] }>('/admin/bans');
+   }
+
+   async banIp(ip: string) {
+     return this.request<{ success: boolean; message: string }>('/admin/bans/ban', {
+       method: 'POST',
+       body: JSON.stringify({ ip }),
+     });
+   }
+
+   async unbanIp(ip: string) {
+     return this.request<{ success: boolean; message: string }>('/admin/bans/unban', {
+       method: 'POST',
+       body: JSON.stringify({ ip }),
+     });
+   }
+
+   async getAdminWhitelist() {
+     return this.request<{ success: boolean; admins: string[] }>('/admin/whitelist');
+   }
+
+   async addAdminToWhitelist(discordId: string) {
+     return this.request<{ success: boolean; message: string }>('/admin/whitelist/add', {
+       method: 'POST',
+       body: JSON.stringify({ discordId }),
+     });
+   }
+
+    async removeAdminFromWhitelist(discordId: string) {
+      return this.request<{ success: boolean; message: string }>('/admin/whitelist/remove', {
+        method: 'POST',
+        body: JSON.stringify({ discordId }),
+      });
+    }
+
+    // Seller Accounts
+    async getSellerAccounts(category?: string, search?: string, from?: string, to?: string) {
+      const params = new URLSearchParams();
+      if (category && category !== 'all') params.set('category', category);
+      if (search) params.set('search', search);
+      if (from) params.set('from', from);
+      if (to) params.set('to', to);
+      const qs = params.toString() ? `?${params.toString()}` : '';
+      return this.request<{ success: boolean; accounts: any[] }>(`/admin/seller-accounts${qs}`);
+    }
+
+    async getSellerCategories() {
+      return this.request<{ success: boolean; categories: string[] }>('/admin/seller-accounts/categories');
+    }
+
+    async getSellerAccount(id: string) {
+      return this.request<{ success: boolean; account: any }>(`/admin/seller-accounts/${id}`);
+    }
+
+    async createSellerAccount(data: { name: string; category: string; dedicatedId?: string; phone?: string; discordId?: string; discordUsername?: string; discordAvatar?: string; notes?: string; status?: string }) {
+      return this.request<{ success: boolean; account: any }>('/admin/seller-accounts', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    }
+
+    async updateSellerAccount(id: string, data: Partial<{ name: string; category: string; dedicatedId?: string; phone?: string; discordId?: string; discordUsername?: string; discordAvatar?: string; notes?: string; status: string }>) {
+      return this.request<{ success: boolean; account: any }>(`/admin/seller-accounts/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    }
+
+    async deleteSellerAccount(id: string) {
+      return this.request<{ success: boolean; message: string }>(`/admin/seller-accounts/${id}`, {
+        method: 'DELETE',
+      });
+    }
+
+    async exportSellerAccountsCSV() {
+      const apiBase = import.meta.env.VITE_API_URL || '/api';
+      const token = localStorage.getItem('auth_token');
+      const headers: HeadersInit = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      const response = await fetch(`${apiBase}/admin/seller-accounts/export/csv`, { headers });
+      if (!response.ok) throw new Error('Export failed');
+      return response.blob();
+    }
   }
-}
 
 export const api = new ApiClient();
 export type { User };

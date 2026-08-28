@@ -197,7 +197,7 @@ function LiveAudit() {
     setIsAuditing(true);
     setResult(null);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/seo/audit?url=${encodeURIComponent(url)}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/seo/audit?url=${encodeURIComponent(url)}`);
       const data = await response.json();
       if (data.success) {
         setResult(data.data);
@@ -330,7 +330,7 @@ function KeywordResearch() {
     if (!query) return toast.error("Please enter a seed keyword");
     setIsSearching(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/seo/keywords?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/seo/keywords?q=${encodeURIComponent(query)}`);
       const data = await response.json();
       if (data.success) {
         setSuggestions(data.suggestions);

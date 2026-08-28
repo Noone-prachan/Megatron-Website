@@ -6,6 +6,7 @@ import React from "react";
 
 const Home = React.lazy(() => import("./components/pages/Home").then(m => ({ default: m.Home })));
 const Products = React.lazy(() => import("./components/pages/Products").then(m => ({ default: m.Products })));
+const Accounts = React.lazy(() => import("./components/pages/Accounts").then(m => ({ default: m.Accounts })));
 const ProductDetail = React.lazy(() => import("./components/pages/ProductDetail").then(m => ({ default: m.ProductDetail })));
 const Reviews = React.lazy(() => import("./components/pages/Reviews").then(m => ({ default: m.Reviews })));
 const Team = React.lazy(() => import("./components/pages/Team").then(m => ({ default: m.Team })));
@@ -24,7 +25,9 @@ const OrdersManager = React.lazy(() => import("./components/admin/OrdersManager"
 const HistoryPage = React.lazy(() => import("./components/admin/HistoryPage").then(m => ({ default: m.HistoryPage })));
 const AnnouncementManager = React.lazy(() => import("./components/admin/AnnouncementManager").then(m => ({ default: m.AnnouncementManager })));
 const SecurityPage = React.lazy(() => import("./components/admin/SecurityPage").then(m => ({ default: m.SecurityPage })));
+const PopupManager = React.lazy(() => import("./components/admin/PopupManager").then(m => ({ default: m.PopupManager })));
 const SeoPage = React.lazy(() => import("./components/admin/SeoPage").then(m => ({ default: m.SeoPage })));
+const SellerAccountsPage = React.lazy(() => import("./components/admin/SellerAccountsPage").then(m => ({ default: m.SellerAccountsPage })));
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +36,8 @@ export const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       { index: true, element: <Home /> },
+      { path: "accounts", element: <Accounts /> },
+      { path: "accounts/:id", element: <ProductDetail /> },
       { path: "products", element: <Products /> },
       { path: "products/:id", element: <ProductDetail /> },
       { path: "reviews", element: <Reviews /> },
@@ -58,8 +63,10 @@ export const router = createBrowserRouter([
           { index: true, element: <AnalyticsPage /> },
           { path: "products", element: <ProductsManager /> },
           { path: "orders", element: <OrdersManager /> },
-          { path: "history", element: <HistoryPage /> },
+          { path: "sellers", element: <SellerAccountsPage /> },
           { path: "announcement", element: <AnnouncementManager /> },
+          { path: "popups", element: <PopupManager /> },
+          { path: "history", element: <HistoryPage /> },
           { path: "security", element: <SecurityPage /> },
           { path: "seo", element: <SeoPage /> },
         ],
